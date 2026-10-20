@@ -1,0 +1,3 @@
+export function Loading({ text = 'Cargando información…' }) { return <div className="loading" role="status"><span className="loader"/>{text}</div>; }
+export function ErrorMessage({ message, retry }) { return <div className="alert" role="alert"><p>{message}</p>{retry && <button className="button secondary" onClick={retry}>Volver a intentar</button>}</div>; }
+export function EmptyState({ title = 'Todavía no hay contenido', children }) { return <div className="empty"><span className="eyebrow">Un espacio en preparación</span><h2>{title}</h2><p>{children || 'Estamos preparando información para esta categoría. Podés explorar las demás.'}</p></div>; }
