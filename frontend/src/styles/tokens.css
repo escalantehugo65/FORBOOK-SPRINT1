@@ -1,0 +1,87 @@
+/* Variables del sistema visual de Forbook.
+   Todos los colores de la interfaz salen de acá, así el modo oscuro solo cambia estos valores. */
+:root {
+  color-scheme: light;
+  --font-display: 'Bricolage Grotesque Variable', 'Trebuchet MS', 'Segoe UI', sans-serif;
+  --font-body: 'Nunito Sans Variable', 'Segoe UI', system-ui, sans-serif;
+
+  --bg: #ffffff;
+  --bg-soft: #eef2ff;
+  --surface: #ffffff;
+  --surface-soft: #f7f9ff;
+  --ink: #0e1a3f;
+  --ink-2: #3f4a70;
+  --ink-3: #4a5578;
+  --line: #e1e7fa;
+  --line-strong: #c9d2f0;
+
+  --primary: #2447d6;
+  --primary-hover: #1a36a8;
+  --on-primary: #ffffff;
+  --link: #2447d6;
+  --tint: #c9d6ff;
+  --mint: #bdebd5;
+  --yellow: #ffd84d;
+  --on-accent: #0e1a3f;
+  --navy: #0e1a3f;
+
+  --band: #2447d6;
+  --band-ink: #ffffff;
+  --band-ink-2: #e3e9ff;
+  --hero-panel: #2447d6;
+
+  --map-bg: #e4f3ee;
+  --map-water: #bfd9ff;
+  --map-grid: rgba(255, 255, 255, 0.7);
+
+  --danger: #b42318;
+  --danger-bg: #fdecea;
+  --danger-line: #f4c7c1;
+  --ok-bg: #e6f6ee;
+  --focus: #2447d6;
+  --backdrop: rgba(14, 26, 63, 0.6);
+  --shadow: 0 14px 30px rgba(14, 26, 63, 0.14);
+  --shadow-strong: 0 30px 70px rgba(14, 26, 63, 0.35);
+
+  --radius-s: 14px;
+  --radius-m: 22px;
+  --radius-l: 28px;
+  --radius-xl: 40px;
+  --container: 1240px;
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --bg: #0b1330;
+  --bg-soft: #101b42;
+  --surface: #15214d;
+  --surface-soft: #111c44;
+  --ink: #f3f5ff;
+  --ink-2: #c9d1f2;
+  --ink-3: #aab4dc;
+  --line: #24316a;
+  --line-strong: #34448a;
+
+  --primary: #3f5ef5;
+  --primary-hover: #2f4bd9;
+  --on-primary: #ffffff;
+  --link: #9db1ff;
+  --tint: #27357a;
+
+  --band: #16236b;
+  --band-ink: #ffffff;
+  --band-ink-2: #d4dcff;
+
+  --map-bg: #12302c;
+  --map-water: #1e3a73;
+  --map-grid: rgba(255, 255, 255, 0.06);
+
+  --danger: #ffb4a8;
+  --danger-bg: #3a1620;
+  --danger-line: #6b2a36;
+  --ok-bg: #12382b;
+  --focus: #ffd84d;
+  --backdrop: rgba(3, 6, 20, 0.72);
+  --shadow: 0 14px 30px rgba(0, 0, 0, 0.35);
+  --shadow-strong: 0 30px 70px rgba(0, 0, 0, 0.55);
+}
