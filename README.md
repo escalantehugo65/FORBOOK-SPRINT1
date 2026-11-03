@@ -62,6 +62,10 @@ Detené cada servidor con `Ctrl+C`. Si cambiás `.env`, reiniciá el servidor co
 
 Ingreso y registro se abren en un modal sobre la bienvenida, sin cambiar la URL. El registro tiene dos pasos y las carreras se consultan por institución desde MySQL. Las cuentas V1 se conservan. Ver docs/CAMBIOS_V1_1.md para fuentes, pruebas y diferencias.
 
+## Diseño nuevo
+
+Toda la interfaz usa un sistema visual nuevo: azul, menta y amarillo, títulos en Bricolage Grotesque y texto en Nunito Sans, con modo claro y oscuro. Ingresar y Crear cuenta están arriba a la derecha y abren la ventana superpuesta. La bienvenida muestra lo que ya funciona del sprint y marca como "Próximamente" el mapa, las comunidades, las preguntas, la guía y los puntos. Las tipografías se instalan con `npm run install:all`; no hace falta migrar ni sembrar de nuevo la base. Ver `docs/DISENO.md`.
+
 ## Recorrido disponible
 
 - Bienvenida, registro con institución persistida y login.
@@ -101,6 +105,7 @@ Las pruebas crean tablas si faltan y eliminan solamente sus registros identifica
 - `docs/SPRINT_1.md`: alcance por historia, dependencias y Scrum.
 - `docs/PRUEBAS.md`: pruebas reproducibles y límites de verificación.
 - `docs/FUENTES.md`: referencias editoriales y categorías iniciales.
+- `docs/DISENO.md`: colores, tipografías, componentes y pantallas del diseño nuevo.
 
 ## Git y continuidad
 

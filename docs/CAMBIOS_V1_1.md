@@ -170,3 +170,22 @@ Estado: implementado para registros nuevos en esta versión. Alcance territorial
 
 Fuente del snapshot: https://apis.datos.gob.ar/georef/api/localidades-censales?provincia=Formosa&max=1000&orden=nombre . Fecha de consulta: 03/11/2026.
 Respaldo previo: Forbook_Respaldo_Antes_Localidades.zip en outputs del chat. Para revertir, restaurar el código previo; la tabla y la columna nuevas pueden permanecer sin uso para preservar datos, sin necesidad de eliminarlas.
+
+## 03/11/2026 — diseño nuevo de toda la aplicación
+
+Estado: implementado en `rama-lautaro`, a partir de `Rama-Hugo`. Cambia el aspecto del frontend; el backend y la base de datos no cambian.
+
+- Sistema visual nuevo en `frontend/src/styles/`: variables de color para claro y oscuro, Bricolage Grotesque y Nunito Sans instaladas con npm (sin depender de Google Fonts). Se retiran `index.css`, `editorial.css`, `WelcomePage.css` e `InstitutionResources.css`.
+- Una sola cabecera para toda la app (`Layout.jsx`), con Ingresar y Crear cuenta arriba a la derecha y menú para celular. `WelcomeLayout.jsx` deja de usarse.
+- La ventana de ingreso y registro conserva su funcionamiento (dos pasos, localidades, institución y carrera, confirmación al cerrar con cambios) y suma botones para pasar de una opción a la otra. El estado de llegada se elige con dos opciones en lugar de una lista.
+- Al ingresar desde una ruta privada, se vuelve a esa ruta. Al cerrar sesión se vuelve a la bienvenida sin abrir el ingreso.
+- Bienvenida: funciones disponibles del sprint (Conozcamos Formosa e inicio personalizado) y, como "Próximamente", mapa, comunidades, preguntas y respuestas, guía para vivir en Formosa y puntos.
+- Mi inicio suma "Fichas para tus primeros días": hasta tres fichas, primero las de la institución del estudiante. Si no hay, muestra un aviso con acceso a Conozcamos Formosa.
+- Los tipos de fuente se muestran como en FF-19: "Fuente oficial", "Comunitaria verificable" y "Opinión o experiencia".
+- Backend: se quita la dependencia `all`, que estaba instalada pero no se usaba.
+
+### Verificación
+
+- 12 pruebas del backend aprobadas con MariaDB 10.11 en una base `_test`; compilación de Vite aprobada.
+- Recorrido en navegador: registro en dos pasos (IPF y UNaF), correo repetido, inicio según perfil e institución, recarga con sesión, categorías con y sin fichas, detalle con fuente y fecha, ficha inexistente, cierre de sesión, ingreso incorrecto y correcto, modo oscuro y enlaces a secciones.
+- Revisión a 1440, 390 y 320 px sin desborde horizontal. Se eliminaron las cuentas técnicas al terminar.
