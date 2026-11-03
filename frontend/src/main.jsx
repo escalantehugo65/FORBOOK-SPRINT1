@@ -9,6 +9,7 @@ import App from './App';
 import './styles/tokens.css';
 import './styles/base.css';
 import './styles/layout.css';
+import './styles/landing.css';
 import './styles/access.css';
 
 createRoot(document.getElementById('root')).render(<React.StrictMode><BrowserRouter><ThemeProvider><AuthProvider><App/></AuthProvider></ThemeProvider></BrowserRouter></React.StrictMode>);
