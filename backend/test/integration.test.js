@@ -7,6 +7,7 @@ import { defineModels } from '../src/models/index.js';
 import { MysqlSessionStore } from '../src/config/sessionStore.js';
 import { createApp } from '../src/app.js';
 import { up } from '../migrations/001-initial.js';
+import { up as careerMigration } from '../migrations/002-careers.js';
 
 test('recorrido real de HU-01/02/03/04/06/11/13 sobre MySQL', { skip: !process.env.TEST_DB_NAME }, async t => {
   if (!process.env.TEST_DB_NAME.endsWith('_test')) throw new Error('TEST_DB_NAME debe terminar en _test.');
@@ -18,10 +19,13 @@ test('recorrido real de HU-01/02/03/04/06/11/13 sobre MySQL', { skip: !process.e
   const db = createDatabase(config);
   const models = defineModels(db);
   const suffix = `${Date.now()}-${Math.random().toString(36).slice(2)}`;
-  let userId, institution, category, emptyCategory, content, draft, cookie;
+  let userId, institution, category, emptyCategory, content, draft, cookie, career, otherCareer, otherInstitution;
   try {
-    await db.authenticate(); await up(db, models);
+    await db.authenticate(); await up(db, models); await careerMigration(db, models);
     institution = await models.Institution.create({ name: `Institución de prueba ${suffix}`, sourceUrl: 'https://example.com' });
+    career = await models.Career.create({ name: 'Sistemas de prueba', slug: `career-${suffix}`, institutionId: institution.id, sourceUrl: 'https://example.com', reviewedAt: '2026-11-03' });
+    otherInstitution = await models.Institution.create({ name: `Otra institución ${suffix}`, sourceUrl: 'https://example.com' });
+    otherCareer = await models.Career.create({ name: 'Otra carrera', slug: `other-${suffix}`, institutionId: otherInstitution.id, sourceUrl: 'https://example.com', reviewedAt: '2026-11-03' });
     category = await models.Category.create({ name: 'Prueba', slug: `test-${suffix}`, description: 'Datos ficticios exclusivos para pruebas' });
     emptyCategory = await models.Category.create({ name: 'Vacía', slug: `empty-${suffix}`, description: 'Categoría sin publicaciones' });
     const values = { slug: `content-${suffix}`, title: 'Contenido de prueba', summary: 'Dato ficticio', body: 'No es información real.', categoryId: category.id, sourceType: 'experience', authorLabel: 'Pruebas automatizadas', status: 'published' };
@@ -31,13 +35,19 @@ test('recorrido real de HU-01/02/03/04/06/11/13 sobre MySQL', { skip: !process.e
     const app = createApp({ models, store, config, db });
     const agent = request.agent(app);
     const post = (path, data, client = agent) => client.post(path).set('Origin', config.frontendUrl).send(data);
-    const profile = { name: 'Ana Prueba', email: `test-${suffix}@example.com`, password: 'Una-clave-segura-123', origin: 'Chaco', institutionId: institution.id, career: 'Sistemas', arrivalStatus: 'not_arrived' };
+    const profile = { name: 'Ana Prueba', email: `test-${suffix}@example.com`, password: 'Una-clave-segura-123', origin: 'Chaco', institutionId: institution.id, careerId: career.id, arrivalStatus: 'not_arrived' };
     await t.test('rutas privadas bloqueadas y origen de mutaciones comprobado', async () => {
       await request(app).get('/api/categories').expect(401);
       await request(app).post('/api/auth/register').send(profile).expect(403);
       await post('/api/auth/register', { ...profile, role: 'admin' }).expect(400);
       await post('/api/auth/register', { ...profile, institutionId: 4294967295 }).expect(400);
       await post('/api/auth/register', { ...profile, password: 'corta' }).expect(400);
+      await post('/api/auth/register', { ...profile, careerId: otherCareer.id }).expect(400);
+      await post('/api/auth/register', { ...profile, careerId: 4294967295 }).expect(400);
+      await post('/api/auth/register', { ...profile, career: 'Texto libre' }).expect(400);
+      const catalog = await request(app).get(`/api/institutions/${institution.id}/careers`).expect(200);
+      assert.equal(catalog.body.data.length, 1);
+      assert.equal(catalog.body.data[0].id, career.id);
     });
     await t.test('registro persistente, cookie HttpOnly y datos públicos', async () => {
       const response = await post('/api/auth/register', profile).expect(201);
@@ -50,6 +60,7 @@ test('recorrido real de HU-01/02/03/04/06/11/13 sobre MySQL', { skip: !process.e
       const user = await models.User.scope('withPassword').findByPk(userId);
       assert.equal(await bcrypt.compare(profile.password, user.passwordHash), true);
       assert.equal(user.role, 'student');
+      assert.equal(user.career, career.name);
       await post('/api/auth/register', profile).expect(409);
     });
     await t.test('perfil y sesión recuperados incluso con otra instancia de Express', async () => {
@@ -94,7 +105,8 @@ test('recorrido real de HU-01/02/03/04/06/11/13 sobre MySQL', { skip: !process.e
     if (userId) await models.User.destroy({ where: { id: userId } });
     if (content) await content.destroy(); if (draft) await draft.destroy();
     if (category) await category.destroy(); if (emptyCategory) await emptyCategory.destroy();
-    if (institution) await institution.destroy();
+    if (career) await career.destroy(); if (otherCareer) await otherCareer.destroy();
+    if (institution) await institution.destroy(); if (otherInstitution) await otherInstitution.destroy();
     await db.close();
   }
 });

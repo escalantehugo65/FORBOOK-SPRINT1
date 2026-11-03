@@ -25,3 +25,8 @@ El contenido son resúmenes propios y enlaces de orientación; no se copiaron ar
 Las cinco categorías son Lugares útiles, Movilidad, Vida estudiantil, Cultura y costumbres y Recomendaciones. Se tomó “Movilidad” del pedido más reciente como nombre inicial. Movilidad y Cultura quedan vacías hasta verificar material suficiente. El equipo puede refinar nombres y límites sin cambiar identificadores de historias.
 
 Para ampliar instituciones, agregá registros verificables al seed y ejecutalo. No hace falta modificar un arreglo de React. Para contenido nuevo, agregá una ficha con slug nuevo y referencia real. El seed no sobrescribe fichas existentes: los cambios editoriales de registros existentes requieren una actualización explícita y revisada en MySQL o una futura herramienta administrativa.
+
+
+## V1.1 — instituciones y carreras (03/11/2026)
+
+El catálogo académico proviene del listado público de SIU Guaraní de UNaF y la página de carreras del IPF. Las fuentes exactas, filtros, límites de vigencia y denominaciones históricas están documentados en `CAMBIOS_V1_1.md`. Cada carrera persistida tiene `sourceUrl` y `reviewedAt`. No se presentan estos listados como inscripción abierta ni se copian requisitos antiguos.

@@ -1,9 +1,14 @@
 import { HttpError } from '../helpers/http.js';
 import { positiveId } from '../middlewares/validation.js';
 
-export function contentController({ Institution, Category, Content }) {
+export function contentController({ Institution, Career, Category, Content }) {
   const include = [{ model: Category, as: 'category', attributes: ['id', 'name', 'slug'] }, { model: Institution, as: 'institution', attributes: ['id', 'name'] }];
   return {
+    careers: async (req, res) => {
+      const institutionId = positiveId(req.params.id, 'Institución');
+      if (!await Institution.findByPk(institutionId)) throw new HttpError(404, 'La institución no existe.');
+      res.json({ data: await Career.findAll({ where: { institutionId }, attributes: ['id', 'name', 'institutionId', 'sourceUrl', 'reviewedAt'], order: [['name', 'ASC']] }) });
+    },
     institutions: async (req, res) => res.json({ data: await Institution.findAll({ attributes: ['id', 'name', 'sourceUrl'], order: [['name', 'ASC']] }) }),
     categories: async (req, res) => res.json({ data: await Category.findAll({ attributes: ['id', 'name', 'slug', 'description'], order: [['id', 'ASC']] }) }),
     list: async (req, res) => {

@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { validateCredentials, positiveId } from '../src/middlewares/validation.js';
 
-const valid = { name: 'Ana Pérez', email: 'ANA@EXAMPLE.COM ', password: 'una-clave-segura-123', origin: 'Resistencia, Chaco', institutionId: 1, career: 'Sistemas', arrivalStatus: 'not_arrived' };
+const valid = { name: 'Ana Pérez', email: 'ANA@EXAMPLE.COM ', password: 'una-clave-segura-123', origin: 'Resistencia, Chaco', institutionId: 1, careerId: 1, arrivalStatus: 'not_arrived' };
 test('normaliza el correo y conserva la contraseña sin recortarla', () => {
   const input = validateCredentials({ ...valid, password: ' una-clave-segura ' }, true);
   assert.equal(input.email, 'ana@example.com'); assert.equal(input.password, ' una-clave-segura ');

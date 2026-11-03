@@ -8,5 +8,5 @@ function SessionState({ children }) {
   if (error) return <div className="container section"><ErrorMessage message={error} retry={refresh}/></div>;
   return children;
 }
-export function PrivateRoute() { const { user } = useAuth(); return <SessionState>{user ? <Outlet/> : <Navigate to="/ingresar" replace/>}</SessionState>; }
+export function PrivateRoute() { const { user } = useAuth(); return <SessionState>{user ? <Outlet/> : <Navigate to="/" replace state={{ authMode: 'login' }}/>}</SessionState>; }
 export function PublicRoute() { const { user } = useAuth(); return <SessionState>{user ? <Navigate to="/inicio" replace/> : <Outlet/>}</SessionState>; }
