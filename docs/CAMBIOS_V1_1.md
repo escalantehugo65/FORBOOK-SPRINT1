@@ -117,3 +117,56 @@ Estado: implementado. Se agrega al inicio la sección “Accesos de tu instituci
 - Pendiente editorial: cargar fichas propias del IPF dentro de Conozcamos Formosa. Los accesos nuevos están en el inicio; no se inventaron artículos para llenar categorías.
 
 Revisión final: perfil IPF mostró Aprende e IPF Conecta y solo 1 ficha general en el catálogo actual; ninguna ficha de UNaF. Se cerró sesión y se retiró la cuenta técnica. Captura guardada en outputs/Forbook_Accesos_IPF.jpg.
+
+## Experimento visual — dirección editorial
+
+Estado: aplicado para evaluación del usuario; reversible, sin reemplazar la lógica del producto.
+
+- React y CSS convencional, sin Tailwind ni dependencias nuevas. `frontend/src/editorial.css` se importa al final desde `main.jsx`, por lo que permite retirar el experimento de forma puntual.
+- Composición con grilla de 12 columnas, alineaciones escalonadas, imagen desplazada y título superpuesto a su área. En móvil se conserva la asimetría por sangrías y encuadre, sin forzar columnas estrechas.
+- Tipografía: Georgia (serif disponible en el sistema, con fallback) para títulos y marca; DM Sans existente para lectura y formularios. No se agregó otra descarga de fuentes. Se usan títulos grandes, cursivas y diferencias claras de escala.
+- Paleta terrosa: fondo lino #f3f0e7, verde bosque #254236 y detalles salvia. La bienvenida conserva modo oscuro con fondo verde profundo y texto crema.
+- Botones con radios alternados, sombras desplazadas y hover breve. Se respeta prefers-reduced-motion. El foco de teclado sigue visible.
+- Inicio privado: bloque de exploración dominante y perfil lateral más pequeño/desplazado. Accesos institucionales separados por líneas en lugar de tarjetas repetidas, con desfase en escritorio.
+- Guía: fichas con anchos alternados y separación por líneas; detalle con tipografía editorial y fuente a un lado. Formularios modales reciben la misma tipografía y geometría.
+- Se conservan autenticación, registro en dos pasos, instituciones/carreras, accesos IPF/UNaF y separación de contenidos. No se modificaron archivos del backend ni la estructura de MySQL.
+- Verificación: compilación Vite aprobada (65 módulos), navegación real de ingreso/inicio/guía/detalle y logout; revisión a 1440 y 390 px sin desbordamiento horizontal; registro modal abierto y estilos de tema comprobados. Se retiró la cuenta técnica al terminar.
+
+### Volver al diseño previo
+
+Respaldo: `Forbook_Respaldo_Antes_Editorial.zip` en outputs del chat. Contiene las versiones anteriores de main.jsx, Layout.jsx, WelcomePage.jsx y HomePage.jsx. Restaurar esos cuatro archivos y retirar editorial.css (ya sin importación) devuelve el diseño anterior a este experimento, manteniendo las funciones institucionales. No es necesario revertir la base ni los cambios funcionales de V1.1.
+
+### Ajuste posterior — minimalismo y color vivo
+
+A pedido del usuario, se conserva la combinación tipográfica Georgia/DM Sans y se retira la imagen de la bienvenida (incluida su importación, por lo que ya no entra en el bundle). Se simplifica la composición a texto y acción principal; sin sombras decorativas ni bloques de paisaje.
+
+Nueva paleta: fondo claro #f7fbf8, verde fresco #087443, texto #18382c y acento lima #d7f16b en acciones secundarias o modo oscuro. La paleta se aplica a la bienvenida, formularios y estilos de pantallas privadas; se mantienen los accesos institucionales y las reglas de filtrado.
+
+Se redujeron los radios irregulares a bordes discretos de 8 px en botones/campos. Compilación aprobada (64 módulos), revisión de escritorio y móvil a 390 px sin desbordamiento y apertura del registro en modo oscuro comprobadas. No hubo cambios funcionales ni de datos.
+
+Respaldo de esta iteración: Forbook_Respaldo_Editorial_Con_Imagen.zip (WelcomePage.jsx y editorial.css anteriores). El archivo del paisaje sigue disponible en assets para permitir revertir, pero no se muestra ni se descarga en la bienvenida actual.
+
+### Tema compartido y evaluación de localidades
+
+Implementado: ThemeProvider común a toda la aplicación y ThemeToggle reutilizable en cabecera pública y privada. La preferencia anterior se conserva, se aplica al inicio privado, Conozcamos Formosa, detalle, mensajes, botones, fichas y accesos institucionales, y persiste al recargar. Compilación aprobada (66 módulos). Probado en navegador el paso de bienvenida oscura a inicio privado oscuro, recarga, guía y detalle, y cambio a claro. Cuenta técnica retirada.
+
+Localidades: investigación, sin modificar todavía el formulario ni los perfiles. Fuente oficial Georef, documentación https://www.argentina.gob.ar/georef y https://georef.argentina.apidocs.ar/operations/get-localidades-censales. Consulta https://apis.datos.gob.ar/georef/api/localidades-censales?provincia=Formosa&max=1000&orden=nombre. La respuesta consultada devolvió 89 registros censales y se guardó en outputs/Formosa_Localidades_Censales_Georef.json para revisión. No equivale a un listado de municipios ni a todos los asentamientos; antes de importar se acuerda el alcance y la categoría territorial. No deduplicar solo por nombre.
+
+Propuesta pendiente: seleccionar provincia y localidad mediante IDs oficiales, guardar catálogo en MySQL para no depender de disponibilidad de Georef durante el registro, filtrar localidades por provincia y validar relación en backend. Formosa continúa siendo el destino fijo; la procedencia puede ser de otra provincia o país. Los perfiles anteriores deben conservar su procedencia histórica hasta una normalización revisada.
+
+### Procedencia controlada — localidades de Formosa
+
+Estado: implementado para registros nuevos en esta versión. Alcance territorial: únicamente Formosa, con los 89 registros de localidades censales de la consulta Georef guardada el 03/11/2026. No se afirma que sea una lista de todos los asentamientos o parajes; es el catálogo censal acordado para esta iteración.
+
+- El paso 2 del registro reemplaza la procedencia escrita por búsqueda y selección de localidad. La búsqueda encuentra nombre o departamento, sin exigir tildes, y las opciones se agrupan por departamento. Lo escrito en el buscador solo filtra: no se guarda como procedencia.
+- El nuevo endpoint público `GET /api/origin-localities` consulta MySQL y devuelve solo provincia 34 (Formosa). El registro envía `originLocalityId` como cadena con el código oficial, nunca un nombre libre.
+- Nuevo modelo/tabla `Locality`/`localities`: ID oficial de ocho caracteres, nombre, provincia, departamento, fuente y fecha de revisión. Los datos quedan versionados en backend/seeders/data/formosa-localities.json. No se consulta Georef durante el registro, por lo que una caída del servicio externo no afecta las opciones disponibles.
+- Migración aditiva `004-origin-localities`: tabla nueva y columna nullable users.origin_locality_id, con clave foránea. No se modificaron migraciones ya aplicadas ni se borraron datos.
+- El backend exige una localidad existente de Formosa y genera la procedencia visible a partir del nombre canónico. Se conserva users.origin como texto histórico/snapshot para mostrar el perfil y mantener compatibilidad. Las cuentas anteriores conservan su procedencia, incluso si es de otra provincia, con ID nulo; no se les asigna una localidad automáticamente.
+- Seed con findOrCreate por código oficial; reejecutar no duplica registros ni sobrescribe cuentas. Las provincias y países restantes se mantienen fuera de esta iteración.
+- Pruebas: compilación frontend aprobada (66 módulos); 12 pruebas SQL aprobadas sin omisiones. Se comprueban rechazo de localidad inexistente, dato territorial inconsistente y texto libre, catálogo limitado a Formosa, ID y nombre canónico guardados, y conservación del origen histórico. Las pruebas también siguen comprobando sesiones, contenido y separación por institución.
+- Navegador: 89 opciones verificadas, búsqueda sin coincidencias, búsqueda sin tilde para Pirané, selección de carrera IPF, registro completo y recuperación de Pirané, Formosa al recargar. Se retiró la cuenta técnica al terminar. Migración y seed reejecutados sin duplicados.
+- Para otra copia: ejecutar npm run db:migrate y npm run db:seed en backend, actualizar frontend y reiniciar API si no está en modo watch. El contrato de registro deja de aceptar origin libre.
+
+Fuente del snapshot: https://apis.datos.gob.ar/georef/api/localidades-censales?provincia=Formosa&max=1000&orden=nombre . Fecha de consulta: 03/11/2026.
+Respaldo previo: Forbook_Respaldo_Antes_Localidades.zip en outputs del chat. Para revertir, restaurar el código previo; la tabla y la columna nuevas pueden permanecer sin uso para preservar datos, sin necesidad de eliminarlas.

@@ -13,6 +13,7 @@ export function apiRoutes(models, cookieOptions) {
   router.post('/auth/login', limit, asyncRoute(auth.login));
   router.get('/auth/me', requireAuth, asyncRoute(auth.me));
   router.post('/auth/logout', asyncRoute(auth.logout));
+  router.get('/origin-localities', asyncRoute(content.localities));
   router.get('/institutions', asyncRoute(content.institutions));
   router.get('/institutions/:id/careers', asyncRoute(content.careers));
   router.get('/institution-resources', requireAuth, asyncRoute(content.resources));

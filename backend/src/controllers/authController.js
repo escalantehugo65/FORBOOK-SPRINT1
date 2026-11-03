@@ -3,7 +3,7 @@ import { HttpError, publicUser, sessionCall } from '../helpers/http.js';
 import { validateCredentials } from '../middlewares/validation.js';
 
 export function authController(models, cookieOptions) {
-  const { User, Institution, Career } = models;
+  const { User, Institution, Career, Locality } = models;
   // Hash de trabajo equivalente para que un correo inexistente también verifique un hash.
   const dummyHash = bcrypt.hashSync('forbook-dummy-password', 12);
   const findUser = id => User.findByPk(id, { include: { model: Institution, as: 'institution' } });
@@ -19,7 +19,11 @@ export function authController(models, cookieOptions) {
       if (await User.findOne({ where: { email: input.email } })) throw new HttpError(409, 'Ese correo ya está registrado.');
       const selectedCareer = await Career.findOne({ where: { id: input.careerId, institutionId: input.institutionId } });
       if (!selectedCareer) throw new HttpError(400, 'La carrera no corresponde a la institución elegida.', { careerId: 'Elegí una carrera del catálogo de tu institución.' });
+      const locality = await Locality.findOne({ where: { id: input.originLocalityId, provinceCode: '34' } });
+      if (!locality) throw new HttpError(400, 'La localidad seleccionada no está disponible.', { originLocalityId: 'Elegí una localidad del catálogo de Formosa.' });
       const { password, careerId, ...profile } = input;
+      profile.originLocalityId = locality.id;
+      profile.origin = `${locality.name}, Formosa`;
       // Se guarda el nombre canónico; el estudiante nunca decide este texto.
       profile.career = selectedCareer.name;
       const user = await User.create({ ...profile, passwordHash: await bcrypt.hash(password, 12), role: 'student' });

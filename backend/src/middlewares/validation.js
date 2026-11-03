@@ -6,7 +6,7 @@ export function positiveId(value, label = 'Identificador') {
 }
 export function validateCredentials(body, registration = false) {
   if (!body || typeof body !== 'object' || Array.isArray(body)) throw new HttpError(400, 'Enviá un objeto JSON válido.');
-  const allowed = registration ? ['name', 'email', 'password', 'origin', 'institutionId', 'careerId', 'arrivalStatus'] : ['email', 'password'];
+  const allowed = registration ? ['name', 'email', 'password', 'originLocalityId', 'institutionId', 'careerId', 'arrivalStatus'] : ['email', 'password'];
   if (Object.keys(body).some(key => !allowed.includes(key))) throw new HttpError(400, 'La petición contiene campos no permitidos.');
   const fields = {};
   const clean = {};
@@ -20,7 +20,9 @@ export function validateCredentials(body, registration = false) {
   text('password', registration ? 10 : 1, 72, false);
   if (Buffer.byteLength(clean.password, 'utf8') > 72) fields.password = 'La contraseña debe ocupar como máximo 72 bytes.';
   if (registration) {
-    text('name', 2, 100); text('origin', 2, 150);
+    text('name', 2, 100);
+    if (typeof body.originLocalityId !== 'string' || !/^34\d{6}$/.test(body.originLocalityId)) fields.originLocalityId = 'Elegí una localidad de Formosa.';
+    clean.originLocalityId = body.originLocalityId;
     try { clean.careerId = positiveId(body.careerId, 'Carrera'); } catch { fields.careerId = 'Elegí una carrera válida.'; }
     clean.arrivalStatus = body.arrivalStatus;
     if (!['arrived', 'not_arrived'].includes(body.arrivalStatus)) fields.arrivalStatus = 'Elegí tu estado de llegada.';

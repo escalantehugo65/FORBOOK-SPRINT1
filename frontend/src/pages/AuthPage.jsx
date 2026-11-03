@@ -5,12 +5,13 @@ import { useFetch } from '../hooks/useFetch';
 import { catalogService } from '../services/catalog';
 import Field from '../components/Field';
 
-const initial = { name: '', email: '', password: '', origin: '', institutionId: '', careerId: '', arrivalStatus: '' };
+const initial = { name: '', email: '', password: '', originLocalityId: '', institutionId: '', careerId: '', arrivalStatus: '' };
 export default function AuthPage({ registration = false, onModeChange, onBusyChange, onDirtyChange, initialNotice = '', titleId = 'access-title' }) {
   const { login, register, checking, error: sessionError, refresh } = useAuth();
   const [values, setValues] = useState(registration ? initial : { email: '', password: '' });
   const [errors, setErrors] = useState({});
   const [step, setStep] = useState(0);
+  const [localitySearch, setLocalitySearch] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
@@ -22,6 +23,11 @@ export default function AuthPage({ registration = false, onModeChange, onBusyCha
   useEffect(() => { onBusyChange(busy); }, [busy, onBusyChange]);
   const loader = useCallback(signal => registration ? catalogService.institutions(signal) : Promise.resolve({ data: [] }), [registration]);
   const careerLoader = useCallback(signal => registration && values.institutionId ? catalogService.careers(values.institutionId, signal) : Promise.resolve({ data: [] }), [registration, values.institutionId]);
+  const localityLoader = useCallback(signal => registration ? catalogService.localities(signal) : Promise.resolve({ data: [] }), [registration]);
+  const localities = useFetch(localityLoader);
+  const normalize = value => value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+  const visibleLocalities = (localities.result?.data || []).filter(item => normalize(`${item.name} ${item.departmentName}`).includes(normalize(localitySearch.trim())));
+  const localityGroups = Map.groupBy(visibleLocalities, item => item.departmentName);
   const institutions = useFetch(loader);
   const careers = useFetch(careerLoader);
   function change(event) {
@@ -35,7 +41,7 @@ export default function AuthPage({ registration = false, onModeChange, onBusyCha
     for (const key of keys) if (!values[key]?.trim()) invalid[key] = 'Completá este campo.';
     if (keys.includes('email') && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.email.trim())) invalid.email = 'Ingresá un correo válido.';
     if (keys.includes('password') && registration && (values.password.length < 10 || new TextEncoder().encode(values.password).length > 72)) invalid.password = 'Usá al menos 10 caracteres y hasta 72 bytes.';
-    for (const [key, min] of [['name', 2], ['origin', 2]]) if (keys.includes(key) && values[key].trim().length < min) invalid[key] = 'Ingresá al menos 2 caracteres.';
+    for (const [key, min] of [['name', 2]]) if (keys.includes(key) && values[key].trim().length < min) invalid[key] = 'Ingresá al menos 2 caracteres.';
     setErrors(invalid);
     if (Object.keys(invalid).length) requestAnimationFrame(() => form.current?.querySelector('[aria-invalid="true"]')?.focus());
     return !Object.keys(invalid).length;
@@ -47,7 +53,7 @@ export default function AuthPage({ registration = false, onModeChange, onBusyCha
       if (validate(['name', 'email', 'password'])) setStep(1);
       return;
     }
-    if (!validate(registration ? ['origin', 'institutionId', 'careerId', 'arrivalStatus'] : ['email', 'password'])) return;
+    if (!validate(registration ? ['originLocalityId', 'institutionId', 'careerId', 'arrivalStatus'] : ['email', 'password'])) return;
     setBusy(true);
     try {
       if (registration) {
@@ -64,7 +70,7 @@ export default function AuthPage({ registration = false, onModeChange, onBusyCha
   }
   const field = name => ({ name, value: values[name] || '', onChange: change, error: errors[name], required: true, disabled: busy });
   const accountStep = !registration || step === 0;
-  const catalogBlocked = registration && step === 1 && (institutions.loading || institutions.error || careers.loading || careers.error || !careers.result?.data.length);
+  const catalogBlocked = registration && step === 1 && (localities.loading || localities.error || !localities.result?.data.length || institutions.loading || institutions.error || careers.loading || careers.error || !careers.result?.data.length);
   return <section className="access-content">
     <p className="access-eyebrow">{registration ? 'Tu llegada a Formosa' : 'Qué bueno verte de nuevo'}</p>
     <h2 id={titleId} ref={heading} tabIndex="-1">{registration ? step === 0 ? 'Empezá por vos.' : 'Tu próximo lugar.' : 'Sentite en casa.'}</h2>
@@ -82,7 +88,11 @@ export default function AuthPage({ registration = false, onModeChange, onBusyCha
         <div className="field access-password"><label htmlFor="password">Contraseña <span aria-hidden="true">*</span></label><div className="access-password-input"><input id="password" type={showPassword ? 'text' : 'password'} autoComplete={registration ? 'new-password' : 'current-password'} aria-invalid={!!errors.password} aria-describedby={errors.password ? 'password-error' : registration ? 'password-hint' : undefined} maxLength={72} {...field('password')} error={undefined}/><button type="button" aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'} aria-pressed={showPassword} onClick={() => setShowPassword(value => !value)}>{showPassword ? 'Ocultar' : 'Mostrar'}</button></div>
           {registration && <small id="password-hint">Al menos 10 caracteres. Usá una clave propia para Forbook.</small>}{errors.password && <small id="password-error" className="field-error">{errors.password}</small>}</div>
       </> : <>
-        <Field label="¿De dónde venís?" placeholder="Localidad y provincia o país" autoComplete="off" minLength={2} maxLength={150} {...field('origin')}/>
+        <div className="field"><label htmlFor="locality-search">Buscar localidad</label><input id="locality-search" type="search" placeholder="Nombre o departamento" value={localitySearch} disabled={busy || localities.loading || !!localities.error} onChange={event => { setLocalitySearch(event.target.value); setValues(previous => ({ ...previous, originLocalityId: '' })); setErrors(previous => ({ ...previous, originLocalityId: undefined })); }}/></div>
+        <Field label="Localidad de procedencia (Formosa)" {...field('originLocalityId')} disabled={busy || localities.loading || !!localities.error}><option value="">{localities.loading ? 'Cargando localidades…' : 'Elegí tu localidad'}</option>{[...localityGroups].map(([department, items]) => <optgroup key={department} label={department}>{items.map(item => <option key={item.id} value={item.id}>{item.name}</option>)}</optgroup>)}</Field>
+        {localities.error && <div className="access-error" role="alert"><p>{localities.error.message}</p><button type="button" className="access-text-button" onClick={localities.retry}>Reintentar localidades</button></div>}
+        {!localities.loading && !localities.error && !visibleLocalities.length && <p className="access-hint" role="status">No encontramos localidades con esa búsqueda.</p>}
+        <p className="access-hint">En esta versión, la procedencia se elige entre las localidades de Formosa.</p>
         <Field label="Institución educativa" {...field('institutionId')} disabled={busy || institutions.loading || !!institutions.error}><option value="">{institutions.loading ? 'Cargando instituciones…' : 'Elegí tu institución'}</option>{institutions.result?.data.map(item => <option key={item.id} value={item.id}>{item.name}</option>)}</Field>
         {institutions.error && <div className="access-error" role="alert"><p>{institutions.error.message}</p><button type="button" className="access-text-button" onClick={institutions.retry}>Reintentar instituciones</button></div>}
         <Field label="Carrera" {...field('careerId')} disabled={busy || !values.institutionId || careers.loading || !!careers.error}><option value="">{!values.institutionId ? 'Primero elegí tu institución' : careers.loading ? 'Cargando carreras…' : 'Elegí tu carrera'}</option>{careers.result?.data.map(item => <option key={item.id} value={item.id}>{item.name}</option>)}</Field>

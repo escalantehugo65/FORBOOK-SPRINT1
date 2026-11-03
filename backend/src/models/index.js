@@ -28,12 +28,22 @@ export function defineModels(db) {
   }, { tableName: 'institution_resources' });
   Institution.hasMany(InstitutionResource, { foreignKey: 'institutionId', as: 'resources' });
   InstitutionResource.belongsTo(Institution, { foreignKey: 'institutionId', as: 'institution' });
+  const Locality = db.define('Locality', {
+    id: { type: DataTypes.STRING(8), primaryKey: true },
+    name: { type: DataTypes.STRING(120), allowNull: false },
+    provinceCode: { type: DataTypes.STRING(2), allowNull: false },
+    departmentCode: { type: DataTypes.STRING(5), allowNull: false },
+    departmentName: { type: DataTypes.STRING(80), allowNull: false },
+    sourceUrl: { type: DataTypes.STRING(1000), allowNull: false },
+    reviewedAt: { type: DataTypes.DATEONLY, allowNull: false },
+  }, { tableName: 'localities' });
   const User = db.define('User', {
     id: { type: DataTypes.INTEGER.UNSIGNED, autoIncrement: true, primaryKey: true },
     name: { type: DataTypes.STRING(100), allowNull: false },
     email: { type: DataTypes.STRING(254), allowNull: false, unique: true },
     passwordHash: { type: DataTypes.STRING(255), allowNull: false },
     origin: { type: DataTypes.STRING(150), allowNull: false },
+    originLocalityId: { type: DataTypes.STRING(8), allowNull: true },
     institutionId: { type: DataTypes.INTEGER.UNSIGNED, allowNull: false },
     career: { type: DataTypes.STRING(180), allowNull: false },
     arrivalStatus: { type: DataTypes.ENUM('not_arrived', 'arrived'), allowNull: false },
@@ -71,5 +81,5 @@ export function defineModels(db) {
   Content.belongsTo(Category, { foreignKey: 'categoryId', as: 'category' });
   Institution.hasMany(Content, { foreignKey: 'institutionId', as: 'contents' });
   Content.belongsTo(Institution, { foreignKey: 'institutionId', as: 'institution' });
-  return { User, Institution, Career, InstitutionResource, Category, Content, Session };
+  return { User, Institution, Career, InstitutionResource, Locality, Category, Content, Session };
 }

@@ -4,12 +4,14 @@ import { defineModels } from '../src/models/index.js';
 import { institutions, categories, contents } from '../seeders/catalog.js';
 import { careerCatalog } from '../seeders/careers.js';
 import { institutionResources } from '../seeders/institutionResources.js';
+import { seedLocalities } from '../seeders/localities.js';
 
 const db = createDatabase(readConfig());
-const { Institution, Career, InstitutionResource, Category, Content } = defineModels(db);
+const { Institution, Career, InstitutionResource, Locality, Category, Content } = defineModels(db);
 try {
   await db.authenticate();
   await db.transaction(async transaction => {
+    await seedLocalities(Locality, transaction);
     for (const item of institutions) await Institution.findOrCreate({ where: { name: item.name }, defaults: item, transaction });
     for (const catalog of careerCatalog) {
       const institution = await Institution.findOne({ where: { name: catalog.institutionName }, transaction });

@@ -5,6 +5,7 @@ import { defineModels } from '../src/models/index.js';
 import { up as initial } from '../migrations/001-initial.js';
 import { up as careers } from '../migrations/002-careers.js';
 import { up as resources } from '../migrations/003-institution-resources.js';
+import { up as localities } from '../migrations/004-origin-localities.js';
 
 const db = createDatabase(readConfig());
 try {
@@ -12,7 +13,7 @@ try {
   const models = defineModels(db);
   const query = db.getQueryInterface();
   await query.createTable('schema_migrations', { name: { type: DataTypes.STRING(150), primaryKey: true, allowNull: false } });
-  for (const [name, up] of [['001-initial', initial], ['002-careers', careers], ['003-institution-resources', resources]]) {
+  for (const [name, up] of [['001-initial', initial], ['002-careers', careers], ['003-institution-resources', resources], ['004-origin-localities', localities]]) {
     const [rows] = await db.query('SELECT name FROM schema_migrations WHERE name = :name', { replacements: { name } });
     if (!rows.length) {
       await up(db, models);

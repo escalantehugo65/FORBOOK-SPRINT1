@@ -1,5 +1,6 @@
 import { request } from './api';
 export const catalogService = {
+  localities: signal => request('/origin-localities', { signal }),
   institutions: signal => request('/institutions', { signal }),
   careers: (id, signal) => request(`/institutions/${encodeURIComponent(id)}/careers`, { signal }),
   institutionResources: signal => request('/institution-resources', { signal }),

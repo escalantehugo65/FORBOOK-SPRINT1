@@ -1,0 +1,542 @@
+{
+  "provinceCode": "34",
+  "provinceName": "Formosa",
+  "sourceUrl": "https://apis.datos.gob.ar/georef/api/localidades-censales?provincia=Formosa&max=1000&orden=nombre",
+  "reviewedAt": "2026-11-03",
+  "localities": [
+    {
+      "id": "34021010",
+      "name": "Banco Payaguá",
+      "departmentCode": "34021",
+      "departmentName": "Laishi"
+    },
+    {
+      "id": "34035010",
+      "name": "Bartolomé De Las Casas",
+      "departmentCode": "34035",
+      "departmentName": "Patiño"
+    },
+    {
+      "id": "34014005",
+      "name": "Boca Riacho Pilagás",
+      "departmentCode": "34014",
+      "departmentName": "Formosa"
+    },
+    {
+      "id": "34042010",
+      "name": "Buena Vista",
+      "departmentCode": "34042",
+      "departmentName": "Pilagás"
+    },
+    {
+      "id": "34035012",
+      "name": "Campo Del Cielo",
+      "departmentCode": "34035",
+      "departmentName": "Patiño"
+    },
+    {
+      "id": "34028004",
+      "name": "Campo Grande",
+      "departmentCode": "34028",
+      "departmentName": "Matacos"
+    },
+    {
+      "id": "34035014",
+      "name": "Campo Tres Pozos",
+      "departmentCode": "34035",
+      "departmentName": "Patiño"
+    },
+    {
+      "id": "34049010",
+      "name": "Clorinda",
+      "departmentCode": "34049",
+      "departmentName": "Pilcomayo"
+    },
+    {
+      "id": "34035015",
+      "name": "Colonia Aborigen Bartolomé de las Casas",
+      "departmentCode": "34035",
+      "departmentName": "Patiño"
+    },
+    {
+      "id": "34035018",
+      "name": "Colonia Javier Muñiz",
+      "departmentCode": "34035",
+      "departmentName": "Patiño"
+    },
+    {
+      "id": "34014010",
+      "name": "Colonia Pastoril",
+      "departmentCode": "34014",
+      "departmentName": "Formosa"
+    },
+    {
+      "id": "34035020",
+      "name": "Colonia Sarmiento",
+      "departmentCode": "34035",
+      "departmentName": "Patiño"
+    },
+    {
+      "id": "34049013",
+      "name": "Colonia Sudamerica",
+      "departmentCode": "34049",
+      "departmentName": "Pilcomayo"
+    },
+    {
+      "id": "34035025",
+      "name": "Colonia Unión Escuela",
+      "departmentCode": "34035",
+      "departmentName": "Patiño"
+    },
+    {
+      "id": "34035030",
+      "name": "Comandante Fontana",
+      "departmentCode": "34035",
+      "departmentName": "Patiño"
+    },
+    {
+      "id": "34035033",
+      "name": "Comunidad Aborigen Laká Wichi",
+      "departmentCode": "34035",
+      "departmentName": "Patiño"
+    },
+    {
+      "id": "34063005",
+      "name": "Comunidad Aborigen Wichi Oblitaj",
+      "departmentCode": "34063",
+      "departmentName": "Ramón Lista"
+    },
+    {
+      "id": "34063007",
+      "name": "El Breal",
+      "departmentCode": "34063",
+      "departmentName": "Ramón Lista"
+    },
+    {
+      "id": "34056020",
+      "name": "El Colorado",
+      "departmentCode": "34056",
+      "departmentName": "Pirané"
+    },
+    {
+      "id": "34042020",
+      "name": "El Espinillo",
+      "departmentCode": "34042",
+      "departmentName": "Pilagás"
+    },
+    {
+      "id": "34063010",
+      "name": "El Potrillo",
+      "departmentCode": "34063",
+      "departmentName": "Ramón Lista"
+    },
+    {
+      "id": "34063030",
+      "name": "El Quebracho",
+      "departmentCode": "34063",
+      "departmentName": "Ramón Lista"
+    },
+    {
+      "id": "34007002",
+      "name": "El Quemado",
+      "departmentCode": "34007",
+      "departmentName": "Bermejo"
+    },
+    {
+      "id": "34035040",
+      "name": "El Recreo",
+      "departmentCode": "34035",
+      "departmentName": "Patiño"
+    },
+    {
+      "id": "34035050",
+      "name": "Estanislao Del Campo",
+      "departmentCode": "34035",
+      "departmentName": "Patiño"
+    },
+    {
+      "id": "34014020",
+      "name": "Formosa",
+      "departmentCode": "34014",
+      "departmentName": "Formosa"
+    },
+    {
+      "id": "34035060",
+      "name": "Fortín Cabo 1º Lugones",
+      "departmentCode": "34035",
+      "departmentName": "Patiño"
+    },
+    {
+      "id": "34035070",
+      "name": "Fortín Sargento 1º Leyes",
+      "departmentCode": "34035",
+      "departmentName": "Patiño"
+    },
+    {
+      "id": "34007003",
+      "name": "Fortin Soledad",
+      "departmentCode": "34007",
+      "departmentName": "Bermejo"
+    },
+    {
+      "id": "34021020",
+      "name": "General Lucio Victorio Mansilla",
+      "departmentCode": "34021",
+      "departmentName": "Laishi"
+    },
+    {
+      "id": "34063020",
+      "name": "General Mosconi",
+      "departmentCode": "34063",
+      "departmentName": "Ramón Lista"
+    },
+    {
+      "id": "34014030",
+      "name": "Gran Guardia",
+      "departmentCode": "34014",
+      "departmentName": "Formosa"
+    },
+    {
+      "id": "34007005",
+      "name": "Guadalcazar",
+      "departmentCode": "34007",
+      "departmentName": "Bermejo"
+    },
+    {
+      "id": "34021030",
+      "name": "Herradura",
+      "departmentCode": "34021",
+      "departmentName": "Laishi"
+    },
+    {
+      "id": "34035080",
+      "name": "Ibarreta",
+      "departmentCode": "34035",
+      "departmentName": "Patiño"
+    },
+    {
+      "id": "34028010",
+      "name": "Ingeniero Guillermo N Juárez",
+      "departmentCode": "34028",
+      "departmentName": "Matacos"
+    },
+    {
+      "id": "34035090",
+      "name": "Juan G Bazán",
+      "departmentCode": "34035",
+      "departmentName": "Patiño"
+    },
+    {
+      "id": "34063040",
+      "name": "La Brea",
+      "departmentCode": "34063",
+      "departmentName": "Ramón Lista"
+    },
+    {
+      "id": "34007006",
+      "name": "La Libertad",
+      "departmentCode": "34007",
+      "departmentName": "Bermejo"
+    },
+    {
+      "id": "34007007",
+      "name": "La Rinconada",
+      "departmentCode": "34007",
+      "departmentName": "Bermejo"
+    },
+    {
+      "id": "34049020",
+      "name": "Laguna Blanca",
+      "departmentCode": "34049",
+      "departmentName": "Pilcomayo"
+    },
+    {
+      "id": "34042030",
+      "name": "Laguna Gallo",
+      "departmentCode": "34042",
+      "departmentName": "Pilagás"
+    },
+    {
+      "id": "34049030",
+      "name": "Laguna Naick-Neck",
+      "departmentCode": "34049",
+      "departmentName": "Pilcomayo"
+    },
+    {
+      "id": "34007010",
+      "name": "Laguna Yema",
+      "departmentCode": "34007",
+      "departmentName": "Bermejo"
+    },
+    {
+      "id": "34007015",
+      "name": "Lamadrid",
+      "departmentCode": "34007",
+      "departmentName": "Bermejo"
+    },
+    {
+      "id": "34063050",
+      "name": "Las Cañitas",
+      "departmentCode": "34063",
+      "departmentName": "Ramón Lista"
+    },
+    {
+      "id": "34035100",
+      "name": "Las Lomitas",
+      "departmentCode": "34035",
+      "departmentName": "Patiño"
+    },
+    {
+      "id": "34042035",
+      "name": "Loro Cué",
+      "departmentCode": "34042",
+      "departmentName": "Pilagás"
+    },
+    {
+      "id": "34007020",
+      "name": "Los Chiriguanos",
+      "departmentCode": "34007",
+      "departmentName": "Bermejo"
+    },
+    {
+      "id": "34056025",
+      "name": "Los Matacos",
+      "departmentCode": "34056",
+      "departmentName": "Pirané"
+    },
+    {
+      "id": "34063060",
+      "name": "Lote 8",
+      "departmentCode": "34063",
+      "departmentName": "Ramón Lista"
+    },
+    {
+      "id": "34049035",
+      "name": "Lucero Cué",
+      "departmentCode": "34049",
+      "departmentName": "Pilcomayo"
+    },
+    {
+      "id": "34063070",
+      "name": "María Cristina",
+      "departmentCode": "34063",
+      "departmentName": "Ramón Lista"
+    },
+    {
+      "id": "34014040",
+      "name": "Mariano Boedo",
+      "departmentCode": "34014",
+      "departmentName": "Formosa"
+    },
+    {
+      "id": "34056010",
+      "name": "Mayor Villafañe",
+      "departmentCode": "34056",
+      "departmentName": "Pirané"
+    },
+    {
+      "id": "34028020",
+      "name": "Misión Pozo Yacaré",
+      "departmentCode": "34028",
+      "departmentName": "Matacos"
+    },
+    {
+      "id": "34063080",
+      "name": "Misión San Andres",
+      "departmentCode": "34063",
+      "departmentName": "Ramón Lista"
+    },
+    {
+      "id": "34042040",
+      "name": "Misión Tacaaglé",
+      "departmentCode": "34042",
+      "departmentName": "Pilagás"
+    },
+    {
+      "id": "34014050",
+      "name": "Mojón De Fierro",
+      "departmentCode": "34014",
+      "departmentName": "Formosa"
+    },
+    {
+      "id": "34056027",
+      "name": "Monte Lindo",
+      "departmentCode": "34056",
+      "departmentName": "Pirané"
+    },
+    {
+      "id": "34049040",
+      "name": "Palma Sola",
+      "departmentCode": "34049",
+      "departmentName": "Pilcomayo"
+    },
+    {
+      "id": "34063090",
+      "name": "Palmar Largo",
+      "departmentCode": "34063",
+      "departmentName": "Ramón Lista"
+    },
+    {
+      "id": "34056030",
+      "name": "Palo Santo",
+      "departmentCode": "34056",
+      "departmentName": "Pirané"
+    },
+    {
+      "id": "34056040",
+      "name": "Pirané",
+      "departmentCode": "34056",
+      "departmentName": "Pirané"
+    },
+    {
+      "id": "34042050",
+      "name": "Portón Negro",
+      "departmentCode": "34042",
+      "departmentName": "Pilagás"
+    },
+    {
+      "id": "34035110",
+      "name": "Posta Cambio Zalazar",
+      "departmentCode": "34035",
+      "departmentName": "Patiño"
+    },
+    {
+      "id": "34007030",
+      "name": "Pozo De Maza",
+      "departmentCode": "34007",
+      "departmentName": "Bermejo"
+    },
+    {
+      "id": "34007040",
+      "name": "Pozo Del Mortero",
+      "departmentCode": "34007",
+      "departmentName": "Bermejo"
+    },
+    {
+      "id": "34035120",
+      "name": "Pozo Del Tigre",
+      "departmentCode": "34035",
+      "departmentName": "Patiño"
+    },
+    {
+      "id": "34063100",
+      "name": "Pozo La Chiva",
+      "departmentCode": "34063",
+      "departmentName": "Ramón Lista"
+    },
+    {
+      "id": "34049050",
+      "name": "Puerto Pilcomayo",
+      "departmentCode": "34049",
+      "departmentName": "Pilcomayo"
+    },
+    {
+      "id": "34049060",
+      "name": "Riacho He-he",
+      "departmentCode": "34049",
+      "departmentName": "Pilcomayo"
+    },
+    {
+      "id": "34049070",
+      "name": "Riacho Negro",
+      "departmentCode": "34049",
+      "departmentName": "Pilcomayo"
+    },
+    {
+      "id": "34007043",
+      "name": "Río Muerto",
+      "departmentCode": "34007",
+      "departmentName": "Bermejo"
+    },
+    {
+      "id": "34021040",
+      "name": "San Francisco De Laishi",
+      "departmentCode": "34021",
+      "departmentName": "Laishi"
+    },
+    {
+      "id": "34014060",
+      "name": "San Hilario",
+      "departmentCode": "34014",
+      "departmentName": "Formosa"
+    },
+    {
+      "id": "34035130",
+      "name": "San Martín I",
+      "departmentCode": "34035",
+      "departmentName": "Patiño"
+    },
+    {
+      "id": "34035140",
+      "name": "San Martín II",
+      "departmentCode": "34035",
+      "departmentName": "Patiño"
+    },
+    {
+      "id": "34007045",
+      "name": "Santa Isabel",
+      "departmentCode": "34007",
+      "departmentName": "Bermejo"
+    },
+    {
+      "id": "34049080",
+      "name": "Siete Palmas",
+      "departmentCode": "34049",
+      "departmentName": "Pilcomayo"
+    },
+    {
+      "id": "34035150",
+      "name": "Subteniente Perín",
+      "departmentCode": "34035",
+      "departmentName": "Patiño"
+    },
+    {
+      "id": "34007047",
+      "name": "Sumayen",
+      "departmentCode": "34007",
+      "departmentName": "Bermejo"
+    },
+    {
+      "id": "34021050",
+      "name": "Tatané",
+      "departmentCode": "34021",
+      "departmentName": "Laishi"
+    },
+    {
+      "id": "34042060",
+      "name": "Tres Lagunas",
+      "departmentCode": "34042",
+      "departmentName": "Pilagás"
+    },
+    {
+      "id": "34007050",
+      "name": "Vaca Perdida",
+      "departmentCode": "34007",
+      "departmentName": "Bermejo"
+    },
+    {
+      "id": "34021060",
+      "name": "Villa Escolar",
+      "departmentCode": "34021",
+      "departmentName": "Laishi"
+    },
+    {
+      "id": "34035160",
+      "name": "Villa General Güemes",
+      "departmentCode": "34035",
+      "departmentName": "Patiño"
+    },
+    {
+      "id": "34035170",
+      "name": "Villa General Manuel Belgrano",
+      "departmentCode": "34035",
+      "departmentName": "Patiño"
+    },
+    {
+      "id": "34056050",
+      "name": "Villa Kilómetro 213",
+      "departmentCode": "34056",
+      "departmentName": "Pirané"
+    }
+  ]
+}

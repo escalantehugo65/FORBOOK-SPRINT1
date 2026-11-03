@@ -2,7 +2,7 @@ import { Op } from 'sequelize';
 import { HttpError } from '../helpers/http.js';
 import { positiveId } from '../middlewares/validation.js';
 
-export function contentController({ User, Institution, Career, InstitutionResource, Category, Content }) {
+export function contentController({ User, Institution, Career, InstitutionResource, Locality, Category, Content }) {
   const include = [{ model: Category, as: 'category', attributes: ['id', 'name', 'slug'] }, { model: Institution, as: 'institution', attributes: ['id', 'name'] }];
   async function currentStudent(req) {
     const student = await User.findByPk(req.session.userId, { attributes: ['id', 'institutionId'] });
@@ -14,6 +14,9 @@ export function contentController({ User, Institution, Career, InstitutionResour
     return { status: 'published', [Op.or]: [{ institutionId: null }, { institutionId: student.institutionId }] };
   }
   return {
+    localities: async (req, res) => {
+      res.json({ data: await Locality.findAll({ where: { provinceCode: '34' }, attributes: ['id', 'name', 'departmentName', 'departmentCode'], order: [['name', 'ASC'], ['id', 'ASC']] }), meta: { province: 'Formosa', source: 'Georef' } });
+    },
     resources: async (req, res) => {
       const student = await currentStudent(req);
       const institution = await Institution.findByPk(student.institutionId, { attributes: ['id', 'name'] });

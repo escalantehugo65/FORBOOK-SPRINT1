@@ -9,6 +9,7 @@ import { createApp } from '../src/app.js';
 import { up } from '../migrations/001-initial.js';
 import { up as careerMigration } from '../migrations/002-careers.js';
 import { up as resourceMigration } from '../migrations/003-institution-resources.js';
+import { up as localityMigration } from '../migrations/004-origin-localities.js';
 
 test('recorrido real de HU-01/02/03/04/06/11/13 sobre MySQL', { skip: !process.env.TEST_DB_NAME }, async t => {
   if (!process.env.TEST_DB_NAME.endsWith('_test')) throw new Error('TEST_DB_NAME debe terminar en _test.');
@@ -20,9 +21,11 @@ test('recorrido real de HU-01/02/03/04/06/11/13 sobre MySQL', { skip: !process.e
   const db = createDatabase(config);
   const models = defineModels(db);
   const suffix = `${Date.now()}-${Math.random().toString(36).slice(2)}`;
-  let userId, institution, category, emptyCategory, content, draft, cookie, career, otherCareer, otherInstitution, ownContent, otherContent, ownResource, otherResource, otherUser;
+  let userId, institution, category, emptyCategory, content, draft, cookie, career, otherCareer, otherInstitution, ownContent, otherContent, ownResource, otherResource, otherUser, locality, outOfProvince;
   try {
-    await db.authenticate(); await up(db, models); await careerMigration(db, models); await resourceMigration(db, models);
+    await db.authenticate(); await up(db, models); await careerMigration(db, models); await resourceMigration(db, models); await localityMigration(db, models);
+    locality = await models.Locality.create({ id: '34999991', name: 'Localidad de prueba', provinceCode: '34', departmentCode: '34999', departmentName: 'Pruebas', sourceUrl: 'https://example.com', reviewedAt: '2026-11-03' });
+    outOfProvince = await models.Locality.create({ id: '34999992', name: 'Dato inconsistente de prueba', provinceCode: '22', departmentCode: '22999', departmentName: 'Pruebas', sourceUrl: 'https://example.com', reviewedAt: '2026-11-03' });
     institution = await models.Institution.create({ name: `Institución de prueba ${suffix}`, sourceUrl: 'https://example.com' });
     career = await models.Career.create({ name: 'Sistemas de prueba', slug: `career-${suffix}`, institutionId: institution.id, sourceUrl: 'https://example.com', reviewedAt: '2026-11-03' });
     otherInstitution = await models.Institution.create({ name: `Otra institución ${suffix}`, sourceUrl: 'https://example.com' });
@@ -40,11 +43,17 @@ test('recorrido real de HU-01/02/03/04/06/11/13 sobre MySQL', { skip: !process.e
     const app = createApp({ models, store, config, db });
     const agent = request.agent(app);
     const post = (path, data, client = agent) => client.post(path).set('Origin', config.frontendUrl).send(data);
-    const profile = { name: 'Ana Prueba', email: `test-${suffix}@example.com`, password: 'Una-clave-segura-123', origin: 'Chaco', institutionId: institution.id, careerId: career.id, arrivalStatus: 'not_arrived' };
+    const profile = { name: 'Ana Prueba', email: `test-${suffix}@example.com`, password: 'Una-clave-segura-123', originLocalityId: locality.id, institutionId: institution.id, careerId: career.id, arrivalStatus: 'not_arrived' };
     await t.test('rutas privadas bloqueadas y origen de mutaciones comprobado', async () => {
       await request(app).get('/api/categories').expect(401);
       await request(app).post('/api/auth/register').send(profile).expect(403);
       await post('/api/auth/register', { ...profile, role: 'admin' }).expect(400);
+      await post('/api/auth/register', { ...profile, origin: 'Texto libre' }).expect(400);
+      await post('/api/auth/register', { ...profile, originLocalityId: '34999990' }).expect(400);
+      await post('/api/auth/register', { ...profile, originLocalityId: outOfProvince.id }).expect(400);
+      const locations = await request(app).get('/api/origin-localities').expect(200);
+      assert.ok(locations.body.data.some(row => row.id === locality.id));
+      assert.ok(!locations.body.data.some(row => row.id === outOfProvince.id));
       await post('/api/auth/register', { ...profile, institutionId: 4294967295 }).expect(400);
       await post('/api/auth/register', { ...profile, password: 'corta' }).expect(400);
       await post('/api/auth/register', { ...profile, careerId: otherCareer.id }).expect(400);
@@ -72,7 +81,8 @@ test('recorrido real de HU-01/02/03/04/06/11/13 sobre MySQL', { skip: !process.e
       const me = await agent.get('/api/auth/me').expect(200);
       assert.equal(me.body.data.user.institution.name, institution.name);
       assert.equal(me.body.data.user.arrivalStatus, 'not_arrived');
-      assert.equal(me.body.data.user.origin, 'Chaco');
+      assert.equal(me.body.data.user.origin, `${locality.name}, Formosa`);
+      assert.equal(me.body.data.user.originLocalityId, locality.id);
       const second = createApp({ models, store: new MysqlSessionStore(models.Session, config.sessionTtl), config, db });
       const restored = await request(second).get('/api/auth/me').set('Cookie', cookie).expect(200);
       assert.equal(restored.body.data.user.id, userId);
@@ -101,6 +111,9 @@ test('recorrido real de HU-01/02/03/04/06/11/13 sobre MySQL', { skip: !process.e
       otherUser = await models.User.create({ name: 'Otra prueba', email: `other-${suffix}@example.com`, passwordHash: await bcrypt.hash(profile.password, 12), origin: 'Prueba', institutionId: otherInstitution.id, career: 'Otra carrera', arrivalStatus: 'arrived' });
       const otherAgent = request.agent(app);
       await post('/api/auth/login', { email: otherUser.email, password: profile.password }, otherAgent).expect(200);
+      const legacyProfile = await otherAgent.get('/api/auth/me').expect(200);
+      assert.equal(legacyProfile.body.data.user.origin, 'Prueba');
+      assert.equal(legacyProfile.body.data.user.originLocalityId, null);
       const otherList = await otherAgent.get(`/api/contents?categoryId=${category.id}`).expect(200);
       assert.deepEqual(new Set(otherList.body.data.map(row => row.id)), new Set([content.id, otherContent.id]));
       await otherAgent.get(`/api/contents/${ownContent.id}`).expect(404);
@@ -136,6 +149,7 @@ test('recorrido real de HU-01/02/03/04/06/11/13 sobre MySQL', { skip: !process.e
     if (category) await category.destroy(); if (emptyCategory) await emptyCategory.destroy();
     if (career) await career.destroy(); if (otherCareer) await otherCareer.destroy();
     if (institution) await institution.destroy(); if (otherInstitution) await otherInstitution.destroy();
+    if (locality) await locality.destroy(); if (outOfProvince) await outOfProvince.destroy();
     await db.close();
   }
 });
