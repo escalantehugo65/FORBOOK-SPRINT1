@@ -15,6 +15,7 @@ export function apiRoutes(models, cookieOptions) {
   router.post('/auth/logout', asyncRoute(auth.logout));
   router.get('/institutions', asyncRoute(content.institutions));
   router.get('/institutions/:id/careers', asyncRoute(content.careers));
+  router.get('/institution-resources', requireAuth, asyncRoute(content.resources));
   router.get('/categories', requireAuth, asyncRoute(content.categories));
   router.get('/contents', requireAuth, asyncRoute(content.list));
   router.get('/contents/:id', requireAuth, asyncRoute(content.detail));

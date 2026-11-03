@@ -16,6 +16,18 @@ export function defineModels(db) {
   }, { tableName: 'careers' });
   Institution.hasMany(Career, { foreignKey: 'institutionId', as: 'careers' });
   Career.belongsTo(Institution, { foreignKey: 'institutionId', as: 'institution' });
+  const InstitutionResource = db.define('InstitutionResource', {
+    id: { type: DataTypes.INTEGER.UNSIGNED, autoIncrement: true, primaryKey: true },
+    institutionId: { type: DataTypes.INTEGER.UNSIGNED, allowNull: false },
+    slug: { type: DataTypes.STRING(120), allowNull: false, unique: true },
+    title: { type: DataTypes.STRING(150), allowNull: false },
+    description: { type: DataTypes.STRING(350), allowNull: false },
+    url: { type: DataTypes.STRING(1000), allowNull: false },
+    availabilityNote: { type: DataTypes.STRING(350), allowNull: true },
+    position: { type: DataTypes.INTEGER.UNSIGNED, allowNull: false, defaultValue: 0 },
+  }, { tableName: 'institution_resources' });
+  Institution.hasMany(InstitutionResource, { foreignKey: 'institutionId', as: 'resources' });
+  InstitutionResource.belongsTo(Institution, { foreignKey: 'institutionId', as: 'institution' });
   const User = db.define('User', {
     id: { type: DataTypes.INTEGER.UNSIGNED, autoIncrement: true, primaryKey: true },
     name: { type: DataTypes.STRING(100), allowNull: false },
@@ -59,5 +71,5 @@ export function defineModels(db) {
   Content.belongsTo(Category, { foreignKey: 'categoryId', as: 'category' });
   Institution.hasMany(Content, { foreignKey: 'institutionId', as: 'contents' });
   Content.belongsTo(Institution, { foreignKey: 'institutionId', as: 'institution' });
-  return { User, Institution, Career, Category, Content, Session };
+  return { User, Institution, Career, InstitutionResource, Category, Content, Session };
 }

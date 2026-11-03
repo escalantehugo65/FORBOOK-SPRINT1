@@ -96,3 +96,24 @@ En `backend/`: `npm run db:migrate`, luego `npm run db:seed` y reiniciar el back
 Se creó `Forbook_Antes_Modal_V1_1.zip` en outputs del chat con los archivos previos a este cambio. Restaurar solo lo relacionado con la tarea y retirar archivos nuevos sin referencias; no resetear toda la rama ni los package-lock que ya tenían cambios propios. La tabla nueva puede permanecer sin uso si se vuelve al código V1; no hace falta borrar datos para revertir el diseño.
 
 Cierre de verificación: cuenta técnica eliminada; 38 carreras disponibles (34 UNaF y 4 IPF). Compilación final aprobada, 62 módulos. Cierre con Escape y conservación de datos al elegir Seguir completando comprobados en navegador.
+
+## 03/11/2026 — accesos y contenido según institución
+
+Estado: implementado. Se agrega al inicio la sección “Accesos de tu institución”, alimentada por MySQL y la sesión autenticada.
+
+| Perfil | Accesos del inicio | Contenidos visibles en Conozcamos Formosa |
+|---|---|---|
+| IPF | Aprende Formosa e IPF Conecta. | Fichas del IPF e información general de la ciudad. |
+| UNaF | SIU Guaraní, UNaF Virtual y portal UNaF. | Fichas de UNaF e información general de la ciudad. |
+
+- Aprende: https://aprende.formosa.gob.ar/ . IPF Conecta: https://ipfconecta.formosa.gob.ar/ . Enlaces aportados por el usuario; no se comprobó disponibilidad ni se simula un estado en tiempo real. El usuario informó que estaban caídos; se mantienen visibles con una nota condicional y se abren en pestaña nueva.
+- No se solicita ninguna contraseña institucional dentro de Forbook.
+- Tabla nueva `institution_resources`, relacionada con instituciones; migración aditiva `003-institution-resources`, sin borrar cuentas o fichas. Seeds agregan cinco accesos sin sobrescribir registros existentes.
+- Endpoint privado `GET /api/institution-resources`: determina la institución mediante el usuario de la sesión. No acepta otra institución como autoridad desde el navegador.
+- El listado de contenidos, su total y el detalle aplican en SQL la misma regla: publicado y de la institución propia o general (`institution_id IS NULL`). Una ficha ajena devuelve 404 incluso con su URL directa. Un filtro de otra institución devuelve lista vacía, no sus fichas.
+- No se usan IDs fijos en React ni se ocultan tarjetas después de haber enviado fichas ajenas al navegador. Los enlaces de las otras instituciones no se devuelven a este perfil.
+- Los catálogos públicos de instituciones/carreras siguen disponibles para permitir el registro; no contienen datos privados de estudiantes.
+- Comprobación: 12 pruebas SQL aprobadas, incluyendo ambos sentidos de separación, conteos, filtros y detalle ajeno; compilación del frontend aprobada. Revisión en navegador con un perfil técnico IPF: dos accesos correctos y ausencia de SIU/UNaF en su inicio.
+- Pendiente editorial: cargar fichas propias del IPF dentro de Conozcamos Formosa. Los accesos nuevos están en el inicio; no se inventaron artículos para llenar categorías.
+
+Revisión final: perfil IPF mostró Aprende e IPF Conecta y solo 1 ficha general en el catálogo actual; ninguna ficha de UNaF. Se cerró sesión y se retiró la cuenta técnica. Captura guardada en outputs/Forbook_Accesos_IPF.jpg.
