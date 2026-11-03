@@ -1,8 +1,14 @@
 import { Link } from 'react-router-dom';
-export const sourceNames = { official: 'Información oficial', community: 'Aporte comunitario', experience: 'Experiencia personal' };
-export function formatDate(date) { return date ? new Intl.DateTimeFormat('es-AR', { dateStyle: 'long', timeZone: 'UTC' }).format(new Date(`${date.slice(0, 10)}T12:00:00Z`)) : 'Sin fecha de revisión'; }
-export default function ContentCard({ content }) {
-  return <article className="content-card"><div className="card-top"><span className="eyebrow">{content.category?.name}</span><span className="card-arrow" aria-hidden="true">↗</span></div>
-    <h2><Link to={`/conozcamos/${content.id}`}>{content.title}</Link></h2><p>{content.summary}</p>
-    <div className="card-meta"><span className="source-tag">{sourceNames[content.sourceType]}</span><small>{formatDate(content.reviewedAt)}</small></div></article>;
+import { formatDate, sourceBadge, sourceNames } from '../utils/content';
+
+// Tarjeta de una ficha: toda la tarjeta lleva al detalle a través del enlace del título.
+export default function ContentCard({ content, headingLevel = 2 }) {
+  const Heading = `h${headingLevel}`;
+  const reviewed = formatDate(content.reviewedAt);
+  return <article className="content-card">
+    <p className="card-category">{content.category?.name}{content.institution ? ' · Tu institución' : ''}</p>
+    <Heading><Link to={`/conozcamos/${content.id}`}>{content.title}</Link></Heading>
+    <p className="summary">{content.summary}</p>
+    <div className="card-meta"><span className={sourceBadge[content.sourceType]}>{sourceNames[content.sourceType]}</span><span>{reviewed ? `Revisada el ${reviewed}` : 'Sin fecha de revisión'}</span></div>
+  </article>;
 }
