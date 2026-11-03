@@ -1,6 +1,6 @@
 // Referencias consultadas el 20/10/2026. La fecha indica revisión editorial,
 // no fecha de publicación de las páginas de origen. No se copian artículos.
-export const institutions = [{ name: 'Universidad Nacional de Formosa (UNaF)', sourceUrl: 'https://www.unf.edu.ar/' }];
+export const institutions = [{ name: 'Universidad Nacional de Formosa (UNaF)', sourceUrl: 'https://www.unf.edu.ar/' }, { name: 'Instituto Politécnico Formosa (IPF)', sourceUrl: 'https://www.ipf.edu.ar/' }];
 export const categories = [
   { name: 'Lugares útiles', slug: 'lugares-utiles', description: 'Puntos de consulta y servicios para tus primeros días.' },
   { name: 'Movilidad', slug: 'movilidad', description: 'Información para preparar tus desplazamientos por Formosa.' },

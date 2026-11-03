@@ -58,6 +58,10 @@ Abrí **http://localhost:5173**. Usá siempre `localhost` en el navegador, de ac
 
 Detené cada servidor con `Ctrl+C`. Si cambiás `.env`, reiniciá el servidor correspondiente. Si MySQL está en otro puerto, modificá `DB_PORT`.
 
+## V1.1 — circuito público
+
+Ingreso y registro se abren en un modal sobre la bienvenida, sin cambiar la URL. El registro tiene dos pasos y las carreras se consultan por institución desde MySQL. Las cuentas V1 se conservan. Ver docs/CAMBIOS_V1_1.md para fuentes, pruebas y diferencias.
+
 ## Recorrido disponible
 
 - Bienvenida, registro con institución persistida y login.
@@ -68,7 +72,7 @@ Detené cada servidor con `Ctrl+C`. Si cambiás `.env`, reiniciá el servidor co
 - Logout que destruye la sesión SQL y elimina la cookie.
 - Estados de carga, vacío, no encontrado y error; CSS adaptable y campos etiquetados.
 
-El catálogo inicial contiene **una institución verificada: UNaF**, cinco categorías y cuatro fichas basadas en portales oficiales. Movilidad y Cultura y costumbres están vacías intencionalmente. No hay horarios, rutas ni información cultural inventada. Las referencias y el alcance de la revisión están en `docs/FUENTES.md`.
+El catálogo inicial contiene **UNaF e Instituto Politécnico Formosa**, 38 carreras de referencia (34 UNaF y 4 IPF), cinco categorías y cuatro fichas basadas en portales oficiales. El catálogo académico no implica que todas las carreras tengan inscripción abierta. Movilidad y Cultura y costumbres están vacías intencionalmente. No hay horarios, rutas ni información cultural inventada. Las referencias y el alcance de la revisión están en `docs/FUENTES.md`.
 
 ## Verificación
 

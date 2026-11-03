@@ -1,0 +1,46 @@
+// Catálogo consultado el 03/11/2026. No implica inscripción abierta.
+// UNaF: se excluyen módulos introductorios, reválidas, posgrados y complementos truncados.
+export const careerCatalog = [
+  { institutionName: 'Universidad Nacional de Formosa (UNaF)', prefix: 'unaf', sourceUrl: 'https://guarani.unf.edu.ar/autogestion/horarios_cursadas/buscar_carreras', names: [
+  "Contador Público",
+  "Ingeniería Civil",
+  "Ingeniería Forestal",
+  "Ingeniería Zootecnista",
+  "Licenciado en Administración de Empresas Agropecuarias",
+  "Licenciado en Agronegocios - Ciclo de Licenciatura",
+  "Licenciado en Comercio Exterior",
+  "Licenciado en Tecnologías de la Información y Comunicación",
+  "Licenciatura en Bromatología",
+  "Licenciatura en Ciencias Naturales",
+  "Licenciatura en Enfermería",
+  "Licenciatura en Geografía",
+  "Licenciatura en Letras",
+  "Licenciatura en Matemática",
+  "Licenciatura en Nutrición",
+  "Licenciatura en Obstetricia",
+  "Licenciatura en Psicopedagogía",
+  "Licenciatura en Radiología e Imágenes",
+  "Profesorado de Educación Especial en Ciegos y Disminuidos Visuales",
+  "Profesorado de Educación Especial en Retraso Mental",
+  "Profesorado de Educación Especial en Sordos e Hipoacúsicos",
+  "Profesorado en Biología",
+  "Profesorado en Física",
+  "Profesorado en Geografía",
+  "Profesorado en Historia",
+  "Profesorado en Letras",
+  "Profesorado en Matemática",
+  "Profesorado en Química",
+  "Psicopedagogía",
+  "Tecnicatura en Análisis y Diseño de Software",
+  "Técnico en Agronegocios",
+  "Técnico en Laboratorio de Análisis Clínicos",
+  "Técnico en Prótesis Dental",
+  "Técnico en Redacción"
+] },
+  { institutionName: 'Instituto Politécnico Formosa (IPF)', prefix: 'ipf', sourceUrl: 'https://www.ipf.edu.ar/carreras', names: [
+  "Tecnicatura Superior en Mecatrónica",
+  "Tecnicatura Superior en Desarrollo de Software Multiplataforma",
+  "Tecnicatura Superior en Química Industrial",
+  "Tecnicatura Superior en Telecomunicaciones"
+] },
+];

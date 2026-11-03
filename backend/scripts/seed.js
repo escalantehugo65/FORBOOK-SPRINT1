@@ -2,13 +2,21 @@ import { readConfig } from '../src/config/env.js';
 import { createDatabase } from '../src/config/database.js';
 import { defineModels } from '../src/models/index.js';
 import { institutions, categories, contents } from '../seeders/catalog.js';
+import { careerCatalog } from '../seeders/careers.js';
 
 const db = createDatabase(readConfig());
-const { Institution, Category, Content } = defineModels(db);
+const { Institution, Career, Category, Content } = defineModels(db);
 try {
   await db.authenticate();
   await db.transaction(async transaction => {
     for (const item of institutions) await Institution.findOrCreate({ where: { name: item.name }, defaults: item, transaction });
+    for (const catalog of careerCatalog) {
+      const institution = await Institution.findOne({ where: { name: catalog.institutionName }, transaction });
+      for (const name of catalog.names) {
+        const slug = `${catalog.prefix}-${name.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/-$/, '')}`;
+        await Career.findOrCreate({ where: { slug }, defaults: { name, institutionId: institution.id, sourceUrl: catalog.sourceUrl, reviewedAt: '2026-11-03' }, transaction });
+      }
+    }
     for (const item of categories) await Category.findOrCreate({ where: { slug: item.slug }, defaults: item, transaction });
     const institution = await Institution.findOne({ where: { name: institutions[0].name }, transaction });
     for (const { categorySlug, institutional, ...item } of contents) {
