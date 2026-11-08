@@ -7,6 +7,8 @@ import HomePage from './pages/HomePage';
 import ExplorePage from './pages/ExplorePage';
 import ContentDetailPage from './pages/ContentDetailPage';
 import NotFoundPage from './pages/NotFoundPage';
+import QuestionsPage from './pages/QuestionsPage';
+import AskQuestionPage from './pages/AskQuestionPage';
 
 export default function App() {
   const { pathname, hash } = useLocation();
@@ -24,6 +26,8 @@ export default function App() {
         <Route path="inicio" element={<HomePage/>}/>
         <Route path="conozcamos" element={<ExplorePage/>}/>
         <Route path="conozcamos/:id" element={<ContentDetailPage/>}/>
+        <Route path="preguntas" element={<QuestionsPage/>}/>
+        <Route path="preguntas/nueva" element={<AskQuestionPage/>}/>
       </Route>
       <Route path="*" element={<NotFoundPage/>}/>
     </Route>

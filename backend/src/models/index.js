@@ -81,5 +81,21 @@ export function defineModels(db) {
   Content.belongsTo(Category, { foreignKey: 'categoryId', as: 'category' });
   Institution.hasMany(Content, { foreignKey: 'institutionId', as: 'contents' });
   Content.belongsTo(Institution, { foreignKey: 'institutionId', as: 'institution' });
-  return { User, Institution, Career, InstitutionResource, Locality, Category, Content, Session };
+  // Preguntas públicas (FF-24 y FF-25).
+  const Question = db.define('Question', {
+    id: { type: DataTypes.INTEGER.UNSIGNED, autoIncrement: true, primaryKey: true },
+    userId: { type: DataTypes.INTEGER.UNSIGNED, allowNull: false },
+    categoryId: { type: DataTypes.INTEGER.UNSIGNED, allowNull: false },
+    institutionId: { type: DataTypes.INTEGER.UNSIGNED, allowNull: true },
+    title: { type: DataTypes.STRING(150), allowNull: false },
+    body: { type: DataTypes.TEXT, allowNull: true },
+    status: { type: DataTypes.ENUM('open', 'answered'), allowNull: false, defaultValue: 'open' },
+  }, { tableName: 'questions' });
+  User.hasMany(Question, { foreignKey: 'userId', as: 'questions' });
+  Question.belongsTo(User, { foreignKey: 'userId', as: 'author' });
+  Category.hasMany(Question, { foreignKey: 'categoryId', as: 'questions' });
+  Question.belongsTo(Category, { foreignKey: 'categoryId', as: 'category' });
+  Institution.hasMany(Question, { foreignKey: 'institutionId', as: 'questions' });
+  Question.belongsTo(Institution, { foreignKey: 'institutionId', as: 'institution' });
+  return { User, Institution, Career, InstitutionResource, Locality, Category, Content, Question, Session };
 }

@@ -3,12 +3,15 @@ import { asyncRoute } from '../helpers/http.js';
 import { requireAuth, authRateLimit } from '../middlewares/security.js';
 import { authController } from '../controllers/authController.js';
 import { contentController } from '../controllers/contentController.js';
+import { questionController } from '../controllers/questionController.js';
 
 export function apiRoutes(models, cookieOptions) {
   const router = Router();
   const auth = authController(models, cookieOptions);
   const content = contentController(models);
+  const questions = questionController(models);
   const limit = authRateLimit();
+  const questionLimit = authRateLimit();
   router.post('/auth/register', limit, asyncRoute(auth.register));
   router.post('/auth/login', limit, asyncRoute(auth.login));
   router.get('/auth/me', requireAuth, asyncRoute(auth.me));
@@ -20,5 +23,7 @@ export function apiRoutes(models, cookieOptions) {
   router.get('/categories', requireAuth, asyncRoute(content.categories));
   router.get('/contents', requireAuth, asyncRoute(content.list));
   router.get('/contents/:id', requireAuth, asyncRoute(content.detail));
+  router.get('/questions', requireAuth, asyncRoute(questions.list));
+  router.post('/questions', requireAuth, questionLimit, asyncRoute(questions.create));
   return router;
 }

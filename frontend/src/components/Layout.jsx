@@ -60,7 +60,7 @@ export default function Layout() {
 
   const name = user ? firstName(user.name) : '';
   const links = user
-    ? <><NavLink to="/inicio">Mi inicio</NavLink><NavLink to="/conozcamos">Conozcamos Formosa</NavLink></>
+    ? <><NavLink to="/inicio">Mi inicio</NavLink><NavLink to="/conozcamos">Conozcamos Formosa</NavLink><NavLink to="/preguntas">Preguntas</NavLink></>
     : sections.map(([id, label]) => <Link key={id} to={{ pathname: '/', hash: `#${id}` }}>{label}</Link>);
 
   return <PublicAccessContext.Provider value={{ openAccess }}>

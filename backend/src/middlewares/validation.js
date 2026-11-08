@@ -31,3 +31,20 @@ export function validateCredentials(body, registration = false) {
   if (Object.keys(fields).length) throw new HttpError(400, 'Revisá los campos indicados.', fields);
   return clean;
 }
+
+// Pregunta: título obligatorio de 10 a 150 caracteres, detalle opcional hasta 2000.
+export function validateQuestion(body) {
+  if (!body || typeof body !== 'object' || Array.isArray(body)) throw new HttpError(400, 'Enviá un objeto JSON válido.');
+  if (Object.keys(body).some(key => !['title', 'body', 'categoryId', 'forMyInstitution'].includes(key))) throw new HttpError(400, 'La petición contiene campos no permitidos.');
+  const fields = {};
+  const title = typeof body.title === 'string' ? body.title.trim() : '';
+  const detail = typeof body.body === 'string' ? body.body.trim() : '';
+  if (title.length < 10 || title.length > 150) fields.title = 'La pregunta debe tener entre 10 y 150 caracteres.';
+  if (body.body !== undefined && typeof body.body !== 'string') fields.body = 'El detalle debe ser texto.';
+  if (detail.length > 2000) fields.body = 'El detalle puede tener hasta 2000 caracteres.';
+  let categoryId;
+  try { categoryId = positiveId(body.categoryId, 'Categoría'); } catch { fields.categoryId = 'Elegí una categoría.'; }
+  if (body.forMyInstitution !== undefined && typeof body.forMyInstitution !== 'boolean') fields.forMyInstitution = 'Valor inválido.';
+  if (Object.keys(fields).length) throw new HttpError(400, 'Revisá los campos indicados.', fields);
+  return { title, body: detail, categoryId, forMyInstitution: body.forMyInstitution === true };
+}
