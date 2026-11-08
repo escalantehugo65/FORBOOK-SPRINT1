@@ -48,3 +48,12 @@ export function validateQuestion(body) {
   if (Object.keys(fields).length) throw new HttpError(400, 'Revisá los campos indicados.', fields);
   return { title, body: detail, categoryId, forMyInstitution: body.forMyInstitution === true };
 }
+
+// Respuesta: texto obligatorio de 10 a 2000 caracteres.
+export function validateAnswer(body) {
+  if (!body || typeof body !== 'object' || Array.isArray(body)) throw new HttpError(400, 'Enviá un objeto JSON válido.');
+  if (Object.keys(body).some(key => key !== 'body')) throw new HttpError(400, 'La petición contiene campos no permitidos.');
+  const text = typeof body.body === 'string' ? body.body.trim() : '';
+  if (text.length < 10 || text.length > 2000) throw new HttpError(400, 'Revisá los campos indicados.', { body: 'La respuesta debe tener entre 10 y 2000 caracteres.' });
+  return { body: text };
+}

@@ -25,5 +25,7 @@ export function apiRoutes(models, cookieOptions) {
   router.get('/contents/:id', requireAuth, asyncRoute(content.detail));
   router.get('/questions', requireAuth, asyncRoute(questions.list));
   router.post('/questions', requireAuth, questionLimit, asyncRoute(questions.create));
+  router.get('/questions/:id', requireAuth, asyncRoute(questions.detail));
+  router.post('/questions/:id/answers', requireAuth, questionLimit, asyncRoute(questions.answer));
   return router;
 }

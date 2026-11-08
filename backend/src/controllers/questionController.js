@@ -1,14 +1,16 @@
 import { HttpError } from '../helpers/http.js';
-import { positiveId, validateQuestion } from '../middlewares/validation.js';
+import { positiveId, validateAnswer, validateQuestion } from '../middlewares/validation.js';
 
-// Preguntas públicas: listar con filtros (FF-24) y publicar (FF-25).
-export function questionController({ User, Institution, Category, Question }) {
+// Preguntas públicas: listar (FF-24), publicar (FF-25), ver el detalle (FF-26) y responder (FF-27).
+export function questionController({ User, Institution, Category, Question, Answer }) {
   const include = [
     { model: User, as: 'author', attributes: ['id', 'name'] },
     { model: Category, as: 'category', attributes: ['id', 'name', 'slug'] },
     { model: Institution, as: 'institution', attributes: ['id', 'name'] },
   ];
   // Del autor solo se muestra el primer nombre: nunca el correo ni otros datos del perfil.
+  const publicAuthor = author => ({ name: author ? author.name.trim().split(/\s+/)[0] : 'Usuario de Forbook' });
+  const publicAnswer = answer => ({ id: answer.id, body: answer.body, createdAt: answer.createdAt, author: publicAuthor(answer.author) });
   const publicQuestion = question => ({
     id: question.id,
     title: question.title,
@@ -17,7 +19,7 @@ export function questionController({ User, Institution, Category, Question }) {
     createdAt: question.createdAt,
     category: question.category,
     institution: question.institution,
-    author: { name: question.author ? question.author.name.trim().split(/\s+/)[0] : 'Usuario de Forbook' },
+    author: publicAuthor(question.author),
   });
   return {
     list: async (req, res) => {
@@ -26,7 +28,7 @@ export function questionController({ User, Institution, Category, Question }) {
       if (req.query.categoryId !== undefined) where.categoryId = positiveId(req.query.categoryId, 'Categoría');
       if (req.query.institutionId !== undefined) where.institutionId = positiveId(req.query.institutionId, 'Institución');
       if (req.query.status !== undefined) {
-        if (!['open', 'answered'].includes(req.query.status)) throw new HttpError(400, 'Estado inválido.');
+        if (!['open', 'answered', 'closed'].includes(req.query.status)) throw new HttpError(400, 'Estado inválido.');
         where.status = req.query.status;
       }
       const page = req.query.page === undefined ? 1 : positiveId(req.query.page, 'Página');
@@ -48,6 +50,27 @@ export function questionController({ User, Institution, Category, Question }) {
       });
       const question = await Question.findByPk(created.id, { include });
       res.status(201).json({ data: publicQuestion(question) });
+    },
+    detail: async (req, res) => {
+      const question = await Question.findByPk(positiveId(req.params.id, 'Pregunta'), { include });
+      if (!question) throw new HttpError(404, 'No encontramos esta pregunta.');
+      const answers = await Answer.findAll({
+        where: { questionId: question.id },
+        include: [{ model: User, as: 'author', attributes: ['id', 'name'] }],
+        order: [['createdAt', 'ASC'], ['id', 'ASC']],
+      });
+      res.json({ data: { ...publicQuestion(question), answers: answers.map(publicAnswer) } });
+    },
+    answer: async (req, res) => {
+      const question = await Question.findByPk(positiveId(req.params.id, 'Pregunta'));
+      if (!question) throw new HttpError(404, 'No encontramos esta pregunta.');
+      // Regla del equipo: una pregunta cerrada ya no recibe respuestas.
+      if (question.status === 'closed') throw new HttpError(409, 'Esta pregunta está cerrada y ya no recibe respuestas.');
+      const input = validateAnswer(req.body);
+      const created = await Answer.create({ questionId: question.id, userId: req.session.userId, body: input.body });
+      if (question.status === 'open') await question.update({ status: 'answered' });
+      const answer = await Answer.findByPk(created.id, { include: [{ model: User, as: 'author', attributes: ['id', 'name'] }] });
+      res.status(201).json({ data: { answer: publicAnswer(answer), status: question.status } });
     },
   };
 }

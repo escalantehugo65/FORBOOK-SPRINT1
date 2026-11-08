@@ -57,6 +57,7 @@ export default function QuestionsPage() {
         <option value="">Todas</option>
         <option value="open">Abiertas</option>
         <option value="answered">Respondidas</option>
+        <option value="closed">Cerradas</option>
       </Field>
     </form>
 

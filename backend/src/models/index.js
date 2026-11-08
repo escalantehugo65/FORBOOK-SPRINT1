@@ -89,7 +89,7 @@ export function defineModels(db) {
     institutionId: { type: DataTypes.INTEGER.UNSIGNED, allowNull: true },
     title: { type: DataTypes.STRING(150), allowNull: false },
     body: { type: DataTypes.TEXT, allowNull: true },
-    status: { type: DataTypes.ENUM('open', 'answered'), allowNull: false, defaultValue: 'open' },
+    status: { type: DataTypes.ENUM('open', 'answered', 'closed'), allowNull: false, defaultValue: 'open' },
   }, { tableName: 'questions' });
   User.hasMany(Question, { foreignKey: 'userId', as: 'questions' });
   Question.belongsTo(User, { foreignKey: 'userId', as: 'author' });
@@ -97,5 +97,16 @@ export function defineModels(db) {
   Question.belongsTo(Category, { foreignKey: 'categoryId', as: 'category' });
   Institution.hasMany(Question, { foreignKey: 'institutionId', as: 'questions' });
   Question.belongsTo(Institution, { foreignKey: 'institutionId', as: 'institution' });
-  return { User, Institution, Career, InstitutionResource, Locality, Category, Content, Question, Session };
+  // Respuestas de una pregunta (FF-26 y FF-27).
+  const Answer = db.define('Answer', {
+    id: { type: DataTypes.INTEGER.UNSIGNED, autoIncrement: true, primaryKey: true },
+    questionId: { type: DataTypes.INTEGER.UNSIGNED, allowNull: false },
+    userId: { type: DataTypes.INTEGER.UNSIGNED, allowNull: false },
+    body: { type: DataTypes.TEXT, allowNull: false },
+  }, { tableName: 'answers' });
+  Question.hasMany(Answer, { foreignKey: 'questionId', as: 'answers' });
+  Answer.belongsTo(Question, { foreignKey: 'questionId', as: 'question' });
+  User.hasMany(Answer, { foreignKey: 'userId', as: 'answers' });
+  Answer.belongsTo(User, { foreignKey: 'userId', as: 'author' });
+  return { User, Institution, Career, InstitutionResource, Locality, Category, Content, Question, Answer, Session };
 }
