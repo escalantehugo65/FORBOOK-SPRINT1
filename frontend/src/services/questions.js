@@ -8,4 +8,7 @@ export const questionService = {
   create: body => request('/questions', { method: 'POST', body }),
   detail: (id, signal) => request(`/questions/${encodeURIComponent(id)}`, { signal }),
   answer: (id, body) => request(`/questions/${encodeURIComponent(id)}/answers`, { method: 'POST', body: { body } }),
+  // El backend exige JSON en todo pedido que modifica datos, por eso se manda {} aunque esté vacío.
+  markHelpful: id => request(`/answers/${encodeURIComponent(id)}/helpful`, { method: 'PUT', body: {} }),
+  unmarkHelpful: id => request(`/answers/${encodeURIComponent(id)}/helpful`, { method: 'DELETE', body: {} }),
 };

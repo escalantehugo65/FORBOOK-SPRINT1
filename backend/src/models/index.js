@@ -108,5 +108,15 @@ export function defineModels(db) {
   Answer.belongsTo(Question, { foreignKey: 'questionId', as: 'question' });
   User.hasMany(Answer, { foreignKey: 'userId', as: 'answers' });
   Answer.belongsTo(User, { foreignKey: 'userId', as: 'author' });
-  return { User, Institution, Career, InstitutionResource, Locality, Category, Content, Question, Answer, Session };
+  // Marcas de "me fue útil" en las respuestas (FF-28): una por usuario y respuesta.
+  const AnswerVote = db.define('AnswerVote', {
+    id: { type: DataTypes.INTEGER.UNSIGNED, autoIncrement: true, primaryKey: true },
+    answerId: { type: DataTypes.INTEGER.UNSIGNED, allowNull: false },
+    userId: { type: DataTypes.INTEGER.UNSIGNED, allowNull: false },
+  }, { tableName: 'answer_votes', updatedAt: false, indexes: [{ unique: true, fields: ['answer_id', 'user_id'], name: 'answer_votes_unique' }] });
+  Answer.hasMany(AnswerVote, { foreignKey: 'answerId', as: 'votes' });
+  AnswerVote.belongsTo(Answer, { foreignKey: 'answerId', as: 'answer' });
+  User.hasMany(AnswerVote, { foreignKey: 'userId', as: 'answerVotes' });
+  AnswerVote.belongsTo(User, { foreignKey: 'userId', as: 'user' });
+  return { User, Institution, Career, InstitutionResource, Locality, Category, Content, Question, Answer, AnswerVote, Session };
 }

@@ -1,8 +1,8 @@
 import { HttpError } from '../helpers/http.js';
 import { positiveId, validateAnswer, validateQuestion } from '../middlewares/validation.js';
 
-// Preguntas públicas: listar (FF-24), publicar (FF-25), ver el detalle (FF-26) y responder (FF-27).
-export function questionController({ User, Institution, Category, Question, Answer }) {
+// Preguntas públicas: listar (FF-24), publicar (FF-25), ver el detalle (FF-26), responder (FF-27) y marcar útil (FF-28).
+export function questionController({ User, Institution, Category, Question, Answer, AnswerVote }) {
   const include = [
     { model: User, as: 'author', attributes: ['id', 'name'] },
     { model: Category, as: 'category', attributes: ['id', 'name', 'slug'] },
@@ -10,7 +10,28 @@ export function questionController({ User, Institution, Category, Question, Answ
   ];
   // Del autor solo se muestra el primer nombre: nunca el correo ni otros datos del perfil.
   const publicAuthor = author => ({ name: author ? author.name.trim().split(/\s+/)[0] : 'Usuario de Forbook' });
-  const publicAnswer = answer => ({ id: answer.id, body: answer.body, createdAt: answer.createdAt, author: publicAuthor(answer.author) });
+  // helpfulCount: cuántas personas la marcaron útil. markedByMe y ownAnswer dependen de quién mira.
+  const publicAnswer = (answer, userId, votes = []) => ({
+    id: answer.id,
+    body: answer.body,
+    createdAt: answer.createdAt,
+    author: publicAuthor(answer.author),
+    helpfulCount: votes.filter(vote => vote.answerId === answer.id).length,
+    markedByMe: votes.some(vote => vote.answerId === answer.id && vote.userId === userId),
+    ownAnswer: answer.userId === userId,
+  });
+  const helpfulState = async (answerId, userId) => ({
+    answerId,
+    helpfulCount: await AnswerVote.count({ where: { answerId } }),
+    markedByMe: Boolean(await AnswerVote.findOne({ where: { answerId, userId } })),
+  });
+  // Regla del equipo: cualquier usuario con sesión marca una vez cada respuesta, menos las propias.
+  const findVotableAnswer = async (req) => {
+    const answer = await Answer.findByPk(positiveId(req.params.id, 'Respuesta'));
+    if (!answer) throw new HttpError(404, 'No encontramos esta respuesta.');
+    if (answer.userId === req.session.userId) throw new HttpError(403, 'No podés marcar como útil tu propia respuesta.');
+    return answer;
+  };
   const publicQuestion = question => ({
     id: question.id,
     title: question.title,
@@ -59,7 +80,8 @@ export function questionController({ User, Institution, Category, Question, Answ
         include: [{ model: User, as: 'author', attributes: ['id', 'name'] }],
         order: [['createdAt', 'ASC'], ['id', 'ASC']],
       });
-      res.json({ data: { ...publicQuestion(question), answers: answers.map(publicAnswer) } });
+      const votes = answers.length ? await AnswerVote.findAll({ where: { answerId: answers.map(answer => answer.id) }, attributes: ['answerId', 'userId'] }) : [];
+      res.json({ data: { ...publicQuestion(question), answers: answers.map(answer => publicAnswer(answer, req.session.userId, votes)) } });
     },
     answer: async (req, res) => {
       const question = await Question.findByPk(positiveId(req.params.id, 'Pregunta'));
@@ -70,7 +92,17 @@ export function questionController({ User, Institution, Category, Question, Answ
       const created = await Answer.create({ questionId: question.id, userId: req.session.userId, body: input.body });
       if (question.status === 'open') await question.update({ status: 'answered' });
       const answer = await Answer.findByPk(created.id, { include: [{ model: User, as: 'author', attributes: ['id', 'name'] }] });
-      res.status(201).json({ data: { answer: publicAnswer(answer), status: question.status } });
+      res.status(201).json({ data: { answer: publicAnswer(answer, req.session.userId), status: question.status } });
+    },
+    markHelpful: async (req, res) => {
+      const answer = await findVotableAnswer(req);
+      await AnswerVote.findOrCreate({ where: { answerId: answer.id, userId: req.session.userId } });
+      res.json({ data: await helpfulState(answer.id, req.session.userId) });
+    },
+    unmarkHelpful: async (req, res) => {
+      const answer = await findVotableAnswer(req);
+      await AnswerVote.destroy({ where: { answerId: answer.id, userId: req.session.userId } });
+      res.json({ data: await helpfulState(answer.id, req.session.userId) });
     },
   };
 }

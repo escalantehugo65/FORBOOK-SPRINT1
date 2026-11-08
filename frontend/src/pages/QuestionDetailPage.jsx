@@ -8,7 +8,13 @@ import { Loading, ErrorMessage } from '../components/Feedback';
 import { ArrowIcon } from '../components/Icons';
 import { statusBadge, statusNames } from '../components/QuestionCard';
 
-// Detalle de una pregunta con sus respuestas (FF-26) y formulario para responder (FF-27).
+// Valoración acumulada en texto simple; nunca se muestran votos negativos ni rankings.
+function helpfulText(count = 0, own) {
+  if (!count) return own ? 'Tu respuesta todavía no fue marcada como útil' : 'Nadie la marcó como útil todavía';
+  return count === 1 ? '1 persona la marcó como útil' : `${count} personas la marcaron como útil`;
+}
+
+// Detalle de una pregunta con sus respuestas (FF-26), formulario para responder (FF-27) y botón "Me fue útil" (FF-28).
 export default function QuestionDetailPage() {
   const { id } = useParams();
   const loader = useCallback(signal => questionService.detail(id, signal), [id]);
@@ -24,8 +30,12 @@ export default function QuestionDetailPage() {
   const [sendError, setSendError] = useState('');
   const [busy, setBusy] = useState(false);
   const [lastId, setLastId] = useState(null);
+  // helpful guarda el resultado de cada marca: { 12: { helpfulCount: 3, markedByMe: true } }.
+  const [helpful, setHelpful] = useState({});
+  const [voting, setVoting] = useState(null);
+  const [voteError, setVoteError] = useState('');
   const newAnswer = useRef(null);
-  useEffect(() => { setAdded([]); setStatus(null); setText(''); setLastId(null); }, [id]);
+  useEffect(() => { setAdded([]); setStatus(null); setText(''); setLastId(null); setHelpful({}); setVoteError(''); }, [id]);
   useEffect(() => { newAnswer.current?.focus(); }, [lastId]);
 
   async function submit(event) {
@@ -47,13 +57,22 @@ export default function QuestionDetailPage() {
     } finally { setBusy(false); }
   }
 
+  async function toggleHelpful(answer) {
+    if (voting) return;
+    setVoting(answer.id); setVoteError('');
+    try {
+      const { data } = answer.markedByMe ? await questionService.unmarkHelpful(answer.id) : await questionService.markHelpful(answer.id);
+      setHelpful(previous => ({ ...previous, [answer.id]: { helpfulCount: data.helpfulCount, markedByMe: data.markedByMe } }));
+    } catch (failure) { setVoteError(failure.message); } finally { setVoting(null); }
+  }
+
   const back = <Link className="back-link" to="/preguntas"><ArrowIcon/>Volver a Preguntas</Link>;
   if (loading) return <div className="container page"><Loading text="Cargando la pregunta…"/></div>;
   if (error) return <div className="container page">{back}{error.status === 404
     ? <div className="detail-head"><h1>No encontramos esta pregunta.</h1><p className="detail-summary">Puede que la dirección esté mal escrita o que la pregunta ya no exista.</p></div>
     : <ErrorMessage message={error.message} retry={retry}/>}</div>;
 
-  const answers = [...question.answers, ...added];
+  const answers = [...question.answers, ...added].map(answer => ({ ...answer, ...helpful[answer.id] }));
   const currentStatus = status || question.status;
   const closed = currentStatus === 'closed';
 
@@ -76,8 +95,15 @@ export default function QuestionDetailPage() {
             ref={answer.id === lastId ? newAnswer : undefined} tabIndex={answer.id === lastId ? -1 : undefined}>
             <p>{answer.body}</p>
             <p className="card-meta">Respondió {answer.author.name} · {formatDate(answer.createdAt)}</p>
+            <div className="answer-foot">
+              {!answer.ownAnswer && <button type="button" className="chip" aria-pressed={answer.markedByMe} disabled={voting === answer.id} onClick={() => toggleHelpful(answer)}>
+                {answer.markedByMe ? 'Te fue útil' : 'Me fue útil'}<span className="sr-only">: respuesta de {answer.author.name}</span>
+              </button>}
+              <span className="helpful-count">{helpfulText(answer.helpfulCount, answer.ownAnswer)}</span>
+            </div>
           </li>)}</ol>
         : <div className="empty"><h3>Todavía nadie respondió</h3><p>Si sabés algo sobre esto, tu respuesta puede ayudar a quien recién llega.</p></div>}
+      {voteError && <div className="alert" role="alert"><p>{voteError}</p></div>}
       {lastId && <p className="access-notice" role="status">Tu respuesta se publicó.</p>}
 
       {closed

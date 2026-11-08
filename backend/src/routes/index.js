@@ -27,5 +27,7 @@ export function apiRoutes(models, cookieOptions) {
   router.post('/questions', requireAuth, questionLimit, asyncRoute(questions.create));
   router.get('/questions/:id', requireAuth, asyncRoute(questions.detail));
   router.post('/questions/:id/answers', requireAuth, questionLimit, asyncRoute(questions.answer));
+  router.put('/answers/:id/helpful', requireAuth, questionLimit, asyncRoute(questions.markHelpful));
+  router.delete('/answers/:id/helpful', requireAuth, questionLimit, asyncRoute(questions.unmarkHelpful));
   return router;
 }
