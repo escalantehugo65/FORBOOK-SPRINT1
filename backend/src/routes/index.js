@@ -1,9 +1,12 @@
 import { Router } from 'express';
 import { asyncRoute } from '../helpers/http.js';
-import { requireAuth, authRateLimit } from '../middlewares/security.js';
+import { requireAuth, requireRole, authRateLimit } from '../middlewares/security.js';
 import { authController } from '../controllers/authController.js';
 import { contentController } from '../controllers/contentController.js';
 import { questionController } from '../controllers/questionController.js';
+import { reportController } from '../controllers/reportController.js';
+import { moderationController } from '../controllers/moderationController.js';
+import { adminController } from '../controllers/adminController.js';
 
 export function apiRoutes(models, cookieOptions) {
   const router = Router();
@@ -12,6 +15,13 @@ export function apiRoutes(models, cookieOptions) {
   const questions = questionController(models);
   const limit = authRateLimit();
   const questionLimit = authRateLimit();
+  const reports = reportController(models);
+  const moderation = moderationController(models);
+  const admin = adminController(models);
+  const reportLimit = authRateLimit();
+  // Épica 7: moderadores y administradores atienden reportes; solo administradores ven el historial y el catálogo.
+  const staffOnly = requireRole(models.User, ['moderator', 'admin']);
+  const adminOnly = requireRole(models.User, ['admin']);
   router.post('/auth/register', limit, asyncRoute(auth.register));
   router.post('/auth/login', limit, asyncRoute(auth.login));
   router.get('/auth/me', requireAuth, asyncRoute(auth.me));
@@ -29,5 +39,15 @@ export function apiRoutes(models, cookieOptions) {
   router.post('/questions/:id/answers', requireAuth, questionLimit, asyncRoute(questions.answer));
   router.put('/answers/:id/helpful', requireAuth, questionLimit, asyncRoute(questions.markHelpful));
   router.delete('/answers/:id/helpful', requireAuth, questionLimit, asyncRoute(questions.unmarkHelpful));
+  router.post('/reports', requireAuth, reportLimit, asyncRoute(reports.create));
+  router.get('/moderation/reports', staffOnly, asyncRoute(moderation.reports));
+  router.post('/moderation/reports/:id/resolve', staffOnly, asyncRoute(moderation.resolve));
+  router.get('/moderation/log', adminOnly, asyncRoute(moderation.log));
+  router.get('/admin/categories', adminOnly, asyncRoute(admin.categories));
+  router.post('/admin/categories', adminOnly, asyncRoute(admin.createCategory));
+  router.put('/admin/categories/:id', adminOnly, asyncRoute(admin.updateCategory));
+  router.delete('/admin/categories/:id', adminOnly, asyncRoute(admin.deleteCategory));
+  router.get('/admin/contents', adminOnly, asyncRoute(admin.contents));
+  router.put('/admin/contents/:id/source', adminOnly, asyncRoute(admin.updateSource));
   return router;
 }

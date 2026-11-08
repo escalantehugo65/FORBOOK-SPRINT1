@@ -7,6 +7,9 @@ import { formatDate } from '../utils/content';
 import { Loading, ErrorMessage } from '../components/Feedback';
 import { ArrowIcon } from '../components/Icons';
 import { statusBadge, statusNames } from '../components/QuestionCard';
+import ReportAction from '../components/ReportAction';
+
+const reportReasons = ['false', 'offensive', 'spam', 'other'];
 
 // Valoración acumulada en texto simple; nunca se muestran votos negativos ni rankings.
 function helpfulText(count = 0, own) {
@@ -86,6 +89,7 @@ export default function QuestionDetailPage() {
       <h1>{question.title}</h1>
       {question.body && <p className="question-body">{question.body}</p>}
       <p className="card-meta">Preguntó {question.author.name} · {formatDate(question.createdAt)}</p>
+      {!question.ownQuestion && <ReportAction targetType="question" targetId={question.id} label="Reportar esta pregunta" reasons={reportReasons}/>}
     </header>
 
     <section className="answers" aria-labelledby="answers-title">
@@ -100,6 +104,7 @@ export default function QuestionDetailPage() {
                 {answer.markedByMe ? 'Te fue útil' : 'Me fue útil'}<span className="sr-only">: respuesta de {answer.author.name}</span>
               </button>}
               <span className="helpful-count">{helpfulText(answer.helpfulCount, answer.ownAnswer)}</span>
+              {!answer.ownAnswer && <ReportAction className="answer-report" targetType="answer" targetId={answer.id} label="Reportar" reasons={reportReasons}/>}
             </div>
           </li>)}</ol>
         : <div className="empty"><h3>Todavía nadie respondió</h3><p>Si sabés algo sobre esto, tu respuesta puede ayudar a quien recién llega.</p></div>}

@@ -1,7 +1,7 @@
 import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import { useEffect } from 'react';
 import Layout from './components/Layout';
-import { PrivateRoute } from './router/guards';
+import { PrivateRoute, RoleRoute } from './router/guards';
 import WelcomePage from './pages/WelcomePage';
 import HomePage from './pages/HomePage';
 import ExplorePage from './pages/ExplorePage';
@@ -10,6 +10,9 @@ import NotFoundPage from './pages/NotFoundPage';
 import QuestionsPage from './pages/QuestionsPage';
 import AskQuestionPage from './pages/AskQuestionPage';
 import QuestionDetailPage from './pages/QuestionDetailPage';
+import ModerationPage from './pages/ModerationPage';
+import ModerationLogPage from './pages/ModerationLogPage';
+import AdminCatalogPage from './pages/AdminCatalogPage';
 
 export default function App() {
   const { pathname, hash } = useLocation();
@@ -30,6 +33,13 @@ export default function App() {
         <Route path="preguntas" element={<QuestionsPage/>}/>
         <Route path="preguntas/nueva" element={<AskQuestionPage/>}/>
         <Route path="preguntas/:id" element={<QuestionDetailPage/>}/>
+        <Route element={<RoleRoute roles={['moderator', 'admin']}/>}>
+          <Route path="moderacion" element={<ModerationPage/>}/>
+        </Route>
+        <Route element={<RoleRoute roles={['admin']}/>}>
+          <Route path="moderacion/historial" element={<ModerationLogPage/>}/>
+          <Route path="moderacion/catalogo" element={<AdminCatalogPage/>}/>
+        </Route>
       </Route>
       <Route path="*" element={<NotFoundPage/>}/>
     </Route>

@@ -66,6 +66,19 @@ Ingreso y registro se abren en un modal sobre la bienvenida, sin cambiar la URL.
 
 Toda la interfaz usa un sistema visual nuevo: azul, menta y amarillo, títulos en Bricolage Grotesque y texto en Nunito Sans, con modo claro y oscuro. Ingresar y Crear cuenta están arriba a la derecha y abren la ventana superpuesta. La bienvenida muestra lo que ya funciona del sprint y marca como "Próximamente" el mapa, las comunidades, las preguntas, la guía y los puntos. Las tipografías se instalan con `npm run install:all`; no hace falta migrar ni sembrar de nuevo la base. Ver `docs/DISENO.md`.
 
+## Moderación (épica 7)
+
+- Cualquier estudiante puede reportar una pregunta, una respuesta o una ficha, y avisar que una ficha puede estar desactualizada. El reporte no borra ni cambia nada.
+- Moderación (`moderator`) atiende la cola en `/moderacion`: desestimar, ocultar o cerrar una pregunta, siempre con un motivo interno. Lo oculto no se borra de la base.
+- Administración (`admin`) además ve el historial en `/moderacion/historial` y administra categorías y fuentes en `/moderacion/catalogo`.
+- Los roles no se eligen al registrarse. Se asignan desde la carpeta `backend`:
+
+```bash
+npm run user:role -- correo@ejemplo.com moderator
+```
+
+Los roles válidos son `student`, `moderator` y `admin`; la persona tiene que recargar la página. Después de bajar estos cambios hay que correr `npm run db:migrate` (migración 008).
+
 ## Recorrido disponible
 
 - Bienvenida, registro con institución persistida y login.

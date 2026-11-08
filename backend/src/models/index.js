@@ -47,7 +47,8 @@ export function defineModels(db) {
     institutionId: { type: DataTypes.INTEGER.UNSIGNED, allowNull: false },
     career: { type: DataTypes.STRING(180), allowNull: false },
     arrivalStatus: { type: DataTypes.ENUM('not_arrived', 'arrived'), allowNull: false },
-    role: { type: DataTypes.ENUM('student', 'admin'), allowNull: false, defaultValue: 'student' },
+    // Los roles especiales se asignan con npm run user:role, nunca desde el registro (épica 7).
+    role: { type: DataTypes.ENUM('student', 'moderator', 'admin'), allowNull: false, defaultValue: 'student' },
   }, { tableName: 'users', defaultScope: { attributes: { exclude: ['passwordHash'] } }, scopes: { withPassword: { attributes: { include: ['passwordHash'] } } } });
   const Category = db.define('Category', {
     id: { type: DataTypes.INTEGER.UNSIGNED, autoIncrement: true, primaryKey: true },
@@ -69,6 +70,8 @@ export function defineModels(db) {
     authorLabel: { type: DataTypes.STRING(180), allowNull: true },
     reviewedAt: { type: DataTypes.DATEONLY, allowNull: true },
     status: { type: DataTypes.ENUM('draft', 'published'), defaultValue: 'draft', allowNull: false },
+    // Fecha en que moderación ocultó la ficha (FF-37). null = visible.
+    hiddenAt: { type: DataTypes.DATE, allowNull: true },
   }, { tableName: 'contents' });
   const Session = db.define('Session', {
     sid: { type: DataTypes.STRING(128), primaryKey: true },
@@ -90,6 +93,7 @@ export function defineModels(db) {
     title: { type: DataTypes.STRING(150), allowNull: false },
     body: { type: DataTypes.TEXT, allowNull: true },
     status: { type: DataTypes.ENUM('open', 'answered', 'closed'), allowNull: false, defaultValue: 'open' },
+    hiddenAt: { type: DataTypes.DATE, allowNull: true },
   }, { tableName: 'questions' });
   User.hasMany(Question, { foreignKey: 'userId', as: 'questions' });
   Question.belongsTo(User, { foreignKey: 'userId', as: 'author' });
@@ -103,6 +107,7 @@ export function defineModels(db) {
     questionId: { type: DataTypes.INTEGER.UNSIGNED, allowNull: false },
     userId: { type: DataTypes.INTEGER.UNSIGNED, allowNull: false },
     body: { type: DataTypes.TEXT, allowNull: false },
+    hiddenAt: { type: DataTypes.DATE, allowNull: true },
   }, { tableName: 'answers' });
   Question.hasMany(Answer, { foreignKey: 'questionId', as: 'answers' });
   Answer.belongsTo(Question, { foreignKey: 'questionId', as: 'question' });
@@ -118,5 +123,33 @@ export function defineModels(db) {
   AnswerVote.belongsTo(Answer, { foreignKey: 'answerId', as: 'answer' });
   User.hasMany(AnswerVote, { foreignKey: 'userId', as: 'answerVotes' });
   AnswerVote.belongsTo(User, { foreignKey: 'userId', as: 'user' });
-  return { User, Institution, Career, InstitutionResource, Locality, Category, Content, Question, Answer, AnswerVote, Session };
+  // Reportes de contenido (FF-34 y FF-35). targetType + targetId señalan qué se reportó.
+  const Report = db.define('Report', {
+    id: { type: DataTypes.INTEGER.UNSIGNED, autoIncrement: true, primaryKey: true },
+    reporterId: { type: DataTypes.INTEGER.UNSIGNED, allowNull: false },
+    targetType: { type: DataTypes.ENUM('question', 'answer', 'content'), allowNull: false },
+    targetId: { type: DataTypes.INTEGER.UNSIGNED, allowNull: false },
+    reason: { type: DataTypes.ENUM('false', 'offensive', 'spam', 'outdated', 'other'), allowNull: false },
+    details: { type: DataTypes.STRING(500), allowNull: true },
+    status: { type: DataTypes.ENUM('pending', 'dismissed', 'actioned'), allowNull: false, defaultValue: 'pending' },
+    action: { type: DataTypes.ENUM('none', 'hide', 'close'), allowNull: true },
+    resolutionNote: { type: DataTypes.STRING(500), allowNull: true },
+    resolvedById: { type: DataTypes.INTEGER.UNSIGNED, allowNull: true },
+    resolvedAt: { type: DataTypes.DATE, allowNull: true },
+  }, { tableName: 'reports' });
+  User.hasMany(Report, { foreignKey: 'reporterId', as: 'reports' });
+  Report.belongsTo(User, { foreignKey: 'reporterId', as: 'reporter' });
+  Report.belongsTo(User, { foreignKey: 'resolvedById', as: 'resolver' });
+  // Historial interno de moderación (FF-38): una fila por cada decisión o cambio de catálogo.
+  const ModerationLog = db.define('ModerationLog', {
+    id: { type: DataTypes.INTEGER.UNSIGNED, autoIncrement: true, primaryKey: true },
+    moderatorId: { type: DataTypes.INTEGER.UNSIGNED, allowNull: true },
+    action: { type: DataTypes.ENUM('dismiss', 'hide', 'close', 'category_create', 'category_update', 'category_delete', 'source_update'), allowNull: false },
+    targetType: { type: DataTypes.ENUM('question', 'answer', 'content', 'category'), allowNull: false },
+    targetId: { type: DataTypes.INTEGER.UNSIGNED, allowNull: false },
+    reportId: { type: DataTypes.INTEGER.UNSIGNED, allowNull: true },
+    note: { type: DataTypes.STRING(500), allowNull: false },
+  }, { tableName: 'moderation_logs', updatedAt: false });
+  ModerationLog.belongsTo(User, { foreignKey: 'moderatorId', as: 'moderator' });
+  return { User, Institution, Career, InstitutionResource, Locality, Category, Content, Question, Answer, AnswerVote, Report, ModerationLog, Session };
 }

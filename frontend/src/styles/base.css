@@ -28,7 +28,7 @@ h1, h2, h3 {
 }
 p { margin: 0; text-wrap: pretty; }
 a { color: var(--link); text-underline-offset: 3px; }
-button, input, select { font: inherit; color: inherit; }
+button, input, select, textarea { font: inherit; color: inherit; }
 button { cursor: pointer; }
 button:disabled { cursor: not-allowed; opacity: 0.6; }
 svg { flex-shrink: 0; }

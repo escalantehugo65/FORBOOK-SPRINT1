@@ -12,5 +12,6 @@ import './styles/layout.css';
 import './styles/landing.css';
 import './styles/access.css';
 import './styles/pages.css';
+import './styles/moderation.css';
 
 createRoot(document.getElementById('root')).render(<React.StrictMode><BrowserRouter><ThemeProvider><AuthProvider><App/></AuthProvider></ThemeProvider></BrowserRouter></React.StrictMode>);

@@ -1,0 +1,85 @@
+/* Épica 7: reportes, moderación, historial y administración del catálogo. */
+
+/* Etiquetas propias de moderación */
+.badge-warn { background: var(--yellow); color: var(--on-accent); }
+.badge-hidden { background: var(--danger-bg); color: var(--danger); border: 2px solid var(--danger-line); padding: 3px 10px; }
+.btn-danger { background: var(--danger-bg); border-color: var(--danger); color: var(--danger); }
+.btn-danger:hover:not(:disabled) { background: var(--danger-line); }
+
+/* Botón "Reportar" y su formulario (FF-34 y FF-35) */
+.report-action { display: grid; gap: 10px; justify-items: start; min-width: 0; }
+.report-toggle { min-height: 44px; padding: 8px 2px; font-size: 14px; color: var(--ink-3); }
+.report-toggle:hover { color: var(--link); }
+.report-toggle[aria-expanded='true'] { color: var(--link); }
+.report-form { display: grid; gap: 14px; width: 100%; max-width: 560px; padding: 18px; border: 2px solid var(--line-strong); border-radius: var(--radius-m); background: var(--surface); }
+.report-reasons { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(200px, 100%), 1fr)); gap: 8px; }
+.report-form .field textarea { min-height: 88px; }
+.report-error { color: var(--danger); font-weight: 700; font-size: 14px; }
+.report-buttons, .admin-buttons { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.report-done { padding: 10px 14px; border-radius: var(--radius-s); background: var(--ok-bg); color: var(--ink); font-weight: 700; font-size: 14px; }
+/* En una respuesta, "Reportar" va a la derecha y, abierto, ocupa todo el ancho. */
+.answer-foot .answer-report { margin-left: auto; }
+.answer-foot .answer-report:has(form), .answer-foot .report-done { flex-basis: 100%; margin-left: 0; }
+.question-detail .report-action { margin-top: -6px; }
+.source-actions { display: grid; gap: 4px; width: 100%; padding-top: 6px; }
+
+/* Pestañas y filtros de moderación */
+.mod-nav { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 24px; padding: 6px; border-radius: 18px; background: var(--bg-soft); width: fit-content; max-width: 100%; }
+.mod-nav a { min-height: 44px; padding: 0 18px; display: inline-flex; align-items: center; border-radius: 13px; color: var(--ink); font-weight: 800; font-size: 15px; text-decoration: none; }
+.mod-nav a:hover { color: var(--link); }
+.mod-nav a[aria-current='page'] { background: var(--primary); color: var(--on-primary); }
+.mod-filters { margin-bottom: 24px; }
+
+/* Cola de reportes (FF-36 y FF-37) */
+.report-list { display: grid; gap: 18px; margin: 0; padding: 0; list-style: none; }
+.report-card { display: grid; gap: 14px; padding: 24px; border: 2px solid var(--line); border-radius: var(--radius-l); background: var(--surface); min-width: 0; }
+.report-top { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.report-target { display: grid; gap: 6px; min-width: 0; }
+.report-title { font-size: 22px; font-weight: 700; overflow-wrap: anywhere; }
+.report-title a { color: var(--ink); }
+.report-title a:hover { color: var(--link); }
+.report-excerpt { margin: 4px 0 0; padding: 12px 16px; border-radius: var(--radius-s); background: var(--bg-soft); color: var(--ink-2); white-space: pre-line; overflow-wrap: anywhere; }
+.report-details { color: var(--ink-2); overflow-wrap: anywhere; }
+.report-details span { font-weight: 800; color: var(--ink); }
+.resolve-form { display: grid; gap: 16px; padding-top: 16px; border-top: 2px solid var(--line); }
+.decision-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr)); gap: 10px; }
+.choice.decision { align-items: flex-start; }
+.choice.decision input { margin-top: 3px; }
+.choice.decision span { display: grid; gap: 2px; }
+.choice.decision small { font-weight: 600; color: var(--ink-3); }
+.resolve-form .form-actions .btn-primary { flex: 0 1 auto; }
+.resolution-box { display: grid; gap: 4px; padding: 14px 16px; border-radius: var(--radius-s); background: var(--bg-soft); overflow-wrap: anywhere; }
+.resolution-box p:last-child { color: var(--ink-2); }
+
+/* Historial (FF-38) */
+.table-wrap { overflow-x: auto; border: 2px solid var(--line); border-radius: var(--radius-m); background: var(--surface); }
+.log-table { width: 100%; min-width: 760px; border-collapse: collapse; font-size: 15px; }
+.log-table th, .log-table td { padding: 14px 16px; text-align: left; vertical-align: top; border-bottom: 2px solid var(--line); }
+.log-table thead th { font-size: 13px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-3); background: var(--surface-soft); }
+.log-table tbody tr:last-child td { border-bottom: 0; }
+.log-table td small { display: block; margin-top: 2px; color: var(--ink-3); font-weight: 700; }
+.log-table td:first-child { white-space: nowrap; }
+
+/* Categorías y fuentes (FF-39) */
+.admin-section { display: grid; gap: 16px; margin-top: 40px; }
+.admin-section h2 { font-size: clamp(1.6rem, 3vw, 2.2rem); font-weight: 800; }
+.admin-intro { color: var(--ink-2); max-width: 760px; }
+.admin-card { display: grid; gap: 14px; padding: 24px; border-radius: var(--radius-l); background: var(--bg-soft); }
+.admin-card h3, .admin-row h3 { font-size: 20px; font-weight: 700; overflow-wrap: anywhere; }
+.admin-list { display: grid; gap: 12px; margin: 0; padding: 0; list-style: none; }
+.admin-row { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 14px 20px; padding: 20px 22px; border: 2px solid var(--line); border-radius: var(--radius-m); background: var(--surface); }
+.admin-row-main { flex: 999 1 320px; min-width: 0; display: grid; gap: 6px; }
+.admin-row-main > p:not(.card-meta):not(.card-category) { color: var(--ink-2); }
+.admin-row > .admin-form, .admin-row > .alert, .admin-row > h3 { flex-basis: 100%; }
+.admin-form { display: grid; gap: 14px; max-width: 720px; }
+.admin-badges { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
+.admin-badges .card-meta { margin: 0; }
+.admin-hint { font-size: 14px; color: var(--ink-3); max-width: 260px; }
+
+@media (max-width: 600px) {
+  .report-card { padding: 20px; }
+  .admin-row { padding: 18px; }
+  .admin-card { padding: 20px; }
+  .mod-nav { width: 100%; }
+  .mod-nav a { flex: 1 1 auto; justify-content: center; }
+}

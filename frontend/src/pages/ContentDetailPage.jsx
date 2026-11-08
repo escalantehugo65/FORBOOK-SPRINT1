@@ -6,6 +6,7 @@ import { catalogService } from '../services/catalog';
 import { Loading, ErrorMessage } from '../components/Feedback';
 import { ArrowIcon, ExternalIcon } from '../components/Icons';
 import { formatDate, sourceBadge, sourceNames } from '../utils/content';
+import ReportAction from '../components/ReportAction';
 
 const sourceNotes = {
   official: 'Consultá la fuente original para confirmar datos que pueden cambiar, como fechas o requisitos.',
@@ -49,6 +50,11 @@ export default function ContentDetailPage() {
         </dl>
         {url && <a className="btn btn-primary btn-small" href={url} target="_blank" rel="noopener noreferrer">Consultar la fuente <ExternalIcon/><span className="sr-only"> (se abre en una pestaña nueva)</span></a>}
         <p className="source-note">{sourceNotes[content.sourceType]}</p>
+        {/* FF-35 y FF-34: el aviso no cambia la ficha; la fecha de revisión sigue visible arriba. */}
+        <div className="source-actions">
+          <ReportAction targetType="content" targetId={content.id} label="Avisar que puede estar desactualizada" reasons={['outdated']} detailsLabel="¿Qué dato cambió? (opcional)"/>
+          <ReportAction targetType="content" targetId={content.id} label="Reportar un problema" reasons={['false', 'offensive', 'other']}/>
+        </div>
       </aside>
     </div>
   </article>;

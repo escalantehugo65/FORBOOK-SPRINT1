@@ -10,6 +10,10 @@ import { up } from '../migrations/001-initial.js';
 import { up as careerMigration } from '../migrations/002-careers.js';
 import { up as resourceMigration } from '../migrations/003-institution-resources.js';
 import { up as localityMigration } from '../migrations/004-origin-localities.js';
+import { up as questionMigration } from '../migrations/005-questions.js';
+import { up as answerMigration } from '../migrations/006-answers.js';
+import { up as voteMigration } from '../migrations/007-answer-votes.js';
+import { up as moderationMigration } from '../migrations/008-moderation.js';
 
 test('recorrido real de HU-01/02/03/04/06/11/13 sobre MySQL', { skip: !process.env.TEST_DB_NAME }, async t => {
   if (!process.env.TEST_DB_NAME.endsWith('_test')) throw new Error('TEST_DB_NAME debe terminar en _test.');
@@ -24,6 +28,8 @@ test('recorrido real de HU-01/02/03/04/06/11/13 sobre MySQL', { skip: !process.e
   let userId, institution, category, emptyCategory, content, draft, cookie, career, otherCareer, otherInstitution, ownContent, otherContent, ownResource, otherResource, otherUser, locality, outOfProvince;
   try {
     await db.authenticate(); await up(db, models); await careerMigration(db, models); await resourceMigration(db, models); await localityMigration(db, models);
+    // Todas las migraciones: los modelos ya usan columnas nuevas (por ejemplo hidden_at en contents).
+    for (const migration of [questionMigration, answerMigration, voteMigration, moderationMigration]) await migration(db, models);
     locality = await models.Locality.create({ id: '34999991', name: 'Localidad de prueba', provinceCode: '34', departmentCode: '34999', departmentName: 'Pruebas', sourceUrl: 'https://example.com', reviewedAt: '2026-11-03' });
     outOfProvince = await models.Locality.create({ id: '34999992', name: 'Dato inconsistente de prueba', provinceCode: '22', departmentCode: '22999', departmentName: 'Pruebas', sourceUrl: 'https://example.com', reviewedAt: '2026-11-03' });
     institution = await models.Institution.create({ name: `Institución de prueba ${suffix}`, sourceUrl: 'https://example.com' });

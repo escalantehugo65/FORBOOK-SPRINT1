@@ -3,6 +3,7 @@ import { Link, NavLink, Outlet, useLocation, useNavigate } from 'react-router-do
 import { useAuth } from '../context/AuthContext';
 import { PublicAccessContext } from '../context/PublicAccessContext';
 import { firstName } from '../utils/content';
+import { canModerate } from '../utils/moderation';
 import AuthModal from './AuthModal';
 import ThemeToggle from './ThemeToggle';
 import { ErrorMessage } from './Feedback';
@@ -60,7 +61,7 @@ export default function Layout() {
 
   const name = user ? firstName(user.name) : '';
   const links = user
-    ? <><NavLink to="/inicio">Mi inicio</NavLink><NavLink to="/conozcamos">Conozcamos Formosa</NavLink><NavLink to="/preguntas">Preguntas</NavLink></>
+    ? <><NavLink to="/inicio">Mi inicio</NavLink><NavLink to="/conozcamos">Conozcamos Formosa</NavLink><NavLink to="/preguntas">Preguntas</NavLink>{canModerate(user) && <NavLink to="/moderacion">Moderación</NavLink>}</>
     : sections.map(([id, label]) => <Link key={id} to={{ pathname: '/', hash: `#${id}` }}>{label}</Link>);
 
   return <PublicAccessContext.Provider value={{ openAccess }}>

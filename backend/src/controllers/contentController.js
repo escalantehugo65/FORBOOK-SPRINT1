@@ -11,7 +11,8 @@ export function contentController({ User, Institution, Career, InstitutionResour
   }
   async function visibleContents(req) {
     const student = await currentStudent(req);
-    return { status: 'published', [Op.or]: [{ institutionId: null }, { institutionId: student.institutionId }] };
+    // Las fichas ocultas por moderación (FF-37) dejan de verse, pero no se borran.
+    return { status: 'published', hiddenAt: null, [Op.or]: [{ institutionId: null }, { institutionId: student.institutionId }] };
   }
   return {
     localities: async (req, res) => {

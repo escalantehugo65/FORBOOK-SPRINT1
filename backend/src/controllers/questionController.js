@@ -27,8 +27,8 @@ export function questionController({ User, Institution, Category, Question, Answ
   });
   // Regla del equipo: cualquier usuario con sesión marca una vez cada respuesta, menos las propias.
   const findVotableAnswer = async (req) => {
-    const answer = await Answer.findByPk(positiveId(req.params.id, 'Respuesta'));
-    if (!answer) throw new HttpError(404, 'No encontramos esta respuesta.');
+    const answer = await Answer.findOne({ where: { id: positiveId(req.params.id, 'Respuesta'), hiddenAt: null }, include: [{ model: Question, as: 'question', attributes: ['id', 'hiddenAt'] }] });
+    if (!answer || answer.question?.hiddenAt) throw new HttpError(404, 'No encontramos esta respuesta.');
     if (answer.userId === req.session.userId) throw new HttpError(403, 'No podés marcar como útil tu propia respuesta.');
     return answer;
   };
@@ -45,7 +45,8 @@ export function questionController({ User, Institution, Category, Question, Answ
   return {
     list: async (req, res) => {
       if (Object.keys(req.query).some(key => !['categoryId', 'institutionId', 'status', 'page'].includes(key))) throw new HttpError(400, 'Filtro no permitido.');
-      const where = {};
+      // Lo que moderación ocultó (FF-37) no aparece en la lista.
+      const where = { hiddenAt: null };
       if (req.query.categoryId !== undefined) where.categoryId = positiveId(req.query.categoryId, 'Categoría');
       if (req.query.institutionId !== undefined) where.institutionId = positiveId(req.query.institutionId, 'Institución');
       if (req.query.status !== undefined) {
@@ -73,18 +74,18 @@ export function questionController({ User, Institution, Category, Question, Answ
       res.status(201).json({ data: publicQuestion(question) });
     },
     detail: async (req, res) => {
-      const question = await Question.findByPk(positiveId(req.params.id, 'Pregunta'), { include });
+      const question = await Question.findOne({ where: { id: positiveId(req.params.id, 'Pregunta'), hiddenAt: null }, include });
       if (!question) throw new HttpError(404, 'No encontramos esta pregunta.');
       const answers = await Answer.findAll({
-        where: { questionId: question.id },
+        where: { questionId: question.id, hiddenAt: null },
         include: [{ model: User, as: 'author', attributes: ['id', 'name'] }],
         order: [['createdAt', 'ASC'], ['id', 'ASC']],
       });
       const votes = answers.length ? await AnswerVote.findAll({ where: { answerId: answers.map(answer => answer.id) }, attributes: ['answerId', 'userId'] }) : [];
-      res.json({ data: { ...publicQuestion(question), answers: answers.map(answer => publicAnswer(answer, req.session.userId, votes)) } });
+      res.json({ data: { ...publicQuestion(question), ownQuestion: question.userId === req.session.userId, answers: answers.map(answer => publicAnswer(answer, req.session.userId, votes)) } });
     },
     answer: async (req, res) => {
-      const question = await Question.findByPk(positiveId(req.params.id, 'Pregunta'));
+      const question = await Question.findOne({ where: { id: positiveId(req.params.id, 'Pregunta'), hiddenAt: null } });
       if (!question) throw new HttpError(404, 'No encontramos esta pregunta.');
       // Regla del equipo: una pregunta cerrada ya no recibe respuestas.
       if (question.status === 'closed') throw new HttpError(409, 'Esta pregunta está cerrada y ya no recibe respuestas.');

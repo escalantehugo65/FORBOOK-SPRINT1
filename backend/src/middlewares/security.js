@@ -5,6 +5,16 @@ export function securityHeaders(req, res, next) {
   next();
 }
 export const requireAuth = (req, res, next) => req.session.userId ? next() : next(new HttpError(401, 'Iniciá sesión para continuar.'));
+// El rol se lee de la base en cada pedido: si un administrador lo cambia, vale desde el próximo pedido.
+export const requireRole = (User, roles) => async (req, res, next) => {
+  try {
+    if (!req.session.userId) throw new HttpError(401, 'Iniciá sesión para continuar.');
+    const user = await User.findByPk(req.session.userId, { attributes: ['id', 'role'] });
+    if (!user) throw new HttpError(401, 'Tu sesión ya no es válida.');
+    if (!roles.includes(user.role)) throw new HttpError(403, 'No tenés permiso para entrar a esta sección.');
+    next();
+  } catch (error) { next(error); }
+};
 // Las mutaciones solo se aceptan con JSON y el origen exacto del frontend.
 export const checkOrigin = origin => (req, res, next) => {
   if (!['GET', 'HEAD', 'OPTIONS'].includes(req.method)) {
