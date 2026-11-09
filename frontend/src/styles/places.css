@@ -33,10 +33,26 @@ p.place-source { color: var(--ink-3); }
 .place-marker:focus-visible { outline: none; }
 .place-marker:focus-visible .place-pin { outline: 3px solid var(--focus); outline-offset: 2px; }
 .place-popup .leaflet-popup-content-wrapper { border-radius: var(--radius-s); }
+.place-popup small { font-size: 12px; font-weight: 800; letter-spacing: 0.04em; text-transform: uppercase; color: #3f4a70; }
 .place-popup .leaflet-popup-content { display: grid; gap: 4px; margin: 12px 16px; font-family: var(--font-body); font-size: 14px; color: #0e1a3f; }
 .place-popup strong { font-family: var(--font-display); font-size: 16px; }
 .leaflet-container { font-family: var(--font-body); }
 :root[data-theme='dark'] .leaflet-tile-pane { filter: brightness(0.82) saturate(0.9); }
+
+/* Un color por categoría, igual en el pin, en los filtros y en las tarjetas */
+.pin-institution { --pin: #2447d6; }
+.pin-health { --pin: #d92d20; }
+.pin-security { --pin: #0e1a3f; }
+.pin-procedures { --pin: #c98a00; }
+.pin-transport { --pin: #0f8f6a; }
+.pin-services { --pin: #7a3fd6; }
+.place-pin[class*='pin-'] { background: var(--pin); }
+.kind-dot { display: inline-block; flex: none; width: 12px; height: 12px; margin-right: 8px; border-radius: 50%; background: var(--pin); box-shadow: 0 0 0 2px var(--surface), 0 0 0 3px var(--line-strong); vertical-align: -1px; }
+.chip .chip-count { margin-left: 6px; font-size: 13px; opacity: 0.75; }
+.place-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.map-reset { position: absolute; top: 12px; right: 12px; z-index: 500; min-height: 40px; padding: 0 14px; border: 2px solid var(--line-strong); border-radius: 12px; background: var(--surface); color: var(--ink); font-weight: 800; font-size: 14px; cursor: pointer; box-shadow: var(--shadow); }
+.map-reset:hover { border-color: var(--primary); color: var(--link); }
+.map-reset:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
 
 /* Rutas (FF-22) */
 .steps-title { font-size: 24px; font-weight: 800; line-height: 1.2; }

@@ -4,11 +4,11 @@ import 'leaflet/dist/leaflet.css';
 import { formosaBounds, insideFormosa, parseCoordinates } from '../utils/coordinates';
 
 const formosaCity = [-26.1833, -58.1833];
-const pinIcon = () => L.divIcon({ className: 'place-marker', html: '<span class="place-pin"></span>', iconSize: [34, 34], iconAnchor: [17, 32] });
+const pinIcon = kind => L.divIcon({ className: 'place-marker', html: `<span class="place-pin${kind ? ` pin-${kind}` : ''}"></span>`, iconSize: [34, 34], iconAnchor: [17, 32] });
 
 // Elegir la ubicación de un lugar de tres formas: tocando el mapa (y arrastrando el pin),
 // pegando coordenadas copiadas de Google Maps o buscando la dirección en OpenStreetMap.
-export default function LocationPicker({ value, onChange, idPrefix, disabled, error }) {
+export default function LocationPicker({ value, onChange, idPrefix, disabled, error, kind }) {
   const containerRef = useRef(null);
   const mapRef = useRef(null);
   const markerRef = useRef(null);
@@ -41,7 +41,7 @@ export default function LocationPicker({ value, onChange, idPrefix, disabled, er
     if (!value) { markerRef.current?.remove(); markerRef.current = null; return; }
     const position = [value.latitude, value.longitude];
     if (!markerRef.current) {
-      markerRef.current = L.marker(position, { icon: pinIcon(), draggable: true, title: 'Ubicación elegida', alt: 'Ubicación elegida', keyboard: true }).addTo(map);
+      markerRef.current = L.marker(position, { icon: pinIcon(kind), draggable: true, title: 'Ubicación elegida', alt: 'Ubicación elegida', keyboard: true }).addTo(map);
       markerRef.current.on('dragend', () => {
         const { lat, lng } = markerRef.current.getLatLng();
         const point = { latitude: Number(lat.toFixed(6)), longitude: Number(lng.toFixed(6)) };
@@ -50,6 +50,9 @@ export default function LocationPicker({ value, onChange, idPrefix, disabled, er
     } else markerRef.current.setLatLng(position);
     if (!map.getBounds().contains(position)) map.setView(position, Math.max(map.getZoom(), 16), { animate: false });
   }, [value]);
+
+  // El pin toma el color de la categoría elegida, igual que en el mapa público.
+  useEffect(() => { markerRef.current?.setIcon(pinIcon(kind)); }, [kind]);
 
   useEffect(() => { if (disabled) mapRef.current?.dragging.disable(); else mapRef.current?.dragging.enable(); }, [disabled]);
 

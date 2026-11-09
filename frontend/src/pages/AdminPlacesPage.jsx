@@ -80,7 +80,7 @@ function PlaceForm({ place, institutions, onSaved, onCancel }) {
       <textarea id={`${prefix}-note`} rows="2" maxLength={450} value={values.studentNote} disabled={busy} onChange={event => set('studentNote', event.target.value)} aria-describedby={`${prefix}-note-hint`}/>
       <small id={`${prefix}-note-hint`}>Opcional. Algo útil y comprobado, sin horarios que puedan cambiar.</small>
     </div>
-    <LocationPicker idPrefix={prefix} value={values.location} onChange={location => set('location', location)} disabled={busy} error={errors.location}/>
+    <LocationPicker idPrefix={prefix} kind={values.kind} value={values.location} onChange={location => set('location', location)} disabled={busy} error={errors.location}/>
     <fieldset className="choice-group" disabled={busy}>
       <legend>Tipo de fuente <span aria-hidden="true">*</span></legend>
       <div className="choice-row">
