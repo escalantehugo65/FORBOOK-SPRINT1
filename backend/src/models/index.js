@@ -84,6 +84,69 @@ export function defineModels(db) {
   Content.belongsTo(Category, { foreignKey: 'categoryId', as: 'category' });
   Institution.hasMany(Content, { foreignKey: 'institutionId', as: 'contents' });
   Content.belongsTo(Institution, { foreignKey: 'institutionId', as: 'institution' });
+  // Épica 4: lugares del mapa (FF-21 y FF-23) y rutas orientativas (FF-22).
+  // Las coordenadas son opcionales: un lugar sin ubicación verificada se muestra igual,
+  // solo con su dirección o referencia en texto.
+  const sourceFields = {
+    sourceType: { type: DataTypes.ENUM('official', 'community', 'experience'), allowNull: false },
+    sourceLabel: { type: DataTypes.STRING(250), allowNull: true },
+    sourceUrl: { type: DataTypes.STRING(1000), allowNull: true },
+    reviewedAt: { type: DataTypes.DATEONLY, allowNull: true },
+    status: { type: DataTypes.ENUM('draft', 'published'), defaultValue: 'draft', allowNull: false },
+    hiddenAt: { type: DataTypes.DATE, allowNull: true },
+  };
+  const Place = db.define('Place', {
+    id: { type: DataTypes.INTEGER.UNSIGNED, autoIncrement: true, primaryKey: true },
+    slug: { type: DataTypes.STRING(150), allowNull: false, unique: true },
+    name: { type: DataTypes.STRING(150), allowNull: false },
+    kind: { type: DataTypes.ENUM('institution', 'health', 'security', 'procedures', 'transport', 'services'), allowNull: false },
+    institutionId: { type: DataTypes.INTEGER.UNSIGNED, allowNull: true },
+    addressLabel: { type: DataTypes.STRING(250), allowNull: true },
+    studentNote: { type: DataTypes.STRING(450), allowNull: true },
+    latitude: { type: DataTypes.DECIMAL(9, 6), allowNull: true },
+    longitude: { type: DataTypes.DECIMAL(9, 6), allowNull: true },
+    ...sourceFields,
+  }, { tableName: 'places' });
+  Institution.hasMany(Place, { foreignKey: 'institutionId', as: 'places' });
+  Place.belongsTo(Institution, { foreignKey: 'institutionId', as: 'institution' });
+  const TravelRoute = db.define('TravelRoute', {
+    id: { type: DataTypes.INTEGER.UNSIGNED, autoIncrement: true, primaryKey: true },
+    slug: { type: DataTypes.STRING(150), allowNull: false, unique: true },
+    institutionId: { type: DataTypes.INTEGER.UNSIGNED, allowNull: false },
+    destinationPlaceId: { type: DataTypes.INTEGER.UNSIGNED, allowNull: true },
+    title: { type: DataTypes.STRING(180), allowNull: false },
+    originLabel: { type: DataTypes.STRING(180), allowNull: false },
+    mode: { type: DataTypes.ENUM('walk', 'bus', 'bike', 'car', 'mixed'), allowNull: false },
+    // Un paso por línea, con referencias que se reconozcan en la calle.
+    steps: { type: DataTypes.TEXT, allowNull: false },
+    // Texto libre ("entre 20 y 30 minutos"). Solo se muestra como dato firme si la fuente es oficial.
+    durationLabel: { type: DataTypes.STRING(120), allowNull: true },
+    ...sourceFields,
+  }, { tableName: 'travel_routes' });
+  Institution.hasMany(TravelRoute, { foreignKey: 'institutionId', as: 'routes' });
+  TravelRoute.belongsTo(Institution, { foreignKey: 'institutionId', as: 'institution' });
+  TravelRoute.belongsTo(Place, { foreignKey: 'destinationPlaceId', as: 'destination' });
+  // Épica 6: espacios de integración (FF-30 y FF-31). No hay membresía ni chat privado:
+  // cada espacio describe para quién es y, si existe, lleva a una sección pública de Forbook.
+  const Group = db.define('Group', {
+    id: { type: DataTypes.INTEGER.UNSIGNED, autoIncrement: true, primaryKey: true },
+    slug: { type: DataTypes.STRING(150), allowNull: false, unique: true },
+    name: { type: DataTypes.STRING(150), allowNull: false },
+    kind: { type: DataTypes.ENUM('institution', 'origin', 'arrival', 'general'), allowNull: false },
+    audience: { type: DataTypes.STRING(300), allowNull: false },
+    summary: { type: DataTypes.STRING(300), allowNull: false },
+    purpose: { type: DataTypes.TEXT, allowNull: false },
+    // Criterios de sugerencia: null o 'any' significa "para todos".
+    institutionId: { type: DataTypes.INTEGER.UNSIGNED, allowNull: true },
+    originScope: { type: DataTypes.ENUM('any', 'formosa', 'outside'), allowNull: false, defaultValue: 'any' },
+    arrivalScope: { type: DataTypes.ENUM('any', 'not_arrived', 'arrived'), allowNull: false, defaultValue: 'any' },
+    linkPath: { type: DataTypes.STRING(250), allowNull: true },
+    linkLabel: { type: DataTypes.STRING(120), allowNull: true },
+    status: { type: DataTypes.ENUM('draft', 'published'), defaultValue: 'draft', allowNull: false },
+    hiddenAt: { type: DataTypes.DATE, allowNull: true },
+  }, { tableName: 'groups' });
+  Institution.hasMany(Group, { foreignKey: 'institutionId', as: 'groups' });
+  Group.belongsTo(Institution, { foreignKey: 'institutionId', as: 'institution' });
   // Preguntas públicas (FF-24 y FF-25).
   const Question = db.define('Question', {
     id: { type: DataTypes.INTEGER.UNSIGNED, autoIncrement: true, primaryKey: true },
@@ -144,12 +207,12 @@ export function defineModels(db) {
   const ModerationLog = db.define('ModerationLog', {
     id: { type: DataTypes.INTEGER.UNSIGNED, autoIncrement: true, primaryKey: true },
     moderatorId: { type: DataTypes.INTEGER.UNSIGNED, allowNull: true },
-    action: { type: DataTypes.ENUM('dismiss', 'hide', 'close', 'category_create', 'category_update', 'category_delete', 'source_update'), allowNull: false },
-    targetType: { type: DataTypes.ENUM('question', 'answer', 'content', 'category'), allowNull: false },
+    action: { type: DataTypes.ENUM('dismiss', 'hide', 'close', 'category_create', 'category_update', 'category_delete', 'source_update', 'place_create', 'place_update'), allowNull: false },
+    targetType: { type: DataTypes.ENUM('question', 'answer', 'content', 'category', 'place'), allowNull: false },
     targetId: { type: DataTypes.INTEGER.UNSIGNED, allowNull: false },
     reportId: { type: DataTypes.INTEGER.UNSIGNED, allowNull: true },
     note: { type: DataTypes.STRING(500), allowNull: false },
   }, { tableName: 'moderation_logs', updatedAt: false });
   ModerationLog.belongsTo(User, { foreignKey: 'moderatorId', as: 'moderator' });
-  return { User, Institution, Career, InstitutionResource, Locality, Category, Content, Question, Answer, AnswerVote, Report, ModerationLog, Session };
+  return { User, Institution, Career, InstitutionResource, Locality, Category, Content, Place, TravelRoute, Group, Question, Answer, AnswerVote, Report, ModerationLog, Session };
 }

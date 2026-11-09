@@ -1,13 +1,13 @@
 import { readConfig } from '../src/config/env.js';
 import { createDatabase } from '../src/config/database.js';
 import { defineModels } from '../src/models/index.js';
-import { institutions, categories, contents } from '../seeders/catalog.js';
+import { institutions, categories, contents, places, travelRoutes, groups } from '../seeders/catalog.js';
 import { careerCatalog } from '../seeders/careers.js';
 import { institutionResources } from '../seeders/institutionResources.js';
 import { seedLocalities } from '../seeders/localities.js';
 
 const db = createDatabase(readConfig());
-const { Institution, Career, InstitutionResource, Locality, Category, Content } = defineModels(db);
+const { Institution, Career, InstitutionResource, Locality, Category, Content, Place, TravelRoute, Group } = defineModels(db);
 try {
   await db.authenticate();
   await db.transaction(async transaction => {
@@ -29,6 +29,19 @@ try {
     for (const { categorySlug, institutional, ...item } of contents) {
       const category = await Category.findOne({ where: { slug: categorySlug }, transaction });
       await Content.findOrCreate({ where: { slug: item.slug }, defaults: { ...item, categoryId: category.id, institutionId: institutional ? institution.id : null, sourceType: 'official', reviewedAt: '2026-10-20', status: 'published' }, transaction });
+    }
+    // findOrCreate no pisa lo que ya existe: las coordenadas cargadas a mano se conservan.
+    const institutionId = async name => name ? (await Institution.findOne({ where: { name }, transaction })).id : null;
+    for (const { institutionName, ...item } of places) {
+      await Place.findOrCreate({ where: { slug: item.slug }, defaults: { ...item, institutionId: await institutionId(institutionName), sourceType: 'official', reviewedAt: '2026-11-08', status: 'published' }, transaction });
+    }
+    for (const { institutionName, destinationSlug, ...item } of travelRoutes) {
+      const destination = destinationSlug ? await Place.findOne({ where: { slug: destinationSlug }, transaction }) : null;
+      await TravelRoute.findOrCreate({ where: { slug: item.slug }, defaults: { ...item, institutionId: await institutionId(institutionName), destinationPlaceId: destination?.id ?? null, status: 'published' }, transaction });
+    }
+    for (const { institutionName, ...item } of groups) {
+      const id = await institutionId(institutionName);
+      await Group.findOrCreate({ where: { slug: item.slug }, defaults: { ...item, institutionId: id, linkPath: item.linkPath?.replace('{institutionId}', id), status: 'published' }, transaction });
     }
   });
   console.log('Catálogo inicial cargado. No se modificaron cuentas ni contenidos existentes.');

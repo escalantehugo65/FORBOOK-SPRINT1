@@ -1,5 +1,5 @@
 import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
-import { useEffect } from 'react';
+import { lazy, Suspense, useEffect } from 'react';
 import Layout from './components/Layout';
 import { PrivateRoute, RoleRoute } from './router/guards';
 import WelcomePage from './pages/WelcomePage';
@@ -13,6 +13,16 @@ import QuestionDetailPage from './pages/QuestionDetailPage';
 import ModerationPage from './pages/ModerationPage';
 import ModerationLogPage from './pages/ModerationLogPage';
 import AdminCatalogPage from './pages/AdminCatalogPage';
+import { Loading } from './components/Feedback';
+import RoutesPage from './pages/RoutesPage';
+import RouteDetailPage from './pages/RouteDetailPage';
+import GroupsPage from './pages/GroupsPage';
+import GroupDetailPage from './pages/GroupDetailPage';
+
+// El mapa (Leaflet) se descarga solo cuando alguien entra a /mapa.
+const MapPage = lazy(() => import('./pages/MapPage'));
+const AdminPlacesPage = lazy(() => import('./pages/AdminPlacesPage'));
+const mapFallback = <div className="container page"><Loading text="Cargando el mapa…"/></div>;
 
 export default function App() {
   const { pathname, hash } = useLocation();
@@ -33,12 +43,18 @@ export default function App() {
         <Route path="preguntas" element={<QuestionsPage/>}/>
         <Route path="preguntas/nueva" element={<AskQuestionPage/>}/>
         <Route path="preguntas/:id" element={<QuestionDetailPage/>}/>
+        <Route path="mapa" element={<Suspense fallback={mapFallback}><MapPage/></Suspense>}/>
+        <Route path="rutas" element={<RoutesPage/>}/>
+        <Route path="rutas/:id" element={<RouteDetailPage/>}/>
+        <Route path="espacios" element={<GroupsPage/>}/>
+        <Route path="espacios/:id" element={<GroupDetailPage/>}/>
         <Route element={<RoleRoute roles={['moderator', 'admin']}/>}>
           <Route path="moderacion" element={<ModerationPage/>}/>
         </Route>
         <Route element={<RoleRoute roles={['admin']}/>}>
           <Route path="moderacion/historial" element={<ModerationLogPage/>}/>
           <Route path="moderacion/catalogo" element={<AdminCatalogPage/>}/>
+          <Route path="moderacion/lugares" element={<Suspense fallback={mapFallback}><AdminPlacesPage/></Suspense>}/>
         </Route>
       </Route>
       <Route path="*" element={<NotFoundPage/>}/>

@@ -61,7 +61,7 @@ export default function Layout() {
 
   const name = user ? firstName(user.name) : '';
   const links = user
-    ? <><NavLink to="/inicio">Mi inicio</NavLink><NavLink to="/conozcamos">Conozcamos Formosa</NavLink><NavLink to="/preguntas">Preguntas</NavLink>{canModerate(user) && <NavLink to="/moderacion">Moderación</NavLink>}</>
+    ? <><NavLink to="/inicio">Mi inicio</NavLink><NavLink to="/conozcamos">Conozcamos Formosa</NavLink><NavLink to="/preguntas">Preguntas</NavLink><NavLink to="/mapa" className={({ isActive }) => isActive || location.pathname.startsWith('/rutas') ? 'active' : undefined}>Mapa</NavLink><NavLink to="/espacios">Espacios</NavLink>{canModerate(user) && <NavLink to="/moderacion">Moderación</NavLink>}</>
     : sections.map(([id, label]) => <Link key={id} to={{ pathname: '/', hash: `#${id}` }}>{label}</Link>);
 
   return <PublicAccessContext.Provider value={{ openAccess }}>

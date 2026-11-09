@@ -79,6 +79,23 @@ npm run user:role -- correo@ejemplo.com moderator
 
 Los roles válidos son `student`, `moderator` y `admin`; la persona tiene que recargar la página. Después de bajar estos cambios hay que correr `npm run db:migrate` (migración 008).
 
+## Lugares, rutas y espacios (épicas 4 y 6)
+
+- `/mapa`: mapa orientativo con Leaflet y OpenStreetMap (no es un GPS). Los lugares se filtran por tipo e institución; un lugar sin coordenadas se muestra igual, con su dirección.
+- `/rutas`: rutas orientativas hacia cada institución, con pasos, fuente y fecha. Un tiempo solo se presenta como dato si la fuente es oficial.
+- `/espacios`: espacios sugeridos según institución, procedencia y llegada. No hay chat privado ni membresía.
+- Los lugares y espacios iniciales están en `backend/seeders/catalog.js`. No se cargan coordenadas ni rutas sin verificar: la lista de rutas arranca vacía.
+- Administración agrega y edita lugares desde **Moderación → Lugares del mapa** (`/moderacion/lugares`): nombre, categoría, institución, dirección, nota, fuente y ubicación. La ubicación se elige tocando el mapa y arrastrando el pin, pegando coordenadas copiadas de Google Maps o buscando la dirección en OpenStreetMap. Cada cambio queda en el historial.
+- También se puede ubicar un lugar desde la terminal, en la carpeta `backend` (las coordenadas tienen que estar comprobadas, por ejemplo en openstreetmap.org):
+
+```bash
+npm run place:location                              # lista los lugares
+npm run place:location -- unaf-campus -26.19 -58.20 # latitud y longitud
+npm run place:location -- unaf-campus quitar        # vuelve a dejarlo sin ubicación
+```
+
+Después de bajar estos cambios hay que correr `npm install` en `frontend` (se agrega Leaflet), `npm run db:migrate` (migraciones 009, 010 y 011) y `npm run db:seed`.
+
 ## Recorrido disponible
 
 - Bienvenida, registro con institución persistida y login.

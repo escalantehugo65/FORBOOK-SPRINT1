@@ -17,8 +17,10 @@ export const actionNames = {
   category_update: 'Categoría editada',
   category_delete: 'Categoría borrada',
   source_update: 'Fuente actualizada',
+  place_create: 'Lugar agregado',
+  place_update: 'Lugar editado',
 };
-export const targetNames = { question: 'Pregunta', answer: 'Respuesta', content: 'Ficha', category: 'Categoría' };
+export const targetNames = { question: 'Pregunta', answer: 'Respuesta', content: 'Ficha', category: 'Categoría', place: 'Lugar' };
 export const canModerate = user => ['moderator', 'admin'].includes(user?.role);
 export function formatDateTime(value) {
   if (!value) return '';

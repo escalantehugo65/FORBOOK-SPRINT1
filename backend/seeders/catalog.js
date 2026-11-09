@@ -26,3 +26,53 @@ export const contents = [
     body: 'El portal municipal de Formosa ofrece una sección de trámites. Podés consultarlo como punto inicial para identificar el área municipal relacionada con una gestión.\n\nAntes de trasladarte, confirmá en la fuente los requisitos, el lugar y el horario vigentes. Esta ficha no afirma horarios de atención ni requisitos específicos.',
     sourceLabel: 'Municipalidad de Formosa — portal web', sourceUrl: 'https://www.formosatuciudad.gob.ar/index.php' },
 ];
+
+// Épica 4: lugares del mapa. La dirección sale del Estatuto de la UNaF publicado en InfoLEG
+// (consultado el 08/11/2026). Las coordenadas quedan vacías a propósito: no se cargan
+// ubicaciones sin verificar. Se agregan con npm run place:location.
+// Para sumar un lugar real: copiá un objeto, cambiá el slug y completá la fuente.
+// kind: institution | health | security | procedures | transport | services
+const unafStatute = { sourceLabel: 'Estatuto de la Universidad Nacional de Formosa — InfoLEG', sourceUrl: 'https://servicios.infoleg.gob.ar/infolegInternet/anexos/410000-414999/412386/res566.pdf' };
+export const places = [
+  { slug: 'unaf-campus', name: 'Campus de la UNaF', kind: 'institution', institutionName: institutions[0].name, addressLabel: 'Av. Dr. Luis Gutnisky 3200, ciudad de Formosa', ...unafStatute },
+  { slug: 'unaf-rectorado', name: 'Rectorado de la UNaF', kind: 'institution', institutionName: institutions[0].name, addressLabel: 'Don Bosco 1082, ciudad de Formosa', ...unafStatute },
+];
+
+// Rutas orientativas (FF-22). Vacío hasta tener referencias comprobadas: nada de recorridos inventados.
+// Ejemplo de formato (los pasos van separados por \n):
+// { slug: 'centro-campus-unaf', institutionName: institutions[0].name, destinationSlug: 'unaf-campus',
+//   title: 'Del centro al Campus de la UNaF', originLabel: 'Plaza San Martín', mode: 'bus',
+//   steps: 'Primer paso con una referencia\nSegundo paso', durationLabel: null,
+//   sourceType: 'community', sourceLabel: 'Quién lo comprobó y cuándo', sourceUrl: null }
+export const travelRoutes = [];
+
+// Épica 6: espacios de integración. Son secciones públicas que Forbook ya tiene;
+// no hay membresía ni chat privado. linkPath con {institutionId} se completa al cargar.
+export const groups = [
+  { slug: 'preguntas-comunidad', name: 'Preguntas de la comunidad', kind: 'general',
+    audience: 'Cualquier estudiante con cuenta en Forbook.',
+    summary: 'Preguntá en público lo que no sabés de Formosa y ayudá con lo que ya conocés.',
+    purpose: 'Es el espacio abierto de Forbook para resolver dudas de la vida estudiantil: trámites, movilidad, dónde comprar o cómo funciona algo en la ciudad.\n\nTodo lo que se publica es público y queda a la vista de otros estudiantes. Las respuestas útiles se marcan para que las encuentre quien llegue después.',
+    linkPath: '/preguntas', linkLabel: 'Ir a Preguntas' },
+  ...institutions.map((institution, index) => ({
+    slug: `estudiantes-${['unaf', 'ipf'][index]}`, name: `Estudiantes ${['de la UNaF', 'del IPF'][index]}`, kind: 'institution', institutionName: institution.name,
+    audience: `Estudiantes de ${institution.name}.`,
+    summary: `Preguntas y respuestas públicas sobre la vida en ${['la UNaF', 'el IPF'][index]}.`,
+    purpose: `Reúne las preguntas que hacen estudiantes de ${institution.name}, para que encuentres a quienes cursan en el mismo lugar que vos.\n\nSirve como primera puerta de contacto: las conversaciones son públicas y respetan las normas de Forbook.`,
+    linkPath: '/preguntas?institutionId={institutionId}', linkLabel: 'Ver sus preguntas' })),
+  { slug: 'antes-de-llegar', name: 'Antes de llegar', kind: 'arrival', arrivalScope: 'not_arrived',
+    audience: 'Quienes todavía no se mudaron a Formosa.',
+    summary: 'Lo que conviene leer y preguntar antes del viaje.',
+    purpose: 'Pensado para la etapa de preparación: conocer la ciudad, las instituciones y las costumbres antes de mudarte.\n\nTe lleva a las fichas de Conozcamos Formosa, con la fuente y la fecha de revisión de cada dato.',
+    linkPath: '/conozcamos', linkLabel: 'Ir a Conozcamos Formosa' },
+  { slug: 'primeros-dias', name: 'Primeros días en la ciudad', kind: 'arrival', arrivalScope: 'arrived',
+    audience: 'Quienes ya llegaron a Formosa.',
+    summary: 'Ubicá lugares útiles y resolvé lo cotidiano.',
+    purpose: 'Para los primeros días después de la mudanza: saber dónde queda cada cosa y cómo llegar a tu institución.\n\nTe lleva al mapa de lugares y a las rutas orientativas.',
+    linkPath: '/mapa', linkLabel: 'Ir al mapa' },
+  { slug: 'de-afuera', name: 'Llegás de otra provincia o país', kind: 'origin', originScope: 'outside',
+    audience: 'Estudiantes que no son de la provincia de Formosa.',
+    summary: 'Para conocer la vida cotidiana y las costumbres de la ciudad.',
+    purpose: 'Si venís de afuera, hay cosas que para quien es de acá son obvias y para vos no. Este espacio junta la información de cultura y vida cotidiana de Formosa.\n\nSi algo no está, preguntalo en público: seguro le sirve a alguien más.',
+    linkPath: '/conozcamos', linkLabel: 'Ir a Conozcamos Formosa' },
+];

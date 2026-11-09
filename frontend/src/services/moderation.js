@@ -13,5 +13,8 @@ export const moderationService = {
   updateCategory: (id, body) => request(`/admin/categories/${encodeURIComponent(id)}`, { method: 'PUT', body }),
   deleteCategory: id => request(`/admin/categories/${encodeURIComponent(id)}`, { method: 'DELETE', body: {} }),
   contents: signal => request('/admin/contents', { signal }),
+  places: signal => request('/admin/places', { signal }),
+  createPlace: body => request('/admin/places', { method: 'POST', body }),
+  updatePlace: (id, body) => request(`/admin/places/${encodeURIComponent(id)}`, { method: 'PUT', body }),
   updateSource: (id, body) => request(`/admin/contents/${encodeURIComponent(id)}/source`, { method: 'PUT', body }),
 };

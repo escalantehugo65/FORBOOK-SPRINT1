@@ -7,6 +7,8 @@ import { questionController } from '../controllers/questionController.js';
 import { reportController } from '../controllers/reportController.js';
 import { moderationController } from '../controllers/moderationController.js';
 import { adminController } from '../controllers/adminController.js';
+import { placeController } from '../controllers/placeController.js';
+import { groupController } from '../controllers/groupController.js';
 
 export function apiRoutes(models, cookieOptions) {
   const router = Router();
@@ -18,6 +20,8 @@ export function apiRoutes(models, cookieOptions) {
   const reports = reportController(models);
   const moderation = moderationController(models);
   const admin = adminController(models);
+  const places = placeController(models);
+  const groups = groupController(models);
   const reportLimit = authRateLimit();
   // Épica 7: moderadores y administradores atienden reportes; solo administradores ven el historial y el catálogo.
   const staffOnly = requireRole(models.User, ['moderator', 'admin']);
@@ -33,6 +37,13 @@ export function apiRoutes(models, cookieOptions) {
   router.get('/categories', requireAuth, asyncRoute(content.categories));
   router.get('/contents', requireAuth, asyncRoute(content.list));
   router.get('/contents/:id', requireAuth, asyncRoute(content.detail));
+  // Épica 4: lugares y rutas. Épica 6: espacios de integración.
+  router.get('/places', requireAuth, asyncRoute(places.places));
+  router.get('/places/:id', requireAuth, asyncRoute(places.place));
+  router.get('/routes', requireAuth, asyncRoute(places.routes));
+  router.get('/routes/:id', requireAuth, asyncRoute(places.route));
+  router.get('/groups', requireAuth, asyncRoute(groups.suggestions));
+  router.get('/groups/:id', requireAuth, asyncRoute(groups.detail));
   router.get('/questions', requireAuth, asyncRoute(questions.list));
   router.post('/questions', requireAuth, questionLimit, asyncRoute(questions.create));
   router.get('/questions/:id', requireAuth, asyncRoute(questions.detail));
@@ -49,5 +60,8 @@ export function apiRoutes(models, cookieOptions) {
   router.delete('/admin/categories/:id', adminOnly, asyncRoute(admin.deleteCategory));
   router.get('/admin/contents', adminOnly, asyncRoute(admin.contents));
   router.put('/admin/contents/:id/source', adminOnly, asyncRoute(admin.updateSource));
+  router.get('/admin/places', adminOnly, asyncRoute(admin.places));
+  router.post('/admin/places', adminOnly, asyncRoute(admin.createPlace));
+  router.put('/admin/places/:id', adminOnly, asyncRoute(admin.updatePlace));
   return router;
 }

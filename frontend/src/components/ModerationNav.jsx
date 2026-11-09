@@ -9,5 +9,6 @@ export default function ModerationNav() {
     <NavLink to="/moderacion" end>Reportes</NavLink>
     <NavLink to="/moderacion/historial">Historial</NavLink>
     <NavLink to="/moderacion/catalogo">Categorías y fuentes</NavLink>
+    <NavLink to="/moderacion/lugares">Lugares del mapa</NavLink>
   </nav>;
 }
