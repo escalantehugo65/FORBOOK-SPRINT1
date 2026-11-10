@@ -1,2 +1,23 @@
 <!doctype html>
-<html lang="es-AR"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta name="theme-color" content="#173d37"/><meta name="description" content="Forbook: una guía para estudiantes que llegan a Formosa."/><title>Forbook · Tu llegada a Formosa</title></head><body><div id="root"></div><script type="module" src="/src/main.jsx"></script></body></html>
+<html lang="es-AR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="theme-color" content="#2447d6"/>
+  <meta name="description" content="Forbook: una guía para estudiantes que llegan a Formosa."/>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg"/>
+  <title>Forbook · Tu llegada a Formosa</title>
+  <script>
+    // Aplica el tema guardado antes de pintar la página, para que no parpadee.
+    try {
+      var theme = localStorage.getItem('forbook.welcome.theme');
+      if (theme !== 'light' && theme !== 'dark') theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      document.documentElement.dataset.theme = theme;
+    } catch (error) { /* El tema es opcional. */ }
+  </script>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="module" src="/src/main.jsx"></script>
+</body>
+</html>

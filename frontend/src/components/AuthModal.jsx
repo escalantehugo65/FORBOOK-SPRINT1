@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 import AuthPage from '../pages/AuthPage';
+import { CloseIcon } from './Icons';
 
-export default function AuthModal({ mode, onClose, onModeChange }) {
+// Ventana superpuesta con <dialog>: mantiene el foco adentro y lo devuelve al botón que la abrió.
+export default function AuthModal({ mode, returnTo, onClose, onModeChange }) {
   const dialog = useRef(null);
   const [notice, setNotice] = useState('');
   const [busy, setBusy] = useState(false);
@@ -25,11 +27,31 @@ export default function AuthModal({ mode, onClose, onModeChange }) {
     if (busy) return;
     if (dirty) setConfirmClose(true); else onClose();
   }
-  return <dialog ref={dialog} className="access-dialog" aria-labelledby="access-title"
-    onCancel={event => { event.preventDefault(); requestClose(); }}>
-    <div className="access-topline"><span className="access-brand">forbook.</span><button type="button" className="access-close" onClick={requestClose} disabled={busy} aria-label="Cerrar ventana">×</button></div>
-    {confirmClose && <section className="access-confirm"><h2 id="access-title" tabIndex="-1">¿Cerrar el formulario?</h2><p>Lo que escribiste se borrará. Podés seguir completándolo o cerrar la ventana.</p><button className="welcome-cta" onClick={() => setConfirmClose(false)}>Seguir completando</button><button className="access-text-button" onClick={onClose}>Cerrar y descartar</button></section>}
-    <div hidden={confirmClose}><AuthPage key={mode} registration={mode === 'register'} titleId={confirmClose ? 'access-form-title' : 'access-title'} initialNotice={notice} onModeChange={(next, message = '') => { setNotice(message); onModeChange(next); }} onBusyChange={setBusy} onDirtyChange={setDirty}/></div>
+  // Los botones de arriba se desactivan mientras se envía; el formulario puede pedir el cambio con un aviso.
+  function switchMode(next, message = '') {
+    if (next === mode) return;
+    setNotice(message);
+    onModeChange(next);
+  }
+  return <dialog ref={dialog} className="access-dialog" aria-labelledby="access-title" onCancel={event => { event.preventDefault(); requestClose(); }}>
+    <div className="access-inner">
+      <div className="access-top">
+        <div className="segmented" role="group" aria-label="Elegí una opción">
+          <button type="button" aria-pressed={mode === 'login'} disabled={busy || confirmClose} onClick={() => switchMode('login')}>Ingresar</button>
+          <button type="button" aria-pressed={mode === 'register'} disabled={busy || confirmClose} onClick={() => switchMode('register')}>Crear cuenta</button>
+        </div>
+        <button type="button" className="icon-button access-close" onClick={requestClose} disabled={busy} aria-label="Cerrar ventana"><CloseIcon/></button>
+      </div>
+      {confirmClose && <section className="access-confirm">
+        <h2 id="access-title" tabIndex="-1">¿Cerrar el formulario?</h2>
+        <p>Lo que escribiste se va a borrar. Podés seguir completándolo o cerrar la ventana.</p>
+        <button className="btn btn-primary" type="button" onClick={() => setConfirmClose(false)}>Seguir completando</button>
+        <button className="link-button" type="button" onClick={onClose}>Cerrar y descartar</button>
+      </section>}
+      <div hidden={confirmClose}>
+        <AuthPage key={mode} registration={mode === 'register'} returnTo={returnTo} titleId={confirmClose ? 'access-form-title' : 'access-title'} initialNotice={notice}
+          onModeChange={switchMode} onBusyChange={setBusy} onDirtyChange={setDirty}/>
+      </div>
+    </div>
   </dialog>;
 }
-

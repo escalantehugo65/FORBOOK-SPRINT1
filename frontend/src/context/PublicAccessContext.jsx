@@ -1,3 +1,5 @@
 import { createContext, useContext } from 'react';
-export const PublicAccessContext = createContext(null);
+
+// Permite que cualquier página abra la ventana de ingreso o registro: openAccess('login' | 'register').
+export const PublicAccessContext = createContext({ openAccess: () => {} });
 export function usePublicAccess() { return useContext(PublicAccessContext); }

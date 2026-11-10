@@ -1,0 +1,621 @@
+{
+  "reviewedAt": "2026-11-06",
+  "scope": "Provincia de Formosa, sedes y anexos. No incluye universidades adicionales. Directorio público y oferta 2026; no es garantía de exhaustividad ni de inscripciones abiertas.",
+  "sources": [
+    "https://des-for.infd.edu.ar/sitio/datos-de-institutos/",
+    "https://des-for.infd.edu.ar/sitio/oferta-academica-2026/",
+    "https://des-for.infd.edu.ar/sitio/wp-content/uploads/2025/11/MAPA-DE-OFERTA-N%C2%B0-4160-25.pdf"
+  ],
+  "institutions": [
+    {
+      "cue": "340051000",
+      "name": "Instituto Superior de Arte “Oscar Alberto Albertazzi” — Formosa",
+      "department": "Formosa",
+      "management": "Estatal",
+      "sourceUrl": "https://des-for.infd.edu.ar/sitio/datos-de-institutos/",
+      "reviewedAt": "2026-11-06",
+      "careers": [
+        "Tecnicatura Superior en Diseño de Comunicación Visual",
+        "Tecnicatura Superior de Músico Social"
+      ],
+      "offerPage": 14,
+      "careerSourceUrl": "https://des-for.infd.edu.ar/sitio/wp-content/uploads/2025/11/MAPA-DE-OFERTA-N%C2%B0-4160-25.pdf",
+      "careerStatus": "Catálogo parcial verificado en oferta 2026"
+    },
+    {
+      "cue": "340059000",
+      "name": "Instituto Superior de Formación Docente en Educación Física — Formosa",
+      "department": "Formosa",
+      "management": "Estatal",
+      "sourceUrl": "https://des-for.infd.edu.ar/sitio/datos-de-institutos/",
+      "reviewedAt": "2026-11-06",
+      "careers": [],
+      "careerStatus": "Carreras pendientes de verificación; no se infieren del nombre de la institución"
+    },
+    {
+      "cue": "340043700",
+      "name": "Instituto Superior de Formación Docente Continua y Técnica para el Nivel Inicial — Formosa",
+      "department": "Formosa",
+      "management": "Estatal",
+      "sourceUrl": "https://des-for.infd.edu.ar/sitio/datos-de-institutos/",
+      "reviewedAt": "2026-11-06",
+      "careers": [
+        "Tecnicatura Superior en Gestión Integral, Negocios y Empresas"
+      ],
+      "offerPage": 13,
+      "careerSourceUrl": "https://des-for.infd.edu.ar/sitio/wp-content/uploads/2025/11/MAPA-DE-OFERTA-N%C2%B0-4160-25.pdf",
+      "careerStatus": "Catálogo parcial verificado en oferta 2026"
+    },
+    {
+      "cue": "340054700",
+      "name": "Instituto Superior de Formación Docente Continua y Técnica “Félix Atilio Cabrera” — Formosa",
+      "department": "Formosa",
+      "management": "Estatal",
+      "sourceUrl": "https://des-for.infd.edu.ar/sitio/datos-de-institutos/",
+      "reviewedAt": "2026-11-06",
+      "careers": [
+        "Tecnicatura Superior en Desarrollador de Software"
+      ],
+      "offerPage": 13,
+      "careerSourceUrl": "https://des-for.infd.edu.ar/sitio/wp-content/uploads/2025/11/MAPA-DE-OFERTA-N%C2%B0-4160-25.pdf",
+      "careerStatus": "Catálogo parcial verificado en oferta 2026"
+    },
+    {
+      "cue": "340058700",
+      "name": "Instituto Superior del Profesorado de Arte de Formosa (ISPAF)",
+      "department": "Formosa",
+      "management": "Estatal",
+      "sourceUrl": "https://des-for.infd.edu.ar/sitio/datos-de-institutos/",
+      "reviewedAt": "2026-11-06",
+      "careers": [
+        "Locución Integral"
+      ],
+      "offerPage": 14,
+      "careerSourceUrl": "https://des-for.infd.edu.ar/sitio/wp-content/uploads/2025/11/MAPA-DE-OFERTA-N%C2%B0-4160-25.pdf",
+      "careerStatus": "Catálogo parcial verificado en oferta 2026"
+    },
+    {
+      "cue": "340049900",
+      "name": "Escuela Normal Superior “República del Paraguay” — Formosa",
+      "department": "Formosa",
+      "management": "Estatal",
+      "sourceUrl": "https://des-for.infd.edu.ar/sitio/datos-de-institutos/",
+      "reviewedAt": "2026-11-06",
+      "careers": [],
+      "careerStatus": "Carreras pendientes de verificación; no se infieren del nombre de la institución"
+    },
+    {
+      "cue": "340111600",
+      "name": "Instituto Superior de Formación Policial — Formosa",
+      "department": "Formosa",
+      "management": "Estatal",
+      "sourceUrl": "https://des-for.infd.edu.ar/sitio/datos-de-institutos/",
+      "reviewedAt": "2026-11-06",
+      "careers": [
+        "Tecnicatura Superior en Seguridad Pública",
+        "Tecnicatura Superior en Seguridad Penitenciaria"
+      ],
+      "offerPage": 15,
+      "careerSourceUrl": "https://des-for.infd.edu.ar/sitio/wp-content/uploads/2025/11/MAPA-DE-OFERTA-N%C2%B0-4160-25.pdf",
+      "careerStatus": "Catálogo parcial verificado en oferta 2026"
+    },
+    {
+      "cue": "340022000",
+      "name": "ISFDyT “Maestro Laureano Gómez” — San Martín II",
+      "department": "Patiño",
+      "management": "Estatal",
+      "sourceUrl": "https://des-for.infd.edu.ar/sitio/datos-de-institutos/",
+      "reviewedAt": "2026-11-06",
+      "careers": [],
+      "careerStatus": "Carreras pendientes de verificación; no se infieren del nombre de la institución"
+    },
+    {
+      "cue": "340041000",
+      "name": "Instituto Superior de Formación Docente Continua y Técnica — Ibarreta",
+      "department": "Patiño",
+      "management": "Estatal",
+      "sourceUrl": "https://des-for.infd.edu.ar/sitio/datos-de-institutos/",
+      "reviewedAt": "2026-11-06",
+      "careers": [
+        "Tecnicatura Superior en Producción Forestal"
+      ],
+      "offerPage": 7,
+      "careerSourceUrl": "https://des-for.infd.edu.ar/sitio/wp-content/uploads/2025/11/MAPA-DE-OFERTA-N%C2%B0-4160-25.pdf",
+      "careerStatus": "Catálogo parcial verificado en oferta 2026"
+    },
+    {
+      "cue": "340017100",
+      "name": "ISFDyT “Maestra Elba González” — Villa General Güemes",
+      "department": "Patiño",
+      "management": "Estatal",
+      "sourceUrl": "https://des-for.infd.edu.ar/sitio/datos-de-institutos/",
+      "reviewedAt": "2026-11-06",
+      "careers": [
+        "Tecnicatura Superior en Producción Forestal"
+      ],
+      "offerPage": 6,
+      "careerSourceUrl": "https://des-for.infd.edu.ar/sitio/wp-content/uploads/2025/11/MAPA-DE-OFERTA-N%C2%B0-4160-25.pdf",
+      "careerStatus": "Catálogo parcial verificado en oferta 2026"
+    },
+    {
+      "cue": "340062200",
+      "name": "ISFDyT “Máxima B. de Navarrete” — Estanislao del Campo",
+      "department": "Patiño",
+      "management": "Estatal",
+      "sourceUrl": "https://des-for.infd.edu.ar/sitio/datos-de-institutos/",
+      "reviewedAt": "2026-11-06",
+      "careers": [],
+      "careerStatus": "Carreras pendientes de verificación; no se infieren del nombre de la institución"
+    },
+    {
+      "cue": "340077600",
+      "name": "Instituto Superior de Formación Docente Continua y Técnica — Comandante Fontana",
+      "department": "Patiño",
+      "management": "Estatal",
+      "sourceUrl": "https://des-for.infd.edu.ar/sitio/datos-de-institutos/",
+      "reviewedAt": "2026-11-06",
+      "careers": [],
+      "careerStatus": "Carreras pendientes de verificación; no se infieren del nombre de la institución"
+    },
+    {
+      "cue": "340077601",
+      "name": "ISFDyT Comandante Fontana — Anexo Palo Santo",
+      "department": "Piranè",
+      "management": "Estatal",
+      "sourceUrl": "https://des-for.infd.edu.ar/sitio/datos-de-institutos/",
+      "reviewedAt": "2026-11-06",
+      "careers": [
+        "Tecnicatura Superior en Producción Forestal"
+      ],
+      "offerPage": 9,
+      "careerSourceUrl": "https://des-for.infd.edu.ar/sitio/wp-content/uploads/2025/11/MAPA-DE-OFERTA-N%C2%B0-4160-25.pdf",
+      "careerStatus": "Catálogo parcial verificado en oferta 2026"
+    },
+    {
+      "cue": "340016700",
+      "name": "Instituto Superior de Formación Docente Continua y Técnica — General Manuel Belgrano",
+      "department": "Patiño",
+      "management": "Estatal",
+      "sourceUrl": "https://des-for.infd.edu.ar/sitio/datos-de-institutos/",
+      "reviewedAt": "2026-11-06",
+      "careers": [],
+      "careerStatus": "Carreras pendientes de verificación; no se infieren del nombre de la institución"
+    },
+    {
+      "cue": "340060800",
+      "name": "ISFDyT “Brigadier General Juan Facundo Quiroga” — Las Lomitas",
+      "department": "Patiño",
+      "management": "Estatal",
+      "sourceUrl": "https://des-for.infd.edu.ar/sitio/datos-de-institutos/",
+      "reviewedAt": "2026-11-06",
+      "careers": [],
+      "careerStatus": "Carreras pendientes de verificación; no se infieren del nombre de la institución"
+    },
+    {
+      "cue": "340060801",
+      "name": "ISFDyT de Las Lomitas — Anexo Laguna Yema",
+      "department": "Bermejo",
+      "management": "Estatal",
+      "sourceUrl": "https://des-for.infd.edu.ar/sitio/datos-de-institutos/",
+      "reviewedAt": "2026-11-06",
+      "careers": [],
+      "careerStatus": "Carreras pendientes de verificación; no se infieren del nombre de la institución"
+    },
+    {
+      "cue": "340057900",
+      "name": "Instituto Superior de Formación Docente Continua y Técnica — Pozo del Tigre",
+      "department": "Patiño",
+      "management": "Estatal",
+      "sourceUrl": "https://des-for.infd.edu.ar/sitio/datos-de-institutos/",
+      "reviewedAt": "2026-11-06",
+      "careers": [],
+      "careerStatus": "Carreras pendientes de verificación; no se infieren del nombre de la institución"
+    },
+    {
+      "cue": "340019300",
+      "name": "Instituto Superior de Formación Docente Continua y Técnica — Laguna Naineck",
+      "department": "Pilcomayo",
+      "management": "Estatal",
+      "sourceUrl": "https://des-for.infd.edu.ar/sitio/datos-de-institutos/",
+      "reviewedAt": "2026-11-06",
+      "careers": [
+        "Tecnicatura Superior en Tecnología de los Alimentos"
+      ],
+      "offerPage": 9,
+      "careerSourceUrl": "https://des-for.infd.edu.ar/sitio/wp-content/uploads/2025/11/MAPA-DE-OFERTA-N%C2%B0-4160-25.pdf",
+      "careerStatus": "Catálogo parcial verificado en oferta 2026"
+    },
+    {
+      "cue": "340031400",
+      "name": "ISFDyT “Don Cristóbal Aguirre” — Clorinda",
+      "department": "Pilcomayo",
+      "management": "Estatal",
+      "sourceUrl": "https://des-for.infd.edu.ar/sitio/datos-de-institutos/",
+      "reviewedAt": "2026-11-06",
+      "careers": [
+        "Tecnicatura Superior en Comercio Internacional"
+      ],
+      "offerPage": 11,
+      "careerSourceUrl": "https://des-for.infd.edu.ar/sitio/wp-content/uploads/2025/11/MAPA-DE-OFERTA-N%C2%B0-4160-25.pdf",
+      "careerStatus": "Catálogo parcial verificado en oferta 2026"
+    },
+    {
+      "cue": "340015400",
+      "name": "ISFDyT de Laguna Blanca — Anexo Riacho He Hé",
+      "department": "Pilcomayo",
+      "management": "Estatal",
+      "sourceUrl": "https://des-for.infd.edu.ar/sitio/datos-de-institutos/",
+      "reviewedAt": "2026-11-06",
+      "careers": [
+        "Tecnicatura Superior en Gestión de la Producción Agropecuaria"
+      ],
+      "offerPage": 8,
+      "careerSourceUrl": "https://des-for.infd.edu.ar/sitio/wp-content/uploads/2025/11/MAPA-DE-OFERTA-N%C2%B0-4160-25.pdf",
+      "careerStatus": "Catálogo parcial verificado en oferta 2026"
+    },
+    {
+      "cue": "340002600",
+      "name": "ISFDyT “Presidente Juan Domingo Perón” — Laguna Blanca",
+      "department": "Pilcomayo",
+      "management": "Estatal",
+      "sourceUrl": "https://des-for.infd.edu.ar/sitio/datos-de-institutos/",
+      "reviewedAt": "2026-11-06",
+      "careers": [
+        "Tecnicatura Superior en Periodismo Multimedial"
+      ],
+      "offerPage": 9,
+      "careerSourceUrl": "https://des-for.infd.edu.ar/sitio/wp-content/uploads/2025/11/MAPA-DE-OFERTA-N%C2%B0-4160-25.pdf",
+      "careerStatus": "Catálogo parcial verificado en oferta 2026"
+    },
+    {
+      "cue": "340017300",
+      "name": "Instituto Superior de Formación Docente Continua y Técnica — Misión Laishí",
+      "department": "Laishì",
+      "management": "Estatal",
+      "sourceUrl": "https://des-for.infd.edu.ar/sitio/datos-de-institutos/",
+      "reviewedAt": "2026-11-06",
+      "careers": [],
+      "careerStatus": "Carreras pendientes de verificación; no se infieren del nombre de la institución"
+    },
+    {
+      "cue": "340017301",
+      "name": "ISFDyT de Misión Laishí — Extensión Áulica Villa Escolar",
+      "department": "Laishì",
+      "management": "Estatal",
+      "sourceUrl": "https://des-for.infd.edu.ar/sitio/datos-de-institutos/",
+      "reviewedAt": "2026-11-06",
+      "careers": [],
+      "careerStatus": "Carreras pendientes de verificación; no se infieren del nombre de la institución"
+    },
+    {
+      "cue": "340033500",
+      "name": "Instituto Superior de Formación Docente Continua y Técnica — Ingeniero Juárez",
+      "department": "Matacos",
+      "management": "Estatal",
+      "sourceUrl": "https://des-for.infd.edu.ar/sitio/datos-de-institutos/",
+      "reviewedAt": "2026-11-06",
+      "careers": [],
+      "careerStatus": "Carreras pendientes de verificación; no se infieren del nombre de la institución"
+    },
+    {
+      "cue": "340038600",
+      "name": "Instituto Superior de Formación Docente Continua y Técnica — El Espinillo",
+      "department": "Pilaga",
+      "management": "Estatal",
+      "sourceUrl": "https://des-for.infd.edu.ar/sitio/datos-de-institutos/",
+      "reviewedAt": "2026-11-06",
+      "careers": [],
+      "careerStatus": "Carreras pendientes de verificación; no se infieren del nombre de la institución"
+    },
+    {
+      "cue": "340067100",
+      "name": "ISFDyT “Víctor Manuel Almenara” — Mayor Villafañe",
+      "department": "Piranè",
+      "management": "Estatal",
+      "sourceUrl": "https://des-for.infd.edu.ar/sitio/datos-de-institutos/",
+      "reviewedAt": "2026-11-06",
+      "careers": [],
+      "careerStatus": "Carreras pendientes de verificación; no se infieren del nombre de la institución"
+    },
+    {
+      "cue": "340040400",
+      "name": "ISFDyT “Nación Latinoamericana” — Villa Dos Trece",
+      "department": "Piranè",
+      "management": "Estatal",
+      "sourceUrl": "https://des-for.infd.edu.ar/sitio/datos-de-institutos/",
+      "reviewedAt": "2026-11-06",
+      "careers": [],
+      "careerStatus": "Carreras pendientes de verificación; no se infieren del nombre de la institución"
+    },
+    {
+      "cue": "340060600",
+      "name": "Instituto Superior de Formación Docente Continua y Técnica — Pirané",
+      "department": "Piranè",
+      "management": "Estatal",
+      "sourceUrl": "https://des-for.infd.edu.ar/sitio/datos-de-institutos/",
+      "reviewedAt": "2026-11-06",
+      "careers": [
+        "Tecnicatura Superior en Producción Forestal"
+      ],
+      "offerPage": 9,
+      "careerSourceUrl": "https://des-for.infd.edu.ar/sitio/wp-content/uploads/2025/11/MAPA-DE-OFERTA-N%C2%B0-4160-25.pdf",
+      "careerStatus": "Catálogo parcial verificado en oferta 2026"
+    },
+    {
+      "cue": "340039700",
+      "name": "ISFDyT “República Federal de Alemania” — El Colorado",
+      "department": "Piranè",
+      "management": "Estatal",
+      "sourceUrl": "https://des-for.infd.edu.ar/sitio/datos-de-institutos/",
+      "reviewedAt": "2026-11-06",
+      "careers": [
+        "Tecnicatura Superior en Soporte de Infraestructura de Tecnología de la Información",
+        "Tecnicatura Superior en Tecnología de los Alimentos"
+      ],
+      "offerPage": 10,
+      "careerSourceUrl": "https://des-for.infd.edu.ar/sitio/wp-content/uploads/2025/11/MAPA-DE-OFERTA-N%C2%B0-4160-25.pdf",
+      "careerStatus": "Catálogo parcial verificado en oferta 2026"
+    },
+    {
+      "cue": "340095400",
+      "name": "Instituto Superior de Formación Docente y Técnica Intercultural Bilingüe — El Potrillo",
+      "department": "Ramón Lista",
+      "management": "Estatal",
+      "sourceUrl": "https://des-for.infd.edu.ar/sitio/datos-de-institutos/",
+      "reviewedAt": "2026-11-06",
+      "careers": [],
+      "careerStatus": "Carreras pendientes de verificación; no se infieren del nombre de la institución"
+    },
+    {
+      "cue": "340058900",
+      "name": "Instituto Superior Privado “Robustiano Macedo Martínez” — Formosa",
+      "department": "Formosa",
+      "management": "Privada",
+      "sourceUrl": "https://des-for.infd.edu.ar/sitio/datos-de-institutos/",
+      "reviewedAt": "2026-11-06",
+      "careers": [
+        "Tecnicatura Superior en Desarrollador de Software",
+        "Tecnicatura Superior en Ciencia de Datos e Inteligencia Artificial"
+      ],
+      "offerPage": 20,
+      "careerSourceUrl": "https://des-for.infd.edu.ar/sitio/wp-content/uploads/2025/11/MAPA-DE-OFERTA-N%C2%B0-4160-25.pdf",
+      "careerStatus": "Catálogo parcial verificado en oferta 2026"
+    },
+    {
+      "cue": "340051100",
+      "name": "Instituto Privado “Santa Isabel” — Formosa",
+      "department": "Formosa",
+      "management": "Privada",
+      "sourceUrl": "https://des-for.infd.edu.ar/sitio/datos-de-institutos/",
+      "reviewedAt": "2026-11-06",
+      "careers": [],
+      "careerStatus": "Carreras pendientes de verificación; no se infieren del nombre de la institución"
+    },
+    {
+      "cue": "340070500",
+      "name": "ISFDyT “Santa Catalina Labouré” — Clorinda",
+      "department": "Pilcomayo",
+      "management": "Privada",
+      "sourceUrl": "https://des-for.infd.edu.ar/sitio/datos-de-institutos/",
+      "reviewedAt": "2026-11-06",
+      "careers": [],
+      "careerStatus": "Carreras pendientes de verificación; no se infieren del nombre de la institución"
+    },
+    {
+      "cue": "340070300",
+      "name": "Instituto Superior Técnico “San José” Ñ 15 — Clorinda",
+      "department": "Pilcomayo",
+      "management": "Privada",
+      "sourceUrl": "https://des-for.infd.edu.ar/sitio/datos-de-institutos/",
+      "reviewedAt": "2026-11-06",
+      "careers": [],
+      "careerStatus": "Carreras pendientes de verificación; no se infieren del nombre de la institución"
+    },
+    {
+      "cue": "340071400",
+      "name": "Instituto Superior “San José” Ñ 12 — Comandante Fontana",
+      "department": "Patiño",
+      "management": "Privada",
+      "sourceUrl": "https://des-for.infd.edu.ar/sitio/datos-de-institutos/",
+      "reviewedAt": "2026-11-06",
+      "careers": [],
+      "careerStatus": "Carreras pendientes de verificación; no se infieren del nombre de la institución"
+    },
+    {
+      "cue": "340117600",
+      "name": "Instituto de Educación Superior Intercultural Bilingüe — El Chorro",
+      "department": "Ramón Lista",
+      "management": "Estatal",
+      "sourceUrl": "https://des-for.infd.edu.ar/sitio/oferta-academica-2026/",
+      "reviewedAt": "2026-11-06",
+      "offerPage": 4,
+      "careers": [],
+      "careerStatus": "Carreras pendientes de verificación; no se infieren del nombre de la institución"
+    },
+    {
+      "cue": "340022001",
+      "name": "ISFDyT de San Martín II — Extensión Áulica Fortín Cabo Primero Lugones",
+      "department": "Patiño",
+      "management": "Estatal",
+      "sourceUrl": "https://des-for.infd.edu.ar/sitio/oferta-academica-2026/",
+      "reviewedAt": "2026-11-06",
+      "offerPage": 6,
+      "careers": [],
+      "careerStatus": "Carreras pendientes de verificación; no se infieren del nombre de la institución"
+    },
+    {
+      "cue": "340016701",
+      "name": "ISFDyT de General Manuel Belgrano — Anexo Misión Tacaaglé",
+      "department": "Pilagás",
+      "management": "Estatal",
+      "sourceUrl": "https://des-for.infd.edu.ar/sitio/oferta-academica-2026/",
+      "reviewedAt": "2026-11-06",
+      "offerPage": 8,
+      "careers": [],
+      "careerStatus": "Carreras pendientes de verificación; no se infieren del nombre de la institución"
+    },
+    {
+      "cue": "340017302",
+      "name": "ISFDyT de Misión Laishí — Extensión Áulica General Lucio V. Mansilla",
+      "department": "Laishí",
+      "management": "Estatal",
+      "sourceUrl": "https://des-for.infd.edu.ar/sitio/oferta-academica-2026/",
+      "reviewedAt": "2026-11-06",
+      "offerPage": 12,
+      "careers": [],
+      "careerStatus": "Carreras pendientes de verificación; no se infieren del nombre de la institución"
+    },
+    {
+      "cue": "340017303",
+      "name": "ISFDyT de Misión Laishí — Extensión Áulica Herradura",
+      "department": "Laishí",
+      "management": "Estatal",
+      "sourceUrl": "https://des-for.infd.edu.ar/sitio/oferta-academica-2026/",
+      "reviewedAt": "2026-11-06",
+      "offerPage": 12,
+      "careers": [],
+      "careerStatus": "Carreras pendientes de verificación; no se infieren del nombre de la institución"
+    },
+    {
+      "cue": "340091600",
+      "name": "Instituto Superior “Juan Manuel de Rosas” — Formosa",
+      "department": "Formosa",
+      "management": "Privada",
+      "sourceUrl": "https://des-for.infd.edu.ar/sitio/oferta-academica-2026/",
+      "reviewedAt": "2026-11-06",
+      "offerPage": 20,
+      "careers": [
+        "Tecnicatura Superior en Comercio Internacional"
+      ],
+      "careerSourceUrl": "https://des-for.infd.edu.ar/sitio/wp-content/uploads/2025/11/MAPA-DE-OFERTA-N%C2%B0-4160-25.pdf",
+      "careerStatus": "Catálogo parcial verificado en oferta 2026"
+    },
+    {
+      "cue": "340091000",
+      "name": "Instituto Superior “Luis Jorge Fontana” — Formosa",
+      "department": "Formosa",
+      "management": "Privada",
+      "sourceUrl": "https://des-for.infd.edu.ar/sitio/oferta-academica-2026/",
+      "reviewedAt": "2026-11-06",
+      "offerPage": 20,
+      "careers": [
+        "Tecnicatura Superior en Comercio Internacional",
+        "Tecnicatura Superior en Gestión Integral, Negocios y Empresas"
+      ],
+      "careerSourceUrl": "https://des-for.infd.edu.ar/sitio/wp-content/uploads/2025/11/MAPA-DE-OFERTA-N%C2%B0-4160-25.pdf",
+      "careerStatus": "Catálogo parcial verificado en oferta 2026"
+    },
+    {
+      "cue": "340115200",
+      "name": "Instituto Superior de Sanidad “Prof. Dr. Ramón Carrillo” — Formosa",
+      "department": "Formosa",
+      "management": "Privada",
+      "sourceUrl": "https://des-for.infd.edu.ar/sitio/oferta-academica-2026/",
+      "reviewedAt": "2026-11-06",
+      "offerPage": 21,
+      "careers": [
+        "Técnico Superior en Procesos y Servicios Farmacéuticos",
+        "Tecnicatura Superior en Administración y Facturación en Salud",
+        "Técnico Superior en Medicina Nuclear",
+        "Técnico Superior en Radiología",
+        "Enfermería",
+        "Tecnicatura Superior en Hemoterapia",
+        "Tecnicatura Superior en Instrumentación Quirúrgica"
+      ],
+      "careerSourceUrl": "https://des-for.infd.edu.ar/sitio/wp-content/uploads/2025/11/MAPA-DE-OFERTA-N%C2%B0-4160-25.pdf",
+      "careerStatus": "Catálogo parcial verificado en oferta 2026"
+    },
+    {
+      "cue": "340081100",
+      "name": "Instituto Superior Santa Rita — Formosa",
+      "department": "Formosa",
+      "management": "Privada",
+      "sourceUrl": "https://des-for.infd.edu.ar/sitio/oferta-academica-2026/",
+      "reviewedAt": "2026-11-06",
+      "offerPage": 21,
+      "careers": [
+        "Tecnicatura Superior en Instrumentación Quirúrgica",
+        "Enfermería",
+        "Tecnicatura Superior en Radiología"
+      ],
+      "careerSourceUrl": "https://des-for.infd.edu.ar/sitio/wp-content/uploads/2025/11/MAPA-DE-OFERTA-N%C2%B0-4160-25.pdf",
+      "careerStatus": "Catálogo parcial verificado en oferta 2026"
+    },
+    {
+      "cue": "340118400",
+      "name": "Instituto Superior “Domingo Faustino Sarmiento” — Formosa",
+      "department": "Formosa",
+      "management": "Privada",
+      "sourceUrl": "https://des-for.infd.edu.ar/sitio/oferta-academica-2026/",
+      "reviewedAt": "2026-11-06",
+      "offerPage": 21,
+      "careers": [
+        "Tecnicatura Superior en Periodismo Multimedial"
+      ],
+      "careerSourceUrl": "https://des-for.infd.edu.ar/sitio/wp-content/uploads/2025/11/MAPA-DE-OFERTA-N%C2%B0-4160-25.pdf",
+      "careerStatus": "Catálogo parcial verificado en oferta 2026"
+    },
+    {
+      "cue": "340095700",
+      "name": "Instituto Superior Formosa — Formosa",
+      "department": "Formosa",
+      "management": "Privada",
+      "sourceUrl": "https://des-for.infd.edu.ar/sitio/oferta-academica-2026/",
+      "reviewedAt": "2026-11-06",
+      "offerPage": 22,
+      "careers": [
+        "Tecnicatura Superior en Desarrollador de Software",
+        "Tecnicatura Superior en Gestión Integral, Negocios y Empresas",
+        "Tecnicatura Superior en Administración y Facturación en Salud",
+        "Tecnicatura Superior en Comercio Internacional"
+      ],
+      "careerSourceUrl": "https://des-for.infd.edu.ar/sitio/wp-content/uploads/2025/11/MAPA-DE-OFERTA-N%C2%B0-4160-25.pdf",
+      "careerStatus": "Catálogo parcial verificado en oferta 2026"
+    },
+    {
+      "cue": "340084500",
+      "name": "Instituto Superior UPCN — Formosa",
+      "department": "Formosa",
+      "management": "Privada",
+      "sourceUrl": "https://des-for.infd.edu.ar/sitio/oferta-academica-2026/",
+      "reviewedAt": "2026-11-06",
+      "offerPage": 22,
+      "careers": [
+        "Tecnicatura Superior en Desarrollador de Software",
+        "Tecnicatura Superior en Gestión Integral, Negocios y Empresas"
+      ],
+      "careerSourceUrl": "https://des-for.infd.edu.ar/sitio/wp-content/uploads/2025/11/MAPA-DE-OFERTA-N%C2%B0-4160-25.pdf",
+      "careerStatus": "Catálogo parcial verificado en oferta 2026"
+    },
+    {
+      "cue": "340118900",
+      "name": "Instituto Técnico Superior en Gastronomía “Manuel Natalicio López Freitas” (UTHGRA) — Formosa",
+      "department": "Formosa",
+      "management": "Privada",
+      "sourceUrl": "https://des-for.infd.edu.ar/sitio/oferta-academica-2026/",
+      "reviewedAt": "2026-11-06",
+      "offerPage": 22,
+      "careers": [
+        "Tecnicatura Superior en Gastronomía"
+      ],
+      "careerSourceUrl": "https://des-for.infd.edu.ar/sitio/wp-content/uploads/2025/11/MAPA-DE-OFERTA-N%C2%B0-4160-25.pdf",
+      "careerStatus": "Catálogo parcial verificado en oferta 2026"
+    },
+    {
+      "cue": "340111201",
+      "name": "Instituto Superior Privado Formosa — Clorinda",
+      "department": "Pilcomayo",
+      "management": "Privada",
+      "sourceUrl": "https://des-for.infd.edu.ar/sitio/oferta-academica-2026/",
+      "reviewedAt": "2026-11-06",
+      "offerPage": 23,
+      "careers": [
+        "Técnico Superior en Procesos y Servicios Farmacéuticos",
+        "Enfermería",
+        "Tecnicatura Superior en Hemoterapia"
+      ],
+      "careerSourceUrl": "https://des-for.infd.edu.ar/sitio/wp-content/uploads/2025/11/MAPA-DE-OFERTA-N%C2%B0-4160-25.pdf",
+      "careerStatus": "Catálogo parcial verificado en oferta 2026"
+    }
+  ]
+}

@@ -1,9 +1,11 @@
+import { registrationInstitutionNames } from '../helpers/registrationInstitutions.js';
 import bcrypt from 'bcryptjs';
+import { countriesByCode } from '../helpers/countries.js';
 import { HttpError, publicUser, sessionCall } from '../helpers/http.js';
 import { validateCredentials } from '../middlewares/validation.js';
 
 export function authController(models, cookieOptions) {
-  const { User, Institution, Career } = models;
+  const { User, Institution, Career, Locality } = models;
   // Hash de trabajo equivalente para que un correo inexistente también verifique un hash.
   const dummyHash = bcrypt.hashSync('forbook-dummy-password', 12);
   const findUser = id => User.findByPk(id, { include: { model: Institution, as: 'institution' } });
@@ -15,13 +17,19 @@ export function authController(models, cookieOptions) {
   return {
     register: async (req, res) => {
       const input = validateCredentials(req.body, true);
-      if (!await Institution.findByPk(input.institutionId)) throw new HttpError(400, 'La institución seleccionada no existe.', { institutionId: 'Elegí una institución del catálogo.' });
+      const targetInstitution = await Institution.findByPk(input.institutionId);
+      if (!targetInstitution || !registrationInstitutionNames.includes(targetInstitution.name)) throw new HttpError(400, 'La institución seleccionada no existe.', { institutionId: 'Elegí una institución del catálogo.' });
       if (await User.findOne({ where: { email: input.email } })) throw new HttpError(409, 'Ese correo ya está registrado.');
-      const selectedCareer = await Career.findOne({ where: { id: input.careerId, institutionId: input.institutionId } });
-      if (!selectedCareer) throw new HttpError(400, 'La carrera no corresponde a la institución elegida.', { careerId: 'Elegí una carrera del catálogo de tu institución.' });
+      const selectedCareer = input.careerId ? await Career.findOne({ where: { id: input.careerId, institutionId: input.institutionId } }) : null;
+      const catalogHasCareers = await Career.count({ where: { institutionId: input.institutionId } });
+      if ((input.careerId && !selectedCareer) || (!input.careerId && catalogHasCareers > 0)) throw new HttpError(400, 'La carrera no corresponde a la institución elegida.', { careerId: 'Elegí una carrera del catálogo de tu institución.' });
+      const locality = input.originCountryCode === 'AR' ? await Locality.findByPk(input.originLocalityId) : null;
+      if (input.originCountryCode === 'AR' && !locality) throw new HttpError(400, 'La localidad seleccionada no está disponible.', { originLocalityId: 'Elegí una localidad del catálogo de Argentina.' });
       const { password, careerId, ...profile } = input;
+      profile.originLocalityId = locality?.id ?? null;
+      profile.origin = locality ? `${locality.name}, ${locality.provinceName || 'Formosa'}` : countriesByCode.get(input.originCountryCode).name;
       // Se guarda el nombre canónico; el estudiante nunca decide este texto.
-      profile.career = selectedCareer.name;
+      profile.career = selectedCareer?.name || 'Carrera pendiente de catálogo';
       const user = await User.create({ ...profile, passwordHash: await bcrypt.hash(password, 12), role: 'student' });
       try { await beginSession(req, user.id); }
       catch (error) {
