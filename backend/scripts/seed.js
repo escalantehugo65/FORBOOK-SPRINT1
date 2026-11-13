@@ -29,7 +29,8 @@ try {
     const institution = await Institution.findOne({ where: { name: institutions[0].name }, transaction });
     for (const { categorySlug, institutional, ...item } of contents) {
       const category = await Category.findOne({ where: { slug: categorySlug }, transaction });
-      await Content.findOrCreate({ where: { slug: item.slug }, defaults: { ...item, categoryId: category.id, institutionId: institutional ? institution.id : null, sourceType: 'official', reviewedAt: '2026-10-20', status: 'published' }, transaction });
+      // Cada ficha puede traer su propia fecha de revisión; las primeras se revisaron el 20/10/2026.
+      await Content.findOrCreate({ where: { slug: item.slug }, defaults: { sourceType: 'official', reviewedAt: '2026-10-20', ...item, categoryId: category.id, institutionId: institutional ? institution.id : null, status: 'published' }, transaction });
     }
     // findOrCreate no pisa lo que ya existe: las coordenadas cargadas a mano se conservan.
     const institutionId = async name => name ? (await Institution.findOne({ where: { name }, transaction })).id : null;
