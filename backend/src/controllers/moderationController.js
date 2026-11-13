@@ -4,13 +4,14 @@ import { positiveId, validateResolution } from '../middlewares/validation.js';
 
 // Resumen de lo reportado o moderado, para mostrarlo en la cola y en el historial.
 // Del contenido se manda solo lo necesario para decidir: nunca datos del autor.
-export async function describeTargets(rows, { Question, Answer, Content, Category }) {
+export async function describeTargets(rows, { Question, Answer, Content, Category, Place }) {
   const ids = type => [...new Set(rows.filter(row => row.targetType === type).map(row => row.targetId))];
-  const [questions, answers, contents, categories] = await Promise.all([
+  const [questions, answers, contents, categories, places] = await Promise.all([
     ids('question').length ? Question.findAll({ where: { id: ids('question') }, attributes: ['id', 'title', 'status', 'hiddenAt'] }) : [],
     ids('answer').length ? Answer.findAll({ where: { id: ids('answer') }, attributes: ['id', 'body', 'hiddenAt', 'questionId'], include: [{ model: Question, as: 'question', attributes: ['id', 'title', 'hiddenAt'] }] }) : [],
     ids('content').length ? Content.findAll({ where: { id: ids('content') }, attributes: ['id', 'title', 'status', 'hiddenAt'] }) : [],
     ids('category').length ? Category.findAll({ where: { id: ids('category') }, attributes: ['id', 'name'] }) : [],
+    ids('place').length ? Place.findAll({ where: { id: ids('place') }, attributes: ['id', 'name', 'status', 'hiddenAt'] }) : [],
   ]);
   const targets = new Map();
   for (const item of questions) targets.set(`question:${item.id}`, { title: item.title, hidden: Boolean(item.hiddenAt), closed: item.status === 'closed', link: item.hiddenAt ? null : `/preguntas/${item.id}` });
@@ -20,6 +21,7 @@ export async function describeTargets(rows, { Question, Answer, Content, Categor
   }
   for (const item of contents) targets.set(`content:${item.id}`, { title: item.title, hidden: Boolean(item.hiddenAt), link: item.hiddenAt || item.status !== 'published' ? null : `/conozcamos/${item.id}` });
   for (const item of categories) targets.set(`category:${item.id}`, { title: item.name, hidden: false, link: null });
+  for (const item of places) targets.set(`place:${item.id}`, { title: item.name, hidden: Boolean(item.hiddenAt), link: item.hiddenAt || item.status !== 'published' ? null : `/mapa?lugar=${item.id}` });
   return row => ({ type: row.targetType, id: row.targetId, ...(targets.get(`${row.targetType}:${row.targetId}`) || { title: 'Ya no existe', missing: true, hidden: false, link: null }) });
 }
 

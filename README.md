@@ -1,127 +1,60 @@
-# Forbook — primera versión
+# Forbook — versión unificada para revisión
 
-Aplicación para estudiantes que llegan a Formosa. Incluye React + Vite, API Express, Sequelize y MySQL. El código implementa HU-01, HU-02, HU-03, HU-04, HU-06 reducida, HU-11 y HU-13. La autenticación usa sesiones de servidor y cookie HttpOnly; no usa JWT ni localStorage.
+Esta entrega local reúne el diseño nuevo y el registro nacional/internacional de la V1.1 con las ramas Rama-Gonzalo2 y rama-laurato del repositorio FORBOOK-SPRINT1, consultadas el 10 de noviembre de 2026.
 
-## Puesta en marcha en Windows
+**Actualización del mapa y registro: [docs/MAPA_Y_REGISTRO.md](docs/MAPA_Y_REGISTRO.md).**
 
-Necesitás Node.js compatible con Vite 7 (se verificó con Node 24), npm y MySQL 8. El proyecto no modifica instalaciones ni servicios del equipo automáticamente.
+**Empezá por [INICIAR.md](INICIAR.md)** para probar con XAMPP. Se usa una base separada llamada `forbook_final_prueba`. No se modificó GitHub ni se creó la rama develop.
 
-1. Abrí una terminal PowerShell en esta carpeta e instalá:
+## Incluye
+
+- Diseño azul, menta y amarillo; tipografías Bricolage Grotesque y Nunito Sans; modo claro/oscuro.
+- Login/registro en modal; sesiones SQL con cookie HttpOnly, logout y permisos por rol.
+- Registro desde las 24 jurisdicciones: 4.027 localidades censales de Georef. Opción “No soy de Argentina”, con 248 países/territorios exteriores del catálogo ISO de 249 entradas.
+- Solo IPF y UNaF en el registro. 38 entradas de carreras en una instalación nueva; los catálogos académicos son parciales y no equivalen a inscripción abierta. Una institución sin catálogo permite registro con carrera pendiente, sin texto libre.
+- Inicio personalizado, Conozcamos Formosa y accesos institucionales separados para IPF y UNaF.
+- Preguntas públicas, respuestas, votos útiles y filtros.
+- Reportes, cola y decisiones de moderación, historial, administración de categorías y fuentes.
+- Mapa con filtros, referencias, fuentes y fechas; carga/edición de lugares por administración; selector de ubicación.
+- Rutas orientativas y espacios públicos sugeridos por procedencia, institución y etapa de llegada.
+
+## Ejecutar
+
+Node 24.15 o posterior de la rama 24 LTS, npm y MySQL/MariaDB. Con MySQL iniciado y después de crear la base indicada en INICIAR.md:
 
 ```powershell
 npm run install:all
+npm run configurar:local
+npm run db:migrate --prefix backend
+npm run db:seed --prefix backend
+npm run dev --prefix backend
 ```
 
-2. En MySQL Workbench o en el cliente MySQL, usando una cuenta con permisos de administración, creá una base y un usuario propio. Reemplazá la contraseña de este ejemplo:
-
-```sql
-CREATE DATABASE forbook CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-CREATE USER 'forbook_app'@'127.0.0.1' IDENTIFIED BY 'REEMPLAZAR_CON_UNA_CLAVE_PROPIA';
-GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, ALTER, INDEX, REFERENCES
-ON forbook.* TO 'forbook_app'@'127.0.0.1';
-```
-
-3. Copiá los archivos de configuración si todavía no existen:
+En otra terminal desde la raíz:
 
 ```powershell
-Copy-Item backend/.env.example backend/.env
-Copy-Item frontend/.env.example frontend/.env
+npm run dev --prefix frontend
 ```
 
-Editá `backend/.env`: host, puerto, base, usuario y contraseña deben coincidir con tu MySQL. Generá el secreto de sesión con este comando y pegá el resultado en `SESSION_SECRET`:
+Abrí http://localhost:5173. La API responde en http://localhost:3001/api/health. Conservá localhost en FRONTEND_URL y en el navegador. Si esos puertos ya están ocupados por otra copia, detené aquella copia primero.
+
+## Comprobar
 
 ```powershell
-node -e "console.log(require('node:crypto').randomBytes(48).toString('base64url'))"
-```
-
-No copies las credenciales de otra persona. Los `.env` locales existentes en esta entrega son para la instancia aislada usada durante la verificación; para tu MySQL configurá los valores propios. El ZIP no incluye secretos.
-
-4. Aplicá la estructura y el catálogo:
-
-```powershell
-cd backend
-npm run db:migrate
-npm run db:seed
-npm run dev
-```
-
-La base debe existir antes de migrar. `db:migrate` registra las migraciones aplicadas en `schema_migrations`. `db:seed` agrega registros faltantes; no reemplaza cambios editoriales ni crea cuentas de demostración. No se usa `sync({ force: true })`.
-
-5. En otra terminal, desde la carpeta del proyecto:
-
-```powershell
-cd frontend
-npm run dev
-```
-
-Abrí **http://localhost:5173**. Usá siempre `localhost` en el navegador, de acuerdo con `FRONTEND_URL`; no alternes con `127.0.0.1`, porque son orígenes diferentes para las cookies y CORS. La API está en **http://localhost:3001/api**; `/api/health` verifica la conexión de base de datos.
-
-Detené cada servidor con `Ctrl+C`. Si cambiás `.env`, reiniciá el servidor correspondiente. Si MySQL está en otro puerto, modificá `DB_PORT`.
-
-## V1.1 — circuito público
-
-Ingreso y registro se abren en un modal sobre la bienvenida, sin cambiar la URL. El registro tiene dos pasos y las carreras se consultan por institución desde MySQL. Las cuentas V1 se conservan. Ver docs/CAMBIOS_V1_1.md para fuentes, pruebas y diferencias.
-
-## Diseño nuevo
-
-Toda la interfaz usa un sistema visual nuevo: azul, menta y amarillo, títulos en Bricolage Grotesque y texto en Nunito Sans, con modo claro y oscuro. Ingresar y Crear cuenta están arriba a la derecha y abren la ventana superpuesta. La bienvenida muestra lo que ya funciona del sprint y marca como "Próximamente" el mapa, las comunidades, las preguntas, la guía y los puntos. Las tipografías se instalan con `npm run install:all`; no hace falta migrar ni sembrar de nuevo la base. Ver `docs/DISENO.md`.
-
-## Moderación (épica 7)
-
-- Cualquier estudiante puede reportar una pregunta, una respuesta o una ficha, y avisar que una ficha puede estar desactualizada. El reporte no borra ni cambia nada.
-- Moderación (`moderator`) atiende la cola en `/moderacion`: desestimar, ocultar o cerrar una pregunta, siempre con un motivo interno. Lo oculto no se borra de la base.
-- Administración (`admin`) además ve el historial en `/moderacion/historial` y administra categorías y fuentes en `/moderacion/catalogo`.
-- Los roles no se eligen al registrarse. Se asignan desde la carpeta `backend`:
-
-```bash
-npm run user:role -- correo@ejemplo.com moderator
-```
-
-Los roles válidos son `student`, `moderator` y `admin`; la persona tiene que recargar la página. Después de bajar estos cambios hay que correr `npm run db:migrate` (migración 008).
-
-## Recorrido disponible
-
-- Bienvenida, registro con institución persistida y login.
-- Inicio contextualizado con datos reales y estado de llegada.
-- Recuperación de sesión al recargar; rutas y API protegidas.
-- Conozcamos Formosa: categorías persistidas, filtros y paginación.
-- Fichas con tipo de fuente, referencia, revisión y relación institucional.
-- Logout que destruye la sesión SQL y elimina la cookie.
-- Estados de carga, vacío, no encontrado y error; CSS adaptable y campos etiquetados.
-
-El catálogo inicial contiene **UNaF e Instituto Politécnico Formosa**, 38 carreras de referencia (34 UNaF y 4 IPF), cinco categorías y cuatro fichas basadas en portales oficiales. El catálogo académico no implica que todas las carreras tengan inscripción abierta. Movilidad y Cultura y costumbres están vacías intencionalmente. No hay horarios, rutas ni información cultural inventada. Las referencias y el alcance de la revisión están en `docs/FUENTES.md`.
-
-## Verificación
-
-```powershell
-npm test
 npm run build
-```
-
-`npm test` ejecuta validaciones; la integración se omite explícitamente si no configurás una base de pruebas. Para probar SQL creá una **base exclusiva** cuyo nombre termine en `_test`, otorgá permisos al usuario de pruebas y ejecutá en `backend/`:
-
-```powershell
-$env:TEST_DB_NAME = 'forbook_test'
-$env:TEST_DB_HOST = '127.0.0.1'
-$env:TEST_DB_PORT = '3306'
-$env:TEST_DB_USER = 'forbook_app'
-$env:TEST_DB_PASSWORD = 'TU_CLAVE_DE_PRUEBAS'
 npm test
 ```
 
-Las pruebas crean tablas si faltan y eliminan solamente sus registros identificados. No uses una base compartida o de producción. El informe de comprobaciones y las verificaciones manuales pendientes están en `docs/PRUEBAS.md`.
+El backend necesita TEST_DB_NAME terminada en `_test` para ejecutar la integración SQL; sin ella la omite. Configurá también TEST_DB_HOST, TEST_DB_PORT, TEST_DB_USER y TEST_DB_PASSWORD en la terminal. Nunca uses una base con alumnos para pruebas.
 
-## Documentación
+## Alcance y documentación
 
-- `docs/ARQUITECTURA.md`: carpetas, datos, API y decisiones de seguridad.
-- `docs/GUIA_APRENDIZAJE.md`: explicación de formularios, HTTP, sesiones y conexión completa.
-- `docs/SPRINT_1.md`: alcance por historia, dependencias y Scrum.
-- `docs/PRUEBAS.md`: pruebas reproducibles y límites de verificación.
-- `docs/FUENTES.md`: referencias editoriales y categorías iniciales.
-- `docs/DISENO.md`: colores, tipografías, componentes y pantallas del diseño nuevo.
+- [Integración: fuentes, conflictos, validación y pendientes](docs/INTEGRACION_FINAL.md).
+- [Guía de ejecución](INICIAR.md).
+- [Investigación de institutos](docs/INSTITUCIONES_FORMOSA.md).
+- [Registro de diferencias V1 → V1.1 y unión](docs/CAMBIOS_V1_1.md).
+- Los documentos fechados de la entrega anterior se conservan como historial; INTEGRACION_FINAL.md describe el estado de esta entrega.
 
-## Git y continuidad
+No se incluyen .git, .env, dependencias instaladas, compilaciones ni bases/cuentas de prueba. No se crean administradores con contraseñas conocidas. Los roles se asignan con `npm run user:role` en backend, solo a cuentas existentes.
 
-Versioná código, documentación, migraciones, seeds, `.env.example` y `package-lock.json`. No subas `.env`, `node_modules`, logs ni datos MySQL. `.gitignore` ya excluye esos archivos del proyecto. Ejemplos de commits: `feat(auth): registrar estudiantes con sesión SQL` o `fix(contents): impedir lectura de borradores`.
-
-La estrategia de ramas se acuerda con el equipo; Scrum no impone `main`/`develop`. La entrega no crea repositorios remotos ni tarjetas en Jira. Antes de un despliegue público configurá HTTPS, origen real y proxy confiable si corresponde; serví el frontend con fallback a `index.html` para las rutas de React Router. Ver `docs/ARQUITECTURA.md`.
+El mapa no es un GPS. Incluye seis puntos con coordenadas aportadas por el usuario y enlaces de Google Maps; las rutas de colectivos todavía no están cargadas. Los espacios no tienen membresía ni chat privado. Puntos/tienda, sanciones públicas y guía temática ampliada siguen pendientes.

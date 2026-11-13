@@ -1,4 +1,6 @@
+import { registrationInstitutionNames } from '../helpers/registrationInstitutions.js';
 import { Op } from 'sequelize';
+import { countryCatalog } from '../helpers/countries.js';
 import { HttpError } from '../helpers/http.js';
 import { positiveId } from '../middlewares/validation.js';
 
@@ -16,8 +18,9 @@ export function contentController({ User, Institution, Career, InstitutionResour
   }
   return {
     localities: async (req, res) => {
-      res.json({ data: await Locality.findAll({ where: { provinceCode: '34' }, attributes: ['id', 'name', 'departmentName', 'departmentCode'], order: [['name', 'ASC'], ['id', 'ASC']] }), meta: { province: 'Formosa', source: 'Georef' } });
+      res.json({ data: await Locality.findAll({ attributes: ['id', 'name', 'provinceCode', 'provinceName', 'departmentName', 'departmentCode'], order: [['name', 'ASC'], ['id', 'ASC']] }), meta: { country: 'Argentina', scope: 'localidades censales', source: 'Georef' } });
     },
+    countries: async (req, res) => res.json({ data: countryCatalog.countries, meta: { standard: countryCatalog.standard } }),
     resources: async (req, res) => {
       const student = await currentStudent(req);
       const institution = await Institution.findByPk(student.institutionId, { attributes: ['id', 'name'] });
@@ -26,10 +29,10 @@ export function contentController({ User, Institution, Career, InstitutionResour
     },
     careers: async (req, res) => {
       const institutionId = positiveId(req.params.id, 'Institución');
-      if (!await Institution.findByPk(institutionId)) throw new HttpError(404, 'La institución no existe.');
+      if (!await Institution.findOne({ where: { id: institutionId, name: { [Op.in]: registrationInstitutionNames } } })) throw new HttpError(404, 'La institución no existe.');
       res.json({ data: await Career.findAll({ where: { institutionId }, attributes: ['id', 'name', 'institutionId', 'sourceUrl', 'reviewedAt'], order: [['name', 'ASC']] }) });
     },
-    institutions: async (req, res) => res.json({ data: await Institution.findAll({ attributes: ['id', 'name', 'sourceUrl'], order: [['name', 'ASC']] }) }),
+    institutions: async (req, res) => res.json({ data: await Institution.findAll({ where: { name: { [Op.in]: registrationInstitutionNames } }, attributes: ['id', 'name', 'sourceUrl'], order: [['name', 'ASC']] }) }),
     categories: async (req, res) => res.json({ data: await Category.findAll({ attributes: ['id', 'name', 'slug', 'description'], order: [['id', 'ASC']] }) }),
     list: async (req, res) => {
       if (Object.keys(req.query).some(key => !['categoryId', 'institutionId', 'page'].includes(key))) throw new HttpError(400, 'Filtro no permitido.');

@@ -1,3 +1,4 @@
+import { countriesByCode } from '../helpers/countries.js';
 import { HttpError } from '../helpers/http.js';
 
 export function positiveId(value, label = 'Identificador') {
@@ -6,7 +7,7 @@ export function positiveId(value, label = 'Identificador') {
 }
 export function validateCredentials(body, registration = false) {
   if (!body || typeof body !== 'object' || Array.isArray(body)) throw new HttpError(400, 'Enviá un objeto JSON válido.');
-  const allowed = registration ? ['name', 'email', 'password', 'originLocalityId', 'institutionId', 'careerId', 'arrivalStatus'] : ['email', 'password'];
+  const allowed = registration ? ['name', 'email', 'password', 'originCountryCode', 'originLocalityId', 'institutionId', 'careerId', 'arrivalStatus'] : ['email', 'password'];
   if (Object.keys(body).some(key => !allowed.includes(key))) throw new HttpError(400, 'La petición contiene campos no permitidos.');
   const fields = {};
   const clean = {};
@@ -21,9 +22,17 @@ export function validateCredentials(body, registration = false) {
   if (Buffer.byteLength(clean.password, 'utf8') > 72) fields.password = 'La contraseña debe ocupar como máximo 72 bytes.';
   if (registration) {
     text('name', 2, 100);
-    if (typeof body.originLocalityId !== 'string' || !/^34\d{6}$/.test(body.originLocalityId)) fields.originLocalityId = 'Elegí una localidad de Formosa.';
-    clean.originLocalityId = body.originLocalityId;
-    try { clean.careerId = positiveId(body.careerId, 'Carrera'); } catch { fields.careerId = 'Elegí una carrera válida.'; }
+    clean.originCountryCode = body.originCountryCode;
+    if (typeof body.originCountryCode !== 'string' || !countriesByCode.has(body.originCountryCode)) fields.originCountryCode = 'Elegí un país del catálogo.';
+    if (body.originCountryCode === 'AR') {
+      if (typeof body.originLocalityId !== 'string' || !/^\d{8}$/.test(body.originLocalityId)) fields.originLocalityId = 'Elegí una localidad de Argentina.';
+      clean.originLocalityId = body.originLocalityId;
+    } else {
+      if (body.originLocalityId !== undefined && body.originLocalityId !== null && body.originLocalityId !== '') fields.originLocalityId = 'Para otro país no se envía una localidad argentina.';
+      clean.originLocalityId = null;
+    }
+    if (body.careerId === null || body.careerId === '' || body.careerId === undefined) clean.careerId = null;
+    else { try { clean.careerId = positiveId(body.careerId, 'Carrera'); } catch { fields.careerId = 'Elegí una carrera válida.'; } }
     clean.arrivalStatus = body.arrivalStatus;
     if (!['arrived', 'not_arrived'].includes(body.arrivalStatus)) fields.arrivalStatus = 'Elegí tu estado de llegada.';
     try { clean.institutionId = positiveId(body.institutionId, 'Institución'); } catch { fields.institutionId = 'Elegí una institución válida.'; }
@@ -135,4 +144,45 @@ export function validateSource(body) {
   if (body.sourceType === 'experience' && !authorLabel) fields.authorLabel = 'Una experiencia necesita indicar quién la cuenta.';
   if (Object.keys(fields).length) throw new HttpError(400, 'Revisá los campos indicados.', fields);
   return { sourceType: body.sourceType, sourceLabel: sourceLabel || null, sourceUrl: sourceUrl || null, authorLabel: authorLabel || null, reviewedAt: reviewedAt || null };
+}
+
+// Recuadro aproximado de la provincia de Formosa: frena coordenadas invertidas o de otro lugar.
+export const formosaBounds = { latitude: [-27, -22], longitude: [-62.5, -57.5] };
+export const placeKindValues = ['institution', 'health', 'security', 'procedures', 'transport', 'services'];
+
+// Lugar del mapa cargado por administración. La ubicación es opcional, pero si viene,
+// vienen las dos coordenadas y tienen que caer dentro de la provincia.
+export function validatePlace(body) {
+  plainObject(body, ['name', 'kind', 'institutionId', 'addressLabel', 'studentNote', 'latitude', 'longitude', 'sourceType', 'sourceLabel', 'sourceUrl', 'reviewedAt', 'status']);
+  const fields = {};
+  const name = typeof body.name === 'string' ? body.name.trim() : '';
+  if (name.length < 3 || name.length > 150) fields.name = 'El nombre debe tener entre 3 y 150 caracteres.';
+  if (!placeKindValues.includes(body.kind)) fields.kind = 'Elegí una categoría.';
+  let institutionId = null;
+  if (body.institutionId !== null && body.institutionId !== undefined && body.institutionId !== '') {
+    try { institutionId = positiveId(body.institutionId, 'Institución'); } catch { fields.institutionId = 'Elegí una institución válida.'; }
+  }
+  const addressLabel = optionalText(body.addressLabel, 250, fields, 'addressLabel', 'La dirección puede tener hasta 250 caracteres.');
+  const studentNote = optionalText(body.studentNote, 450, fields, 'studentNote', 'La nota puede tener hasta 450 caracteres.');
+  let latitude = null;
+  let longitude = null;
+  const empty = value => value === null || value === undefined || value === '';
+  if (empty(body.latitude) !== empty(body.longitude)) fields.latitude = 'Cargá las dos coordenadas o ninguna.';
+  else if (!empty(body.latitude)) {
+    if (typeof body.latitude !== 'number' || typeof body.longitude !== 'number' || !Number.isFinite(body.latitude) || !Number.isFinite(body.longitude)) fields.latitude = 'Las coordenadas tienen que ser números.';
+    else if (body.latitude < formosaBounds.latitude[0] || body.latitude > formosaBounds.latitude[1] || body.longitude < formosaBounds.longitude[0] || body.longitude > formosaBounds.longitude[1]) fields.latitude = 'Esa ubicación queda fuera de la provincia de Formosa.';
+    else { latitude = Number(body.latitude.toFixed(6)); longitude = Number(body.longitude.toFixed(6)); }
+  }
+  if (!['draft', 'published'].includes(body.status)) fields.status = 'Elegí si se publica o queda como borrador.';
+  // Los lugares no tienen campo de autoría: solo fuente oficial o comunitaria verificable.
+  let source = {};
+  if (!['official', 'community'].includes(body.sourceType)) fields.sourceType = 'Elegí fuente oficial o comunitaria verificable.';
+  else {
+    try { source = validateSource({ sourceType: body.sourceType, sourceLabel: body.sourceLabel, sourceUrl: body.sourceUrl, reviewedAt: body.reviewedAt }); }
+    catch (error) { Object.assign(fields, error.fields || {}); }
+  }
+  if (!fields.sourceType && !source.reviewedAt && !fields.reviewedAt) fields.reviewedAt = 'Indicá cuándo revisaste el dato.';
+  if (Object.keys(fields).length) throw new HttpError(400, 'Revisá los campos indicados.', fields);
+  const { authorLabel, ...cleanSource } = source;
+  return { name, kind: body.kind, institutionId, addressLabel: addressLabel || null, studentNote: studentNote || null, latitude, longitude, status: body.status, ...cleanSource };
 }

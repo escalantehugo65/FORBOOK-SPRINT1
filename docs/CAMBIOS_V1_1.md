@@ -189,3 +189,18 @@ Estado: implementado en `rama-lautaro`, a partir de `Rama-Hugo`. Cambia el aspec
 - 12 pruebas del backend aprobadas con MariaDB 10.11 en una base `_test`; compilación de Vite aprobada.
 - Recorrido en navegador: registro en dos pasos (IPF y UNaF), correo repetido, inicio según perfil e institución, recarga con sesión, categorías con y sin fichas, detalle con fuente y fecha, ficha inexistente, cierre de sesión, ingreso incorrecto y correcto, modo oscuro y enlaces a secciones.
 - Revisión a 1440, 390 y 320 px sin desborde horizontal. Se eliminaron las cuentas técnicas al terminar.
+
+
+## 6 de noviembre de 2026 — Diseño recibido y registro nacional/internacional
+
+Se conserva el diseño nuevo recibido y se amplían procedencias e instituciones. El detalle, los límites de los catálogos y la validación de esta entrega están en ENTREGA_DISENO_NUEVO.md e INSTITUCIONES_FORMOSA.md. La revisión visual quedó pendiente por indisponibilidad de la herramienta.
+
+
+## 10 de noviembre de 2026 — Unión local para revisión
+
+Se incorpora Rama-Gonzalo2 (que contiene rama-laurato) a la entrega de diseño nuevo y catálogos nacionales/internacionales. Se resuelven migraciones, rol/país, contenidos ocultos, sugerencias por provincia y el desborde del modal en pantallas angostas. Ver INTEGRACION_FINAL.md para commits, pruebas y pendientes. No se publicó en GitHub.
+
+
+## 10 de noviembre de 2026 — Seis lugares y registro UNaF/IPF
+
+Se carga el lote de ubicaciones aportadas por el usuario. Se limita el registro a UNaF/IPF y se preservan las cuentas históricas. Ver MAPA_Y_REGISTRO.md para fuentes, actualización y validación.

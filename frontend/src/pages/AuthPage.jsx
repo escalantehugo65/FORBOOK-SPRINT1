@@ -5,7 +5,7 @@ import { useFetch } from '../hooks/useFetch';
 import { catalogService } from '../services/catalog';
 import Field from '../components/Field';
 
-const initial = { name: '', email: '', password: '', originLocalityId: '', institutionId: '', careerId: '', arrivalStatus: '' };
+const initial = { name: '', email: '', password: '', originCountryCode: 'AR', originLocalityId: '', institutionId: '', careerId: '', arrivalStatus: '' };
 const normalize = value => value.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
 // Solo se vuelve a rutas internas de Forbook después de ingresar.
 const safeDestination = path => typeof path === 'string' && path.startsWith('/') && !path.startsWith('//') ? path : '/inicio';
@@ -20,6 +20,9 @@ export default function AuthPage({ registration = false, returnTo, onModeChange,
   const [values, setValues] = useState(registration ? initial : { email: '', password: '' });
   const [errors, setErrors] = useState({});
   const [step, setStep] = useState(0);
+  const [originMode, setOriginMode] = useState('AR');
+  const [provinceCode, setProvinceCode] = useState('');
+  const [institutionSearch, setInstitutionSearch] = useState('');
   const [localitySearch, setLocalitySearch] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -34,10 +37,14 @@ export default function AuthPage({ registration = false, returnTo, onModeChange,
   const institutionLoader = useCallback(signal => registration ? catalogService.institutions(signal) : Promise.resolve({ data: [] }), [registration]);
   const careerLoader = useCallback(signal => registration && values.institutionId ? catalogService.careers(values.institutionId, signal) : Promise.resolve({ data: [] }), [registration, values.institutionId]);
   const localityLoader = useCallback(signal => registration ? catalogService.localities(signal) : Promise.resolve({ data: [] }), [registration]);
+  const countryLoader = useCallback(signal => registration ? catalogService.countries(signal) : Promise.resolve({ data: [] }), [registration]);
+  const countries = useFetch(countryLoader);
   const localities = useFetch(localityLoader);
   const institutions = useFetch(institutionLoader);
   const careers = useFetch(careerLoader);
-  const visibleLocalities = (localities.result?.data || []).filter(item => normalize(`${item.name} ${item.departmentName}`).includes(normalize(localitySearch.trim())));
+  const provinces = [...new Map((localities.result?.data || []).map(item => [item.provinceCode, item.provinceName || 'Formosa'])).entries()].sort((a,b) => a[1].localeCompare(b[1], 'es'));
+  const visibleLocalities = (localities.result?.data || []).filter(item => item.provinceCode === provinceCode && normalize(`${item.name} ${item.departmentName}`).includes(normalize(localitySearch.trim())));
+  const visibleInstitutions = (institutions.result?.data || []).filter(item => normalize(item.name).includes(normalize(institutionSearch.trim())));
   const localityGroups = groupByDepartment(visibleLocalities);
 
   function change(event) {
@@ -64,11 +71,11 @@ export default function AuthPage({ registration = false, returnTo, onModeChange,
       if (validate(['name', 'email', 'password'])) setStep(1);
       return;
     }
-    if (!validate(registration ? ['originLocalityId', 'institutionId', 'careerId', 'arrivalStatus'] : ['email', 'password'])) return;
+    if (!validate(registration ? [...(originMode === 'AR' ? ['originLocalityId'] : ['originCountryCode']), 'institutionId', ...(careers.result?.data.length ? ['careerId'] : []), 'arrivalStatus'] : ['email', 'password'])) return;
     setBusy(true);
     try {
       if (registration) {
-        const started = await register({ ...values, institutionId: Number(values.institutionId), careerId: Number(values.careerId) });
+        const started = await register({ ...values, institutionId: Number(values.institutionId), careerId: values.careerId ? Number(values.careerId) : null });
         if (!started) {
           // La cuenta existe pero la sesión no se abrió: se pide ingresar en lugar de crear otra cuenta.
           onDirtyChange(false); onModeChange('login', 'Tu cuenta ya está creada. Iniciá sesión para continuar.'); return;
@@ -83,7 +90,7 @@ export default function AuthPage({ registration = false, returnTo, onModeChange,
 
   const field = name => ({ name, value: values[name] || '', onChange: change, error: errors[name], required: true, disabled: busy });
   const accountStep = !registration || step === 0;
-  const catalogBlocked = registration && step === 1 && (localities.loading || localities.error || !localities.result?.data.length || institutions.loading || institutions.error || careers.loading || careers.error || !careers.result?.data.length);
+  const catalogBlocked = registration && step === 1 && ((originMode === 'AR' ? localities.loading || localities.error || !localities.result?.data.length : countries.loading || countries.error || !countries.result?.data.length) || institutions.loading || institutions.error || careers.loading || careers.error);
   const title = registration ? (step === 0 ? 'Creá tu cuenta' : 'Contanos de tu llegada') : 'Ingresá a Forbook';
   const intro = registration
     ? (step === 0 ? 'Con tu nombre, tu correo y una contraseña propia para Forbook.' : 'De dónde venís, dónde vas a estudiar y si ya llegaste a la ciudad.')
@@ -121,29 +128,55 @@ export default function AuthPage({ registration = false, returnTo, onModeChange,
             {errors.password && <small id="password-error" className="field-error">{errors.password}</small>}
           </div>
         </> : <>
-          <div className="field">
-            <label htmlFor="locality-search">Buscar localidad</label>
-            <input id="locality-search" type="search" placeholder="Nombre o departamento" value={localitySearch} disabled={busy || localities.loading || !!localities.error}
-              onChange={event => { setLocalitySearch(event.target.value); setValues(previous => ({ ...previous, originLocalityId: '' })); setErrors(previous => ({ ...previous, originLocalityId: undefined })); }}/>
-          </div>
-          <Field label="Localidad de procedencia (Formosa)" hint="En esta versión, la procedencia se elige entre las localidades de Formosa." {...field('originLocalityId')} disabled={busy || localities.loading || !!localities.error}>
-            <option value="">{localities.loading ? 'Cargando localidades…' : 'Elegí tu localidad'}</option>
-            {[...localityGroups].map(([department, items]) => <optgroup key={department} label={department}>{items.map(item => <option key={item.id} value={item.id}>{item.name}</option>)}</optgroup>)}
+          <Field name="origin-mode" label="¿De dónde venís?" value={originMode} required disabled={busy} onChange={event => {
+            const mode = event.target.value; setOriginMode(mode); setProvinceCode(''); setLocalitySearch('');
+            setValues(previous => ({ ...previous, originCountryCode: mode === 'AR' ? 'AR' : '', originLocalityId: '' }));
+            setErrors(previous => ({ ...previous, originLocalityId: undefined, originCountryCode: undefined })); onDirtyChange(true);
+          }}>
+            <option value="AR">Soy de Argentina</option>
+            <option value="outside">No soy de Argentina</option>
           </Field>
-          {localities.error && <div className="alert" role="alert"><p>{localities.error.message}</p><button type="button" className="btn btn-outline btn-small" onClick={localities.retry}>Reintentar localidades</button></div>}
-          {!localities.loading && !localities.error && !visibleLocalities.length && <p className="access-hint" role="status">No encontramos localidades con esa búsqueda.</p>}
-          <Field label="Institución educativa" {...field('institutionId')} disabled={busy || institutions.loading || !!institutions.error}>
+          {originMode === 'AR' ? <>
+            <Field name="province" label="Provincia de procedencia" value={provinceCode} required disabled={busy || localities.loading || !!localities.error} onChange={event => {
+              setProvinceCode(event.target.value); setLocalitySearch(''); setValues(previous => ({ ...previous, originLocalityId: '' })); onDirtyChange(true);
+            }}>
+              <option value="">{localities.loading ? 'Cargando provincias…' : 'Elegí tu provincia'}</option>
+              {provinces.map(([code, name]) => <option key={code} value={code}>{name}</option>)}
+            </Field>
+            <div className="field">
+              <label htmlFor="locality-search">Buscar localidad</label>
+              <input id="locality-search" type="search" placeholder="Nombre o departamento" value={localitySearch} disabled={busy || !provinceCode || localities.loading || !!localities.error}
+                onChange={event => { setLocalitySearch(event.target.value); setValues(previous => ({ ...previous, originLocalityId: '' })); setErrors(previous => ({ ...previous, originLocalityId: undefined })); onDirtyChange(true); }}/>
+            </div>
+            <Field label="Localidad de procedencia" hint="Localidades censales de Argentina, según el catálogo oficial Georef." {...field('originLocalityId')} disabled={busy || !provinceCode || localities.loading || !!localities.error}>
+              <option value="">{!provinceCode ? 'Primero elegí tu provincia' : 'Elegí tu localidad'}</option>
+              {[...localityGroups].map(([department, items]) => <optgroup key={department} label={department}>{items.map(item => <option key={item.id} value={item.id}>{item.name}</option>)}</optgroup>)}
+            </Field>
+            {localities.error && <div className="alert" role="alert"><p>{localities.error.message}</p><button type="button" className="btn btn-outline btn-small" onClick={localities.retry}>Reintentar localidades</button></div>}
+            {provinceCode && !localities.loading && !localities.error && !visibleLocalities.length && <p className="access-hint" role="status">No encontramos localidades con esa búsqueda.</p>}
+          </> : <>
+            <Field label="País de procedencia" {...field('originCountryCode')} disabled={busy || countries.loading || !!countries.error} hint="Países y territorios del catálogo ISO 3166-1.">
+              <option value="">{countries.loading ? 'Cargando países…' : 'Elegí tu país'}</option>
+              {countries.result?.data.filter(item => item.code !== 'AR').sort((a, b) => a.name.localeCompare(b.name, 'es')).map(item => <option key={item.code} value={item.code}>{item.name}</option>)}
+            </Field>
+            {countries.error && <div className="alert" role="alert"><p>{countries.error.message}</p><button type="button" className="btn btn-outline btn-small" onClick={countries.retry}>Reintentar países</button></div>}
+          </>}
+          <div className="field"><label htmlFor="institution-search">Buscar institución</label><input id="institution-search" type="search" placeholder="Nombre o localidad de la institución" value={institutionSearch} disabled={busy || institutions.loading || !!institutions.error} onChange={event => {
+            setInstitutionSearch(event.target.value); setValues(previous => ({ ...previous, institutionId: '', careerId: '' })); onDirtyChange(true);
+          }}/></div>
+          <Field label="Institución educativa" hint="Por ahora, Forbook acompaña a estudiantes de UNaF e IPF." {...field('institutionId')} disabled={busy || institutions.loading || !!institutions.error}>
             <option value="">{institutions.loading ? 'Cargando instituciones…' : 'Elegí tu institución'}</option>
-            {institutions.result?.data.map(item => <option key={item.id} value={item.id}>{item.name}</option>)}
+            {visibleInstitutions.map(item => <option key={item.id} value={item.id}>{item.name}</option>)}
           </Field>
+          {!institutions.loading && !institutions.error && !visibleInstitutions.length && <p className="access-hint" role="status">No encontramos instituciones con esa búsqueda.</p>}
           {institutions.error && <div className="alert" role="alert"><p>{institutions.error.message}</p><button type="button" className="btn btn-outline btn-small" onClick={institutions.retry}>Reintentar instituciones</button></div>}
-          <Field label="Carrera" {...field('careerId')} disabled={busy || !values.institutionId || careers.loading || !!careers.error}>
-            <option value="">{!values.institutionId ? 'Primero elegí tu institución' : careers.loading ? 'Cargando carreras…' : 'Elegí tu carrera'}</option>
+          <Field label="Carrera" {...field('careerId')} required={!!careers.result?.data.length} disabled={busy || !values.institutionId || careers.loading || !!careers.error || !careers.result?.data.length}>
+            <option value="">{!values.institutionId ? 'Primero elegí tu institución' : careers.loading ? 'Cargando carreras…' : !careers.result?.data.length ? 'Carreras pendientes de catálogo' : 'Elegí tu carrera'}</option>
             {careers.result?.data.map(item => <option key={item.id} value={item.id}>{item.name}</option>)}
           </Field>
           {careers.error && <div className="alert" role="alert"><p>{careers.error.message}</p><button type="button" className="btn btn-outline btn-small" onClick={careers.retry}>Reintentar carreras</button></div>}
-          {values.institutionId && !careers.loading && !careers.error && !careers.result?.data.length && <p className="access-hint" role="status">Todavía no hay carreras cargadas para esta institución.</p>}
-          <details className="access-help"><summary>No encuentro mi carrera</summary><p>Si no aparece en la lista, todavía no podemos completar tu registro. No elijas una carrera diferente.</p></details>
+          {values.institutionId && !careers.loading && !careers.error && !careers.result?.data.length && <p className="access-hint" role="status">Las carreras de esta institución están en revisión. Podés crear tu cuenta con la carrera pendiente, sin elegir una que no te corresponde.</p>}
+          <details className="access-help"><summary>No encuentro mi carrera</summary><p>El catálogo incluye carreras verificadas y puede estar incompleto. No elijas una carrera diferente. Si todavía no cargamos ninguna para tu institución, podés continuar con la carrera pendiente.</p></details>
           <fieldset className="choice-group">
             <legend>¿Ya llegaste a Formosa? <span aria-hidden="true">*</span></legend>
             <div className="choice-row">

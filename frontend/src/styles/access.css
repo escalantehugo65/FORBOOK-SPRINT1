@@ -10,6 +10,10 @@
 }
 .access-dialog::backdrop { background: var(--backdrop); }
 .access-inner { display: grid; gap: 22px; padding: 24px 28px 28px; }
+/* Los nombres largos del catálogo no deben imponer el ancho mínimo del modal. */
+.access-inner > *, .access-content > *, .access-heading > *, .access-fields > * { min-width: 0; }
+.access-heading h2, .steps li { overflow-wrap: anywhere; }
+.access-fields select { min-width: 0; max-width: 100%; }
 .access-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .segmented { display: flex; gap: 6px; padding: 5px; border-radius: 16px; background: var(--bg-soft); }
 .segmented button {
@@ -38,7 +42,7 @@
 .password-input { display: flex; gap: 8px; }
 .password-input input { flex: 1; min-width: 0; }
 .password-input .btn { min-height: 50px; flex-shrink: 0; }
-.form-actions { display: flex; gap: 10px; margin-top: 4px; }
+.form-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 4px; }
 .form-actions .btn-primary { flex: 1; }
 .access-hint { font-size: 14px; color: var(--ink-3); }
 .access-notice { padding: 12px 14px; border-radius: var(--radius-s); background: var(--ok-bg); color: var(--ink); font-weight: 700; }
@@ -52,6 +56,6 @@
 
 @media (max-width: 480px) {
   .access-inner { padding: 18px 18px 22px; }
-  .segmented button { padding: 0 12px; font-size: 14px; }
+  .segmented button { padding: 0 8px; font-size: 14px; }
   .access-heading h2 { font-size: 25px; }
 }

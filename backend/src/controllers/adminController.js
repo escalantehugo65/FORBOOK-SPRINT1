@@ -1,9 +1,10 @@
 import { Op, fn, col } from 'sequelize';
 import { HttpError } from '../helpers/http.js';
-import { positiveId, validateCategory, validateSource } from '../middlewares/validation.js';
+import { positiveId, validateCategory, validateSource, validatePlace } from '../middlewares/validation.js';
 
-// Administrar categorías y metadatos de fuente (FF-39). Cada cambio queda en el historial (FF-38).
-export function adminController({ Category, Content, Question, Institution, ModerationLog }) {
+// Administrar categorías y metadatos de fuente (FF-39) y los lugares del mapa (épica 4).
+// Cada cambio queda en el historial (FF-38).
+export function adminController({ Category, Content, Question, Institution, Place, ModerationLog }) {
   const slugify = name => name.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 100);
   const countBy = async model => new Map((await model.findAll({ attributes: ['categoryId', [fn('COUNT', col('id')), 'total']], group: ['categoryId'], raw: true })).map(row => [row.categoryId, Number(row.total)]));
   const shorten = text => text.length > 500 ? `${text.slice(0, 497)}…` : text;
@@ -16,6 +17,17 @@ export function adminController({ Category, Content, Question, Institution, Mode
   const sourceFields = { sourceType: 'tipo de fuente', sourceLabel: 'fuente', sourceUrl: 'enlace', authorLabel: 'autoría', reviewedAt: 'fecha de revisión' };
   const contentAttributes = ['id', 'title', 'status', 'hiddenAt', 'categoryId', 'institutionId', ...Object.keys(sourceFields)];
   const contentInclude = [{ model: Category, as: 'category', attributes: ['id', 'name'] }, { model: Institution, as: 'institution', attributes: ['id', 'name'] }];
+  const placeFields = { name: 'nombre', kind: 'categoría', institutionId: 'institución', addressLabel: 'dirección', studentNote: 'nota', latitude: 'ubicación', longitude: 'ubicación', status: 'estado', sourceType: 'tipo de fuente', sourceLabel: 'fuente', sourceUrl: 'enlace', reviewedAt: 'fecha de revisión' };
+  const placeAttributes = ['id', 'slug', 'institutionId', ...Object.keys(placeFields)];
+  const placeInstitution = { model: Institution, as: 'institution', attributes: ['id', 'name'] };
+  // MySQL devuelve DECIMAL como texto: el mapa necesita números.
+  const presentPlace = place => {
+    const { latitude, longitude, ...rest } = place.toJSON();
+    return { ...rest, latitude: latitude === null ? null : Number(latitude), longitude: longitude === null ? null : Number(longitude) };
+  };
+  const checkInstitution = async id => {
+    if (id !== null && !await Institution.findByPk(id)) throw new HttpError(400, 'Revisá los campos indicados.', { institutionId: 'Elegí una institución válida.' });
+  };
   return {
     categories: async (req, res) => {
       const [rows, contents, questions] = await Promise.all([Category.findAll({ attributes: ['id', 'name', 'slug', 'description'], order: [['id', 'ASC']] }), countBy(Content), countBy(Question)]);
@@ -63,6 +75,38 @@ export function adminController({ Category, Content, Question, Institution, Mode
     },
     contents: async (req, res) => {
       res.json({ data: await Content.findAll({ attributes: contentAttributes, include: contentInclude, order: [['id', 'ASC']], limit: 200 }) });
+    },
+    places: async (req, res) => {
+      res.json({ data: (await Place.findAll({ attributes: placeAttributes, include: [placeInstitution], order: [['name', 'ASC'], ['id', 'ASC']] })).map(presentPlace) });
+    },
+    createPlace: async (req, res) => {
+      const input = validatePlace(req.body);
+      await checkInstitution(input.institutionId);
+      const base = slugify(input.name) || 'lugar';
+      let slug = base;
+      for (let n = 2; await Place.findOne({ where: { slug } }); n += 1) slug = `${base}-${n}`;
+      const place = await Place.sequelize.transaction(async transaction => {
+        const created = await Place.create({ ...input, slug }, { transaction });
+        await log(req, 'place_create', 'place', created.id, `Agregó el lugar "${created.name}"${input.latitude === null ? ' sin ubicación' : ' con ubicación en el mapa'}.`, transaction);
+        return created;
+      });
+      res.status(201).json({ data: presentPlace(await Place.findByPk(place.id, { attributes: placeAttributes, include: [placeInstitution] })) });
+    },
+    updatePlace: async (req, res) => {
+      const place = await Place.findByPk(positiveId(req.params.id, 'Lugar'));
+      if (!place) throw new HttpError(404, 'No encontramos ese lugar.');
+      const input = validatePlace(req.body);
+      await checkInstitution(input.institutionId);
+      const same = (key, value) => key === 'latitude' || key === 'longitude' ? (place[key] === null ? null : Number(place[key])) === value : (place[key] ?? null) === value;
+      const changed = Object.keys(placeFields).filter(key => !same(key, input[key]));
+      if (changed.length) {
+        await Place.sequelize.transaction(async transaction => {
+          await place.update(input, { transaction });
+          const labels = [...new Set(changed.map(key => placeFields[key]))];
+          await log(req, 'place_update', 'place', place.id, `Editó el lugar "${place.name}": ${labels.join(', ')}.`, transaction);
+        });
+      }
+      res.json({ data: presentPlace(await Place.findByPk(place.id, { attributes: placeAttributes, include: [placeInstitution] })) });
     },
     updateSource: async (req, res) => {
       const content = await Content.findByPk(positiveId(req.params.id, 'Ficha'));

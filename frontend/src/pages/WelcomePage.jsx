@@ -4,13 +4,13 @@ import { usePublicAccess } from '../context/PublicAccessContext';
 import { usePageTitle } from '../hooks/usePageTitle';
 import { ArrowIcon, BookIcon, ChatIcon, CheckIcon, HomeIcon, PinIcon, ShieldIcon, UsersIcon } from '../components/Icons';
 
-// Funciones de la plataforma: las dos primeras ya funcionan (FF Sprint 1); el resto llega más adelante.
+// Funciones de la plataforma: path indica a dónde lleva cada una que ya funciona; sin path, llega más adelante.
 const features = [
-  { id: 'conozcamos', title: 'Conozcamos Formosa', text: 'Fichas organizadas por categoría, con la fuente y la fecha de revisión a la vista.', icon: BookIcon, tile: 'tile-mint', available: true },
-  { id: 'inicio', title: 'Tu inicio personalizado', text: 'Armado con tu procedencia, tu institución, tu carrera y si ya llegaste a la ciudad.', icon: HomeIcon, tile: 'tile-yellow', available: true },
-  { id: 'mapa', title: 'Mapa de lugares', text: 'Los puntos importantes de la ciudad y rutas orientativas hacia tu institución.', icon: PinIcon, tile: 'tile-tint' },
-  { id: 'comunidades', title: 'Comunidades', text: 'Grupos de gente con tus mismos intereses: vas a poder crear uno o sumarte.', icon: UsersIcon, tile: 'tile-tint' },
-  { id: 'preguntas', title: 'Preguntas y respuestas', text: 'Preguntá lo que no sabés: la comunidad responde y marca lo más útil.', icon: ChatIcon, tile: 'tile-tint' },
+  { id: 'conozcamos', title: 'Conozcamos Formosa', text: 'Fichas organizadas por categoría, con la fuente y la fecha de revisión a la vista.', icon: BookIcon, tile: 'tile-mint', path: '/conozcamos', cta: 'Explorar' },
+  { id: 'inicio', title: 'Tu inicio personalizado', text: 'Armado con tu procedencia, tu institución, tu carrera y si ya llegaste a la ciudad.', icon: HomeIcon, tile: 'tile-yellow', path: '/inicio', cta: 'Ir a mi inicio' },
+  { id: 'mapa', title: 'Mapa de lugares', text: 'Los puntos importantes de la ciudad y rutas orientativas hacia tu institución.', icon: PinIcon, tile: 'tile-tint', path: '/mapa', cta: 'Abrir el mapa' },
+  { id: 'comunidades', title: 'Espacios de integración', text: 'Espacios sugeridos según tu institución, de dónde venís y si ya llegaste a la ciudad.', icon: UsersIcon, tile: 'tile-tint', path: '/espacios', cta: 'Ver espacios' },
+  { id: 'preguntas', title: 'Preguntas y respuestas', text: 'Preguntá lo que no sabés: la comunidad responde y marca lo más útil.', icon: ChatIcon, tile: 'tile-tint', path: '/preguntas', cta: 'Ver preguntas' },
   { id: 'guia', title: 'Cómo vivir en Formosa', text: 'Una guía por temas, con consejos de seguridad y de cuidado con los alimentos.', icon: ShieldIcon, tile: 'tile-tint' },
 ];
 const categories = ['Lugares útiles', 'Movilidad', 'Vida estudiantil', 'Cultura y costumbres', 'Recomendaciones'];
@@ -67,13 +67,13 @@ export default function WelcomePage() {
         <div className="section-head"><div><p className="eyebrow">Funciones</p><h2 id="features-title" className="section-title">Todo lo que necesitás para arrancar en Formosa</h2></div>
           <p>Lo que ya podés usar hoy y lo que estamos preparando.</p></div>
         <div className="feature-grid">
-          {features.map(({ id, title, text, icon: FeatureIcon, tile, available }) => <article className="feature-card" key={id}>
-            <div className="feature-top"><span className={`icon-tile ${tile}`}><FeatureIcon/></span>{available ? <span className="badge"><CheckIcon/>Disponible</span> : <Soon/>}</div>
+          {features.map(({ id, title, text, icon: FeatureIcon, tile, path, cta }) => <article className="feature-card" key={id}>
+            <div className="feature-top"><span className={`icon-tile ${tile}`}><FeatureIcon/></span>{path ? <span className="badge"><CheckIcon/>Disponible</span> : <Soon/>}</div>
             <h3>{title}</h3>
             <p>{text}</p>
-            {available && (user
-              ? <Link className="btn btn-outline btn-small" to={id === 'inicio' ? '/inicio' : '/conozcamos'}>{id === 'inicio' ? 'Ir a mi inicio' : 'Explorar'} <ArrowIcon/></Link>
-              : <button className="btn btn-outline btn-small" type="button" onClick={start}>Crear cuenta para {id === 'inicio' ? 'verlo' : 'explorar'}</button>)}
+            {path && (user
+              ? <Link className="btn btn-outline btn-small" to={path}>{cta} <ArrowIcon/></Link>
+              : <button className="btn btn-outline btn-small" type="button" onClick={start}>Crear cuenta para {id === 'inicio' ? 'verlo' : 'usarlo'}</button>)}
           </article>)}
         </div>
       </div>
@@ -105,14 +105,15 @@ export default function WelcomePage() {
     <section id="mapa" className="section band-soft" aria-labelledby="map-title">
       <div className="container split">
         <div className="split-copy">
-          <div className="eyebrow-row"><p className="eyebrow">Mapa</p><Soon/></div>
+          <p className="eyebrow">Mapa</p>
           <h2 id="map-title" className="section-title">Saber dónde queda cada cosa, desde el primer día</h2>
-          <p>Vas a poder ver instituciones, servicios y lugares útiles en un mapa, con rutas orientativas para llegar.</p>
+          <p>Mirá instituciones, servicios y lugares útiles en un mapa orientativo, con la dirección y la fuente de cada uno, y rutas explicadas con referencias para llegar.</p>
           <ul className="legend">
             <li><span className="dot dot-blue"/>Instituciones</li>
             <li><span className="dot dot-yellow"/>Lugares útiles</li>
             <li><span className="dot dot-mint"/>Movilidad</li>
           </ul>
+          {user ? <Link className="btn btn-primary" to="/mapa">Abrir el mapa <ArrowIcon/></Link> : <button className="btn btn-primary" type="button" onClick={start}>Crear cuenta para ver el mapa</button>}
         </div>
         <div className="map-art" aria-hidden="true">
           <div className="map-grid"/>
