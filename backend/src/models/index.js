@@ -51,6 +51,17 @@ export function defineModels(db) {
     arrivalStatus: { type: DataTypes.ENUM('not_arrived', 'arrived'), allowNull: false },
     // Los roles especiales se asignan con npm run user:role, nunca desde el registro (épica 7).
     role: { type: DataTypes.ENUM('student', 'moderator', 'admin'), allowNull: false, defaultValue: 'student' },
+    // Perfil: lo edita cada persona desde /perfil.
+    bio: { type: DataTypes.STRING(280), allowNull: true },
+    avatarColor: { type: DataTypes.ENUM('azul', 'menta', 'amarillo', 'coral', 'violeta', 'rio'), allowNull: false, defaultValue: 'azul' },
+    bannerStyle: { type: DataTypes.ENUM('rio', 'monte', 'atardecer', 'pomelo', 'noche', 'liso'), allowNull: false, defaultValue: 'rio' },
+    // Intereses como claves separadas por coma (lista cerrada, ver validación).
+    interests: { type: DataTypes.STRING(200), allowNull: true },
+    cohortYear: { type: DataTypes.SMALLINT.UNSIGNED, allowNull: true },
+    showOrigin: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: true },
+    showArrival: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: true },
+    // Fecha en que moderación ocultó la descripción. null = visible.
+    bioHiddenAt: { type: DataTypes.DATE, allowNull: true },
   }, { tableName: 'users', defaultScope: { attributes: { exclude: ['passwordHash'] } }, scopes: { withPassword: { attributes: { include: ['passwordHash'] } } } });
   const Category = db.define('Category', {
     id: { type: DataTypes.INTEGER.UNSIGNED, autoIncrement: true, primaryKey: true },
@@ -192,9 +203,9 @@ export function defineModels(db) {
   const Report = db.define('Report', {
     id: { type: DataTypes.INTEGER.UNSIGNED, autoIncrement: true, primaryKey: true },
     reporterId: { type: DataTypes.INTEGER.UNSIGNED, allowNull: false },
-    targetType: { type: DataTypes.ENUM('question', 'answer', 'content'), allowNull: false },
+    targetType: { type: DataTypes.ENUM('question', 'answer', 'content', 'profile'), allowNull: false },
     targetId: { type: DataTypes.INTEGER.UNSIGNED, allowNull: false },
-    reason: { type: DataTypes.ENUM('false', 'offensive', 'spam', 'outdated', 'other'), allowNull: false },
+    reason: { type: DataTypes.ENUM('false', 'offensive', 'spam', 'outdated', 'personal_data', 'other'), allowNull: false },
     details: { type: DataTypes.STRING(500), allowNull: true },
     status: { type: DataTypes.ENUM('pending', 'dismissed', 'actioned'), allowNull: false, defaultValue: 'pending' },
     action: { type: DataTypes.ENUM('none', 'hide', 'close'), allowNull: true },
@@ -209,12 +220,25 @@ export function defineModels(db) {
   const ModerationLog = db.define('ModerationLog', {
     id: { type: DataTypes.INTEGER.UNSIGNED, autoIncrement: true, primaryKey: true },
     moderatorId: { type: DataTypes.INTEGER.UNSIGNED, allowNull: true },
-    action: { type: DataTypes.ENUM('dismiss', 'hide', 'close', 'category_create', 'category_update', 'category_delete', 'source_update', 'place_create', 'place_update'), allowNull: false },
-    targetType: { type: DataTypes.ENUM('question', 'answer', 'content', 'category', 'place'), allowNull: false },
+    action: { type: DataTypes.ENUM('dismiss', 'hide', 'close', 'category_create', 'category_update', 'category_delete', 'source_update', 'place_create', 'place_update', 'warn', 'warning_revoke', 'bio_hide', 'bio_show'), allowNull: false },
+    targetType: { type: DataTypes.ENUM('question', 'answer', 'content', 'category', 'place', 'profile'), allowNull: false },
     targetId: { type: DataTypes.INTEGER.UNSIGNED, allowNull: false },
     reportId: { type: DataTypes.INTEGER.UNSIGNED, allowNull: true },
     note: { type: DataTypes.STRING(500), allowNull: false },
   }, { tableName: 'moderation_logs', updatedAt: false });
+  // Advertencias de moderación: se ven en el perfil mientras no se revoquen.
+  const UserWarning = db.define('UserWarning', {
+    id: { type: DataTypes.INTEGER.UNSIGNED, autoIncrement: true, primaryKey: true },
+    userId: { type: DataTypes.INTEGER.UNSIGNED, allowNull: false },
+    moderatorId: { type: DataTypes.INTEGER.UNSIGNED, allowNull: true },
+    reason: { type: DataTypes.ENUM('false', 'offensive', 'spam', 'personal_data', 'other'), allowNull: false },
+    note: { type: DataTypes.STRING(450), allowNull: false },
+    revokedAt: { type: DataTypes.DATE, allowNull: true },
+    revokedById: { type: DataTypes.INTEGER.UNSIGNED, allowNull: true },
+  }, { tableName: 'user_warnings', updatedAt: false });
+  User.hasMany(UserWarning, { foreignKey: 'userId', as: 'warnings' });
+  UserWarning.belongsTo(User, { foreignKey: 'userId', as: 'user' });
+  UserWarning.belongsTo(User, { foreignKey: 'moderatorId', as: 'moderator' });
   ModerationLog.belongsTo(User, { foreignKey: 'moderatorId', as: 'moderator' });
-  return { User, Institution, Career, InstitutionResource, Locality, Category, Content, Place, TravelRoute, Group, Question, Answer, AnswerVote, Report, ModerationLog, Session };
+  return { User, Institution, Career, InstitutionResource, Locality, Category, Content, Place, TravelRoute, Group, Question, Answer, AnswerVote, Report, ModerationLog, UserWarning, Session };
 }

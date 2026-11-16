@@ -4,6 +4,7 @@ export const reasonNames = {
   offensive: 'Ofensivo o agresivo',
   spam: 'Spam o publicidad',
   outdated: 'Puede estar desactualizada',
+  personal_data: 'Datos personales expuestos',
   other: 'Otro motivo',
 };
 export const reportStatusNames = { pending: 'Pendiente', dismissed: 'Desestimado', actioned: 'Con acción' };
@@ -19,8 +20,12 @@ export const actionNames = {
   source_update: 'Fuente actualizada',
   place_create: 'Lugar agregado',
   place_update: 'Lugar editado',
+  warn: 'Advertencia',
+  warning_revoke: 'Advertencia revocada',
+  bio_hide: 'Descripción ocultada',
+  bio_show: 'Descripción visible otra vez',
 };
-export const targetNames = { question: 'Pregunta', answer: 'Respuesta', content: 'Ficha', category: 'Categoría', place: 'Lugar' };
+export const targetNames = { question: 'Pregunta', answer: 'Respuesta', content: 'Ficha', category: 'Categoría', place: 'Lugar', profile: 'Perfil' };
 export const canModerate = user => ['moderator', 'admin'].includes(user?.role);
 export function formatDateTime(value) {
   if (!value) return '';

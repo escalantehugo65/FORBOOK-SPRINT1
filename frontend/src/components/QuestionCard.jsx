@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { formatDate } from '../utils/content';
+import AuthorLink from './AuthorLink';
 
 export const statusNames = { open: 'Abierta', answered: 'Respondida', closed: 'Cerrada' };
 export const statusBadge = { open: 'badge badge-community', answered: 'badge badge-official', closed: 'badge badge-soon' };
@@ -13,6 +14,6 @@ export default function QuestionCard({ question, highlighted = false }) {
     </div>
     <h3><Link to={`/preguntas/${question.id}`}>{question.title}</Link></h3>
     {question.body && <p className="question-body">{question.body}</p>}
-    <p className="card-meta">Preguntó {question.author.name} · {formatDate(question.createdAt)}</p>
+    <p className="card-meta">Preguntó <AuthorLink author={question.author}/> · {formatDate(question.createdAt)}</p>
   </article>;
 }

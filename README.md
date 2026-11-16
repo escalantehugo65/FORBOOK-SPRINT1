@@ -58,3 +58,10 @@ El backend necesita TEST_DB_NAME terminada en `_test` para ejecutar la integraci
 No se incluyen .git, .env, dependencias instaladas, compilaciones ni bases/cuentas de prueba. No se crean administradores con contraseñas conocidas. Los roles se asignan con `npm run user:role` en backend, solo a cuentas existentes.
 
 El mapa no es un GPS. Incluye seis puntos con coordenadas aportadas por el usuario y enlaces de Google Maps; las rutas de colectivos todavía no están cargadas. Los espacios no tienen membresía ni chat privado. Puntos/tienda, sanciones públicas y guía temática ampliada siguen pendientes.
+
+## Perfiles
+
+- `/perfil`: perfil propio. Cada persona edita su descripción (hasta 280 caracteres), color del avatar, fondo, intereses (hasta 6), año de ingreso y privacidad (mostrar o no de dónde viene y si ya llegó), y puede cambiar su contraseña.
+- `/usuarios/:id`: perfil de otra persona, solo con sesión iniciada. Muestra actividad (preguntas, respuestas y respuestas marcadas como útiles), insignias y advertencias de moderación. El correo no se muestra nunca y no hay mensajes privados.
+- Moderación puede dar y revocar advertencias y ocultar o volver a mostrar una descripción. Los perfiles se pueden reportar. Todo queda en el historial.
+- Después de bajar estos cambios: `npm run db:migrate` (migración 012).

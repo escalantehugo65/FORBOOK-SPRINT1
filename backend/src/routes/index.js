@@ -9,6 +9,7 @@ import { moderationController } from '../controllers/moderationController.js';
 import { adminController } from '../controllers/adminController.js';
 import { placeController } from '../controllers/placeController.js';
 import { groupController } from '../controllers/groupController.js';
+import { profileController } from '../controllers/profileController.js';
 
 export function apiRoutes(models, cookieOptions) {
   const router = Router();
@@ -22,6 +23,8 @@ export function apiRoutes(models, cookieOptions) {
   const admin = adminController(models);
   const places = placeController(models);
   const groups = groupController(models);
+  const profiles = profileController(models);
+  const passwordLimit = authRateLimit();
   const reportLimit = authRateLimit();
   // Épica 7: moderadores y administradores atienden reportes; solo administradores ven el historial y el catálogo.
   const staffOnly = requireRole(models.User, ['moderator', 'admin']);
@@ -51,6 +54,15 @@ export function apiRoutes(models, cookieOptions) {
   router.post('/questions/:id/answers', requireAuth, questionLimit, asyncRoute(questions.answer));
   router.put('/answers/:id/helpful', requireAuth, questionLimit, asyncRoute(questions.markHelpful));
   router.delete('/answers/:id/helpful', requireAuth, questionLimit, asyncRoute(questions.unmarkHelpful));
+  // Perfiles: el propio, el de otras personas y las acciones de moderación sobre un perfil.
+  router.get('/profile', requireAuth, asyncRoute(profiles.mine));
+  router.put('/profile', requireAuth, asyncRoute(profiles.update));
+  router.put('/profile/password', requireAuth, passwordLimit, asyncRoute(profiles.changePassword));
+  router.get('/users/:id', requireAuth, asyncRoute(profiles.detail));
+  router.post('/moderation/users/:id/warnings', staffOnly, asyncRoute(profiles.warn));
+  router.post('/moderation/warnings/:id/revoke', staffOnly, asyncRoute(profiles.revokeWarning));
+  router.post('/moderation/users/:id/bio/hide', staffOnly, asyncRoute(profiles.setBioVisibility(true)));
+  router.post('/moderation/users/:id/bio/show', staffOnly, asyncRoute(profiles.setBioVisibility(false)));
   router.post('/reports', requireAuth, reportLimit, asyncRoute(reports.create));
   router.get('/moderation/reports', staffOnly, asyncRoute(moderation.reports));
   router.post('/moderation/reports/:id/resolve', staffOnly, asyncRoute(moderation.resolve));

@@ -4,12 +4,13 @@ import { positiveId, validateAnswer, validateQuestion } from '../middlewares/val
 // Preguntas públicas: listar (FF-24), publicar (FF-25), ver el detalle (FF-26), responder (FF-27) y marcar útil (FF-28).
 export function questionController({ User, Institution, Category, Question, Answer, AnswerVote }) {
   const include = [
-    { model: User, as: 'author', attributes: ['id', 'name'] },
+    { model: User, as: 'author', attributes: ['id', 'name', 'avatarColor'] },
     { model: Category, as: 'category', attributes: ['id', 'name', 'slug'] },
     { model: Institution, as: 'institution', attributes: ['id', 'name'] },
   ];
   // Del autor solo se muestra el primer nombre: nunca el correo ni otros datos del perfil.
-  const publicAuthor = author => ({ name: author ? author.name.trim().split(/\s+/)[0] : 'Usuario de Forbook' });
+  // Solo el nombre de pila y el id del perfil; nunca el correo ni otros datos.
+  const publicAuthor = author => author ? { id: author.id, name: author.name.trim().split(/\s+/)[0], avatarColor: author.avatarColor } : { id: null, name: 'Usuario de Forbook', avatarColor: 'azul' };
   // helpfulCount: cuántas personas la marcaron útil. markedByMe y ownAnswer dependen de quién mira.
   const publicAnswer = (answer, userId, votes = []) => ({
     id: answer.id,
@@ -78,7 +79,7 @@ export function questionController({ User, Institution, Category, Question, Answ
       if (!question) throw new HttpError(404, 'No encontramos esta pregunta.');
       const answers = await Answer.findAll({
         where: { questionId: question.id, hiddenAt: null },
-        include: [{ model: User, as: 'author', attributes: ['id', 'name'] }],
+        include: [{ model: User, as: 'author', attributes: ['id', 'name', 'avatarColor'] }],
         order: [['createdAt', 'ASC'], ['id', 'ASC']],
       });
       const votes = answers.length ? await AnswerVote.findAll({ where: { answerId: answers.map(answer => answer.id) }, attributes: ['answerId', 'userId'] }) : [];
@@ -92,7 +93,7 @@ export function questionController({ User, Institution, Category, Question, Answ
       const input = validateAnswer(req.body);
       const created = await Answer.create({ questionId: question.id, userId: req.session.userId, body: input.body });
       if (question.status === 'open') await question.update({ status: 'answered' });
-      const answer = await Answer.findByPk(created.id, { include: [{ model: User, as: 'author', attributes: ['id', 'name'] }] });
+      const answer = await Answer.findByPk(created.id, { include: [{ model: User, as: 'author', attributes: ['id', 'name', 'avatarColor'] }] });
       res.status(201).json({ data: { answer: publicAnswer(answer, req.session.userId), status: question.status } });
     },
     markHelpful: async (req, res) => {

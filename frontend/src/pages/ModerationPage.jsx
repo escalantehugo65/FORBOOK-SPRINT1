@@ -25,7 +25,9 @@ function ReportCard({ report, onResolved }) {
   const [busy, setBusy] = useState(false);
   const decisions = [
     ['dismiss', 'Desestimar', 'El contenido queda como está.'],
-    ['hide', 'Ocultar', 'Deja de verse, pero no se borra.'],
+    target.type === 'profile'
+      ? ['hide', 'Ocultar la descripción', 'La cuenta sigue activa; la descripción deja de verse.']
+      : ['hide', 'Ocultar', 'Deja de verse, pero no se borra.'],
     ...(target.type === 'question' ? [['close', 'Cerrar la pregunta', 'Sigue visible, pero no recibe respuestas.']] : []),
   ].filter(([value]) => !target.missing || value === 'dismiss');
 

@@ -8,6 +8,7 @@ import { Loading, ErrorMessage } from '../components/Feedback';
 import { ArrowIcon } from '../components/Icons';
 import { statusBadge, statusNames } from '../components/QuestionCard';
 import ReportAction from '../components/ReportAction';
+import AuthorLink from '../components/AuthorLink';
 
 const reportReasons = ['false', 'offensive', 'spam', 'other'];
 
@@ -88,7 +89,7 @@ export default function QuestionDetailPage() {
       </div>
       <h1>{question.title}</h1>
       {question.body && <p className="question-body">{question.body}</p>}
-      <p className="card-meta">Preguntó {question.author.name} · {formatDate(question.createdAt)}</p>
+      <p className="card-meta">Preguntó <AuthorLink author={question.author}/> · {formatDate(question.createdAt)}</p>
       {!question.ownQuestion && <ReportAction targetType="question" targetId={question.id} label="Reportar esta pregunta" reasons={reportReasons}/>}
     </header>
 
@@ -98,7 +99,7 @@ export default function QuestionDetailPage() {
         ? <ol className="answer-list">{answers.map(answer => <li key={answer.id} className={answer.id === lastId ? 'answer-card is-new' : 'answer-card'}
             ref={answer.id === lastId ? newAnswer : undefined} tabIndex={answer.id === lastId ? -1 : undefined}>
             <p>{answer.body}</p>
-            <p className="card-meta">Respondió {answer.author.name} · {formatDate(answer.createdAt)}</p>
+            <p className="card-meta">Respondió <AuthorLink author={answer.author}/> · {formatDate(answer.createdAt)}</p>
             <div className="answer-foot">
               {!answer.ownAnswer && <button type="button" className="chip" aria-pressed={answer.markedByMe} disabled={voting === answer.id} onClick={() => toggleHelpful(answer)}>
                 {answer.markedByMe ? 'Te fue útil' : 'Me fue útil'}<span className="sr-only">: respuesta de {answer.author.name}</span>

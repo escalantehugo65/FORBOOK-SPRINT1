@@ -13,6 +13,7 @@ import { up as moderation } from '../migrations/008-moderation.js';
 import { up as places } from '../migrations/009-places.js';
 import { up as groups } from '../migrations/010-groups.js';
 import { up as placeAdmin } from '../migrations/011-place-admin.js';
+import { up as profiles } from '../migrations/012-profiles.js';
 
 import { up as nationalOrigin } from '../migrations/005-national-origin.js';
 
@@ -22,7 +23,7 @@ try {
   const models = defineModels(db);
   const query = db.getQueryInterface();
   await query.createTable('schema_migrations', { name: { type: DataTypes.STRING(150), primaryKey: true, allowNull: false } });
-  for (const [name, up] of [['001-initial', initial], ['002-careers', careers], ['003-institution-resources', resources], ['004-origin-localities', localities], ['005-national-origin', nationalOrigin], ['005-questions', questions], ['006-answers', answers], ['007-answer-votes', answerVotes], ['008-moderation', moderation], ['009-places', places], ['010-groups', groups], ['011-place-admin', placeAdmin]]) {
+  for (const [name, up] of [['001-initial', initial], ['002-careers', careers], ['003-institution-resources', resources], ['004-origin-localities', localities], ['005-national-origin', nationalOrigin], ['005-questions', questions], ['006-answers', answers], ['007-answer-votes', answerVotes], ['008-moderation', moderation], ['009-places', places], ['010-groups', groups], ['011-place-admin', placeAdmin], ['012-profiles', profiles]]) {
     const [rows] = await db.query('SELECT name FROM schema_migrations WHERE name = :name', { replacements: { name } });
     if (!rows.length) {
       await up(db, models);

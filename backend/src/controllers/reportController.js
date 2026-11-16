@@ -2,7 +2,7 @@ import { Op } from 'sequelize';
 import { HttpError } from '../helpers/http.js';
 import { validateReport } from '../middlewares/validation.js';
 
-// Reportar contenido (FF-34) o avisar que una ficha puede estar desactualizada (FF-35).
+// Reportar contenido (FF-34), avisar que una ficha puede estar desactualizada (FF-35) o reportar un perfil.
 // El reporte no cambia nada del contenido: solo queda pendiente para moderación.
 export function reportController({ User, Question, Answer, Content, Report }) {
   const confirmation = 'Gracias. Recibimos tu aviso y lo va a revisar el equipo de moderación.';
@@ -16,6 +16,10 @@ export function reportController({ User, Question, Answer, Content, Report }) {
     if (targetType === 'answer') {
       const answer = await Answer.findOne({ where: { id: targetId, hiddenAt: null }, attributes: ['id', 'userId'], include: [{ model: Question, as: 'question', attributes: ['id', 'hiddenAt'] }] });
       return answer && !answer.question?.hiddenAt && { ownerId: answer.userId };
+    }
+    if (targetType === 'profile') {
+      const person = await User.findByPk(targetId, { attributes: ['id'] });
+      return person && { ownerId: person.id };
     }
     const content = await Content.findOne({ where: { id: targetId, status: 'published', hiddenAt: null, [Op.or]: [{ institutionId: null }, { institutionId: student.institutionId }] }, attributes: ['id'] });
     return content && { ownerId: null };

@@ -18,6 +18,7 @@ import { up as moderation } from '../migrations/008-moderation.js';
 import { up as places } from '../migrations/009-places.js';
 import { up as groups } from '../migrations/010-groups.js';
 import { up as placeAdmin } from '../migrations/011-place-admin.js';
+import { up as profiles } from '../migrations/012-profiles.js';
 
 // Lugares cargados desde la página por administración, con historial.
 test('administración de lugares del mapa sobre MySQL', { skip: !process.env.TEST_DB_NAME }, async t => {
@@ -35,7 +36,7 @@ test('administración de lugares del mapa sobre MySQL', { skip: !process.env.TES
   const placeIds = [];
   try {
     await db.authenticate();
-    for (const migration of [initial, careers, resources, localities, nationalOrigin, questions, answers, votes, moderation, places, groups, placeAdmin]) await migration(db, models);
+    for (const migration of [initial, careers, resources, localities, nationalOrigin, questions, answers, votes, moderation, places, groups, placeAdmin, profiles]) await migration(db, models);
     await placeAdmin(db, models);
     institution = await models.Institution.create({ name: `Institución admin mapa ${suffix}`, sourceUrl: 'https://example.com' });
     const passwordHash = await bcrypt.hash('Una-clave-segura-123', 4);

@@ -1,0 +1,98 @@
+/* Perfiles de usuario: avatar, fondo decorativo, datos, actividad y advertencias. */
+
+/* Colores del avatar (lista cerrada, igual que en el backend) */
+.avatar-azul { background: #2447d6; color: #fff; }
+.avatar-menta { background: var(--mint); color: var(--on-accent); }
+.avatar-amarillo { background: var(--yellow); color: #0e1a3f; }
+.avatar-coral { background: #d9533f; color: #fff; }
+.avatar-violeta { background: #7a3fd6; color: #fff; }
+.avatar-rio { background: #0f7f63; color: #fff; }
+.avatar-xl { width: 104px; height: 104px; font-size: 38px; border: 5px solid var(--surface); box-shadow: var(--shadow); }
+.avatar-small { width: 28px; height: 28px; font-size: 12px; }
+
+/* Fondos del perfil */
+.banner-rio { background: radial-gradient(circle at 85% 20%, rgba(255, 255, 255, 0.35) 0 12%, transparent 13%), linear-gradient(120deg, #1f5fa8, #3aa3c2 55%, #9fe0cf); }
+.banner-monte { background: radial-gradient(circle at 15% 80%, rgba(255, 255, 255, 0.18) 0 18%, transparent 19%), linear-gradient(120deg, #17492f, #2f7d47 55%, #9cc85f); }
+.banner-atardecer { background: radial-gradient(circle at 75% 85%, #ffd66b 0 14%, transparent 15%), linear-gradient(120deg, #f2994a, #e0575a 55%, #6d3fc4); }
+.banner-pomelo { background: radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.45) 0 10%, transparent 11%), linear-gradient(120deg, #ffd66b, #ff9a7a 55%, #ea5a77); }
+.banner-noche { background: radial-gradient(circle at 80% 25%, #f4f1d0 0 6%, transparent 7%), radial-gradient(circle at 30% 60%, rgba(255, 255, 255, 0.7) 0 1%, transparent 1.5%), linear-gradient(120deg, #0b1533, #24336e 60%, #4f43a8); }
+.banner-liso { background: var(--tint); }
+
+.profile { display: grid; gap: 22px; }
+.user-profile-head { border: 2px solid var(--line); border-radius: var(--radius-l); background: var(--surface); overflow: hidden; }
+.profile-banner { height: 170px; }
+.profile-identity { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 14px 22px; padding: 0 28px 24px; }
+.profile-identity .avatar-xl { margin-top: -56px; }
+.profile-title { flex: 1 1 260px; min-width: 0; display: grid; gap: 8px; }
+.profile-title h1 { font-size: clamp(28px, 4vw, 40px); line-height: 1.1; overflow-wrap: anywhere; }
+.profile-badges { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.profile-badge-moderation { background: var(--tint); color: var(--link); }
+.profile-badge-helpful { background: var(--ok-bg); }
+.profile-actions { display: flex; gap: 10px; }
+
+.profile-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(260px, 340px); gap: 22px; align-items: start; }
+.profile-main { display: grid; gap: 22px; min-width: 0; }
+.profile-card { display: grid; gap: 14px; align-content: start; padding: 24px; border: 2px solid var(--line); border-radius: var(--radius-l); background: var(--surface); min-width: 0; }
+.profile-card h2 { font-size: 22px; line-height: 1.2; }
+.profile-subtitle { margin-top: 6px; font-size: 15px; font-weight: 800; color: var(--ink-2); text-transform: uppercase; letter-spacing: 0.04em; }
+.profile-bio { font-size: 17px; line-height: 1.7; white-space: pre-line; overflow-wrap: anywhere; }
+.profile-empty { color: var(--ink-3); font-size: 15px; }
+.profile-hidden-note { padding: 12px 16px; border-radius: var(--radius-s); background: var(--danger-bg); border: 2px solid var(--danger-line); font-weight: 700; font-size: 15px; }
+
+.interest-list { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.interest-chip { padding: 6px 14px; border-radius: 999px; background: var(--tint); color: var(--ink); font-weight: 700; font-size: 14px; }
+
+.profile-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin: 0; }
+.profile-stats div { display: grid; gap: 4px; padding: 14px; border-radius: var(--radius-m); background: var(--surface-soft); text-align: center; }
+.profile-stats dt { order: 2; font-size: 13px; font-weight: 700; color: var(--ink-3); }
+.profile-stats dd { order: 1; margin: 0; font-family: var(--font-display); font-size: 30px; font-weight: 800; line-height: 1; }
+.activity-list { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; }
+.activity-list li { display: grid; gap: 2px; padding-bottom: 10px; border-bottom: 1px solid var(--line); min-width: 0; }
+.activity-list li:last-child { border-bottom: 0; padding-bottom: 0; }
+.activity-list a { font-weight: 800; overflow-wrap: anywhere; }
+.activity-list span { color: var(--ink-3); font-size: 14px; overflow-wrap: anywhere; }
+
+.profile-details dl { display: grid; gap: 12px; margin: 0; }
+.profile-details dt { font-size: 13px; font-weight: 800; color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.04em; }
+.profile-details dd { margin: 2px 0 0; font-weight: 700; overflow-wrap: anywhere; }
+
+/* Advertencias visibles en el perfil */
+.profile-warnings { display: grid; gap: 10px; padding: 20px 24px; border-radius: var(--radius-l); background: var(--danger-bg); border: 2px solid var(--danger-line); }
+.profile-warnings h2 { font-size: 20px; color: var(--danger); }
+.profile-warnings ul { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.profile-warnings li p { margin-top: 4px; font-size: 15px; color: var(--ink-2); }
+.profile-warning-note { font-size: 14px; color: var(--ink-2); }
+
+/* Edición y herramientas */
+.profile-settings { display: grid; gap: 22px; margin-top: 22px; scroll-margin-top: 96px; }
+.profile-form { max-width: 820px; }
+.profile-form textarea, .moderation-tools textarea, .moderation-tools select, .moderation-tools input { width: 100%; padding: 10px 14px; border: 2px solid var(--line-strong); border-radius: var(--radius-s); background: var(--surface); }
+.swatch-row, .banner-options, .interest-options { display: flex; flex-wrap: wrap; gap: 10px; }
+.swatch-option, .banner-option { position: relative; display: grid; justify-items: center; gap: 6px; padding: 10px; border: 2px solid var(--line); border-radius: var(--radius-m); font-size: 14px; font-weight: 700; cursor: pointer; }
+.swatch-option input, .banner-option input { position: absolute; opacity: 0; pointer-events: none; }
+.swatch-option:has(input:checked), .banner-option:has(input:checked) { border-color: var(--primary); box-shadow: 0 0 0 3px var(--tint); }
+.swatch-option:has(input:focus-visible), .banner-option:has(input:focus-visible) { outline: 3px solid var(--focus); outline-offset: 2px; }
+.banner-preview { display: block; width: 120px; height: 52px; border-radius: var(--radius-s); }
+.interest-option { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 14px; border: 2px solid var(--line); border-radius: 999px; font-weight: 700; font-size: 14px; cursor: pointer; }
+.interest-option:has(input:checked) { border-color: var(--primary); background: var(--tint); }
+.interest-option:has(input:disabled) { opacity: 0.55; cursor: not-allowed; }
+.moderation-tools { border-color: var(--line-strong); }
+.moderation-tools form, .tool-group { display: grid; gap: 12px; }
+.profile-notice { margin-top: 16px; }
+.profile-report { justify-self: start; }
+
+/* Encabezado: el chip del usuario lleva a su perfil */
+a.user-chip { color: inherit; text-decoration: none; border-radius: 999px; padding: 2px 10px 2px 2px; }
+a.user-chip:hover { background: var(--bg-soft); }
+a.menu-user { color: inherit; text-decoration: none; }
+a.menu-user small { display: block; font-size: 13px; font-weight: 700; color: var(--link); }
+.author-link { font-weight: 800; }
+
+@media (max-width: 860px) {
+  .profile-grid { grid-template-columns: 1fr; }
+  .profile-banner { height: 120px; }
+  .profile-identity { padding: 0 18px 20px; }
+  .profile-identity .avatar-xl { width: 88px; height: 88px; font-size: 32px; margin-top: -44px; }
+  .profile-card { padding: 18px; }
+  .profile-stats dd { font-size: 24px; }
+}

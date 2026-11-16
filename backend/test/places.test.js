@@ -18,6 +18,7 @@ import { up as moderation } from '../migrations/008-moderation.js';
 import { up as places } from '../migrations/009-places.js';
 import { up as groups } from '../migrations/010-groups.js';
 import { up as placeAdmin } from '../migrations/011-place-admin.js';
+import { up as profiles } from '../migrations/012-profiles.js';
 
 // Épicas 4 y 6 sobre MySQL real: lugares (FF-21/23), rutas (FF-22) y espacios de integración (FF-30/31).
 test('lugares, rutas y espacios de integración sobre MySQL', { skip: !process.env.TEST_DB_NAME }, async t => {
@@ -34,7 +35,7 @@ test('lugares, rutas y espacios de integración sobre MySQL', { skip: !process.e
   const created = [];
   try {
     await db.authenticate();
-    for (const migration of [initial, careers, resources, localities, nationalOrigin, questions, answers, votes, moderation, places, groups, placeAdmin]) await migration(db, models);
+    for (const migration of [initial, careers, resources, localities, nationalOrigin, questions, answers, votes, moderation, places, groups, placeAdmin, profiles]) await migration(db, models);
     await places(db, models); await groups(db, models); // se pueden repetir sin romper nada
     institution = await models.Institution.create({ name: `Institución mapa ${suffix}`, sourceUrl: 'https://example.com' });
     otherInstitution = await models.Institution.create({ name: `Otra institución mapa ${suffix}`, sourceUrl: 'https://example.com' });

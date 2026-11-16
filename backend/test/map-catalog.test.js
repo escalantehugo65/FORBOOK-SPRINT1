@@ -9,7 +9,7 @@ test('seis lugares reales: carga inicial, actualización y preservación de edic
   const db=createDatabase({db:{host:process.env.TEST_DB_HOST||'127.0.0.1',port:Number(process.env.TEST_DB_PORT||3306),database:process.env.TEST_DB_NAME,username:process.env.TEST_DB_USER||'root',password:process.env.TEST_DB_PASSWORD||''}});
   const models=defineModels(db); const institutionIds=[];
   try {
-    for (const name of ['001-initial','002-careers','003-institution-resources','004-origin-localities','005-national-origin','005-questions','006-answers','007-answer-votes','008-moderation','009-places','010-groups','011-place-admin']) await (await import(`../migrations/${name}.js`)).up(db,models);
+    for (const name of ['001-initial','002-careers','003-institution-resources','004-origin-localities','005-national-origin','005-questions','006-answers','007-answer-votes','008-moderation','009-places','010-groups','011-place-admin','012-profiles']) await (await import(`../migrations/${name}.js`)).up(db,models);
     for (const name of ['Universidad Nacional de Formosa (UNaF)','Instituto Politécnico Formosa (IPF)']) institutionIds.push((await models.Institution.create({name,sourceUrl:'https://example.com'})).id);
     const oldSource='https://servicios.infoleg.gob.ar/infolegInternet/anexos/410000-414999/412386/res566.pdf';
     await models.Place.create({slug:'unaf-campus',name:'Campus de la UNaF',kind:'institution',institutionId:institutionIds[0],addressLabel:'Av. Dr. Luis Gutnisky 3200, ciudad de Formosa',sourceType:'official',sourceUrl:oldSource,reviewedAt:'2026-11-08',status:'published'});

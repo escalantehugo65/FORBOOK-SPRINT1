@@ -4,14 +4,15 @@ import { positiveId, validateResolution } from '../middlewares/validation.js';
 
 // Resumen de lo reportado o moderado, para mostrarlo en la cola y en el historial.
 // Del contenido se manda solo lo necesario para decidir: nunca datos del autor.
-export async function describeTargets(rows, { Question, Answer, Content, Category, Place }) {
+export async function describeTargets(rows, { Question, Answer, Content, Category, Place, User }) {
   const ids = type => [...new Set(rows.filter(row => row.targetType === type).map(row => row.targetId))];
-  const [questions, answers, contents, categories, places] = await Promise.all([
+  const [questions, answers, contents, categories, places, profiles] = await Promise.all([
     ids('question').length ? Question.findAll({ where: { id: ids('question') }, attributes: ['id', 'title', 'status', 'hiddenAt'] }) : [],
     ids('answer').length ? Answer.findAll({ where: { id: ids('answer') }, attributes: ['id', 'body', 'hiddenAt', 'questionId'], include: [{ model: Question, as: 'question', attributes: ['id', 'title', 'hiddenAt'] }] }) : [],
     ids('content').length ? Content.findAll({ where: { id: ids('content') }, attributes: ['id', 'title', 'status', 'hiddenAt'] }) : [],
     ids('category').length ? Category.findAll({ where: { id: ids('category') }, attributes: ['id', 'name'] }) : [],
     ids('place').length ? Place.findAll({ where: { id: ids('place') }, attributes: ['id', 'name', 'status', 'hiddenAt'] }) : [],
+    ids('profile').length ? User.findAll({ where: { id: ids('profile') }, attributes: ['id', 'name', 'bio', 'bioHiddenAt'] }) : [],
   ]);
   const targets = new Map();
   for (const item of questions) targets.set(`question:${item.id}`, { title: item.title, hidden: Boolean(item.hiddenAt), closed: item.status === 'closed', link: item.hiddenAt ? null : `/preguntas/${item.id}` });
@@ -22,6 +23,8 @@ export async function describeTargets(rows, { Question, Answer, Content, Categor
   for (const item of contents) targets.set(`content:${item.id}`, { title: item.title, hidden: Boolean(item.hiddenAt), link: item.hiddenAt || item.status !== 'published' ? null : `/conozcamos/${item.id}` });
   for (const item of categories) targets.set(`category:${item.id}`, { title: item.name, hidden: false, link: null });
   for (const item of places) targets.set(`place:${item.id}`, { title: item.name, hidden: Boolean(item.hiddenAt), link: item.hiddenAt || item.status !== 'published' ? null : `/mapa?lugar=${item.id}` });
+  // De un perfil se muestra el nombre y la descripción reportada, para poder decidir.
+  for (const item of profiles) targets.set(`profile:${item.id}`, { title: item.name, excerpt: item.bio ? (item.bio.length > 160 ? `${item.bio.slice(0, 157)}…` : item.bio) : 'Sin descripción', hidden: Boolean(item.bioHiddenAt), link: `/usuarios/${item.id}` });
   return row => ({ type: row.targetType, id: row.targetId, ...(targets.get(`${row.targetType}:${row.targetId}`) || { title: 'Ya no existe', missing: true, hidden: false, link: null }) });
 }
 
@@ -59,7 +62,7 @@ export function moderationController(models) {
       if (!report) throw new HttpError(404, 'No encontramos este reporte.');
       if (report.status !== 'pending') throw new HttpError(409, 'Este reporte ya fue resuelto.');
       if (input.decision === 'close' && report.targetType !== 'question') throw new HttpError(400, 'Solo se pueden cerrar preguntas.', { decision: 'Elegí otra decisión.' });
-      const model = { question: Question, answer: Answer, content: Content }[report.targetType];
+      const model = { question: Question, answer: Answer, content: Content, profile: User }[report.targetType];
       const target = await model.findByPk(report.targetId);
       if (!target && input.decision !== 'dismiss') throw new HttpError(409, 'El contenido ya no existe: solo se puede desestimar el reporte.');
       const resolution = {
@@ -71,7 +74,9 @@ export function moderationController(models) {
       await Report.sequelize.transaction(async transaction => {
         const [updated] = await Report.update(resolution, { where: { id: report.id, status: 'pending' }, transaction });
         if (!updated) throw new HttpError(409, 'Este reporte ya fue resuelto.');
-        if (input.decision === 'hide' && !target.hiddenAt) await target.update({ hiddenAt: new Date() }, { transaction });
+        // En un perfil, "ocultar" oculta la descripción; la cuenta sigue activa.
+        if (input.decision === 'hide' && report.targetType === 'profile') { if (!target.bioHiddenAt) await target.update({ bioHiddenAt: new Date() }, { transaction }); }
+        else if (input.decision === 'hide' && !target.hiddenAt) await target.update({ hiddenAt: new Date() }, { transaction });
         if (input.decision === 'close') await target.update({ status: 'closed' }, { transaction });
         // Si se aplicó una acción, los demás reportes pendientes sobre lo mismo quedan resueltos igual.
         if (input.decision !== 'dismiss') await Report.update(resolution, { where: { targetType: report.targetType, targetId: report.targetId, status: 'pending' }, transaction });

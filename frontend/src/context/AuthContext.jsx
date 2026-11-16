@@ -13,6 +13,10 @@ export function AuthProvider({ children }) {
     finally { setChecking(false); }
   }, []);
   useEffect(() => { refresh(); }, [refresh]);
+  // Actualiza los datos de la sesión sin mostrar la pantalla de carga (por ejemplo, al editar el perfil).
+  const reloadUser = useCallback(async () => {
+    try { const result = await authService.me(); setUser(result.data.user); } catch { /* si falla, se conserva lo que había */ }
+  }, []);
   useEffect(() => {
     const expired = () => setUser(null);
     window.addEventListener('forbook:unauthorized', expired);
@@ -21,6 +25,6 @@ export function AuthProvider({ children }) {
   const login = async values => { const result = await authService.login(values); setUser(result.data.user); };
   const register = async values => { const result = await authService.register(values); if (result.data.sessionStarted) setUser(result.data.user); return result.data.sessionStarted; };
   const logout = async () => { await authService.logout(); setUser(null); };
-  return <AuthContext.Provider value={{ user, checking, error, refresh, login, register, logout }}>{children}</AuthContext.Provider>;
+  return <AuthContext.Provider value={{ user, checking, error, refresh, reloadUser, login, register, logout }}>{children}</AuthContext.Provider>;
 }
 export const useAuth = () => useContext(AuthContext);

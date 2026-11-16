@@ -18,6 +18,7 @@ import { up as moderation } from '../migrations/008-moderation.js';
 import { up as places } from '../migrations/009-places.js';
 import { up as groups } from '../migrations/010-groups.js';
 import { up as placeAdmin } from '../migrations/011-place-admin.js';
+import { up as profiles } from '../migrations/012-profiles.js';
 
 // Épica 7 sobre MySQL real: reportes, permisos por rol, resolución, historial y catálogo.
 test('moderación FF-34 a FF-39 sobre MySQL', { skip: !process.env.TEST_DB_NAME }, async t => {
@@ -34,7 +35,7 @@ test('moderación FF-34 a FF-39 sobre MySQL', { skip: !process.env.TEST_DB_NAME 
   let institution, category, content;
   try {
     await db.authenticate();
-    for (const migration of [initial, careers, resources, localities, nationalOrigin, questions, answers, votes, moderation, places, groups, placeAdmin]) await migration(db, models);
+    for (const migration of [initial, careers, resources, localities, nationalOrigin, questions, answers, votes, moderation, places, groups, placeAdmin, profiles]) await migration(db, models);
     institution = await models.Institution.create({ name: `Institución moderación ${suffix}`, sourceUrl: 'https://example.com' });
     category = await models.Category.create({ name: `Moderación ${suffix}`, slug: `mod-${suffix}`, description: 'Datos ficticios exclusivos para pruebas' });
     content = await models.Content.create({ slug: `mod-content-${suffix}`, title: 'Ficha de prueba', summary: 'Dato ficticio', body: 'No es información real.', categoryId: category.id, sourceType: 'official', sourceLabel: 'Organismo de prueba', sourceUrl: 'https://example.com', reviewedAt: '2026-10-20', status: 'published' });

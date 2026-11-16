@@ -3,6 +3,7 @@ import { Link, NavLink, Outlet, useLocation, useNavigate } from 'react-router-do
 import { useAuth } from '../context/AuthContext';
 import { PublicAccessContext } from '../context/PublicAccessContext';
 import { firstName } from '../utils/content';
+import Avatar from './Avatar';
 import { canModerate } from '../utils/moderation';
 import AuthModal from './AuthModal';
 import ThemeToggle from './ThemeToggle';
@@ -74,7 +75,7 @@ export default function Layout() {
           {checking ? <span className="header-placeholder" aria-hidden="true"/> : <>
             <ThemeToggle className="desktop-only"/>
             {user ? <>
-              <span className="user-chip desktop-only"><span className="avatar" aria-hidden="true">{name.charAt(0).toUpperCase()}</span><span>{name}</span></span>
+              <Link className="user-chip desktop-only" to="/perfil" aria-label={`Mi perfil: ${user.name}`}><Avatar name={user.name} color={user.avatarColor}/><span>{name}</span></Link>
               <button className="btn btn-outline btn-small desktop-only" type="button" onClick={closeSession} disabled={busy}>{busy ? 'Cerrando…' : 'Cerrar sesión'}</button>
             </> : <>
               <button className="btn btn-outline btn-small" type="button" onClick={() => openAccess('login')}>Ingresar</button>
@@ -87,7 +88,7 @@ export default function Layout() {
       {menuOpen && <div id="mobile-menu" className="mobile-menu"><div className="container">
         <nav aria-label="Navegación principal">{links}</nav>
         <div className="menu-actions">
-          {user && <p className="menu-user"><span className="avatar" aria-hidden="true">{name.charAt(0).toUpperCase()}</span>{user.name}</p>}
+          {user && <Link className="menu-user" to="/perfil"><Avatar name={user.name} color={user.avatarColor}/><span>{user.name}<small>Ver mi perfil</small></span></Link>}
           <ThemeToggle withLabel/>
           {user
             ? <button className="btn btn-outline" type="button" onClick={closeSession} disabled={busy}>{busy ? 'Cerrando…' : 'Cerrar sesión'}</button>

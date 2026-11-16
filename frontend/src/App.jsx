@@ -18,6 +18,8 @@ import RoutesPage from './pages/RoutesPage';
 import RouteDetailPage from './pages/RouteDetailPage';
 import GroupsPage from './pages/GroupsPage';
 import GroupDetailPage from './pages/GroupDetailPage';
+import ProfilePage from './pages/ProfilePage';
+import UserProfilePage from './pages/UserProfilePage';
 
 // El mapa (Leaflet) se descarga solo cuando alguien entra a /mapa.
 const MapPage = lazy(() => import('./pages/MapPage'));
@@ -48,6 +50,8 @@ export default function App() {
         <Route path="rutas/:id" element={<RouteDetailPage/>}/>
         <Route path="espacios" element={<GroupsPage/>}/>
         <Route path="espacios/:id" element={<GroupDetailPage/>}/>
+        <Route path="perfil" element={<ProfilePage/>}/>
+        <Route path="usuarios/:id" element={<UserProfilePage/>}/>
         <Route element={<RoleRoute roles={['moderator', 'admin']}/>}>
           <Route path="moderacion" element={<ModerationPage/>}/>
         </Route>

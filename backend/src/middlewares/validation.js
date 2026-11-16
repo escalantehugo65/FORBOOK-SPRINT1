@@ -83,10 +83,10 @@ const optionalText = (value, max, fields, key, message) => {
 export function validateReport(body) {
   plainObject(body, ['targetType', 'targetId', 'reason', 'details']);
   const fields = {};
-  if (!['question', 'answer', 'content'].includes(body.targetType)) fields.targetType = 'Tipo de contenido inválido.';
+  if (!['question', 'answer', 'content', 'profile'].includes(body.targetType)) fields.targetType = 'Tipo de contenido inválido.';
   let targetId;
   try { targetId = positiveId(body.targetId, 'Contenido'); } catch { fields.targetId = 'Contenido inválido.'; }
-  if (!['false', 'offensive', 'spam', 'outdated', 'other'].includes(body.reason)) fields.reason = 'Elegí un motivo.';
+  if (!['false', 'offensive', 'spam', 'outdated', 'personal_data', 'other'].includes(body.reason)) fields.reason = 'Elegí un motivo.';
   else if (body.reason === 'outdated' && body.targetType !== 'content') fields.reason = 'Ese motivo solo se usa en las fichas.';
   const details = optionalText(body.details, 500, fields, 'details', 'El comentario puede tener hasta 500 caracteres.');
   if (Object.keys(fields).length) throw new HttpError(400, 'Revisá los campos indicados.', fields);
@@ -185,4 +185,66 @@ export function validatePlace(body) {
   if (Object.keys(fields).length) throw new HttpError(400, 'Revisá los campos indicados.', fields);
   const { authorLabel, ...cleanSource } = source;
   return { name, kind: body.kind, institutionId, addressLabel: addressLabel || null, studentNote: studentNote || null, latitude, longitude, status: body.status, ...cleanSource };
+}
+
+
+// Perfil: opciones cerradas de decoración e intereses, para que nadie pueda inyectar estilos ni texto libre.
+export const profileOptions = {
+  avatarColors: ['azul', 'menta', 'amarillo', 'coral', 'violeta', 'rio'],
+  bannerStyles: ['rio', 'monte', 'atardecer', 'pomelo', 'noche', 'liso'],
+  interests: ['deportes', 'musica', 'juegos', 'lectura', 'arte', 'tecnologia', 'cine', 'voluntariado', 'idiomas', 'naturaleza', 'cocina', 'fotografia'],
+  maxInterests: 6,
+};
+export function validateProfile(body) {
+  plainObject(body, ['bio', 'avatarColor', 'bannerStyle', 'interests', 'cohortYear', 'showOrigin', 'showArrival']);
+  const fields = {};
+  const bio = optionalText(body.bio, 280, fields, 'bio', 'La descripción puede tener hasta 280 caracteres.');
+  if (!profileOptions.avatarColors.includes(body.avatarColor)) fields.avatarColor = 'Elegí un color de la lista.';
+  if (!profileOptions.bannerStyles.includes(body.bannerStyle)) fields.bannerStyle = 'Elegí un fondo de la lista.';
+  let interests = [];
+  if (!Array.isArray(body.interests) || body.interests.some(item => !profileOptions.interests.includes(item))) fields.interests = 'Elegí intereses de la lista.';
+  else {
+    interests = [...new Set(body.interests)];
+    if (interests.length > profileOptions.maxInterests) fields.interests = `Podés elegir hasta ${profileOptions.maxInterests} intereses.`;
+  }
+  let cohortYear = null;
+  const maxYear = new Date().getFullYear() + 1;
+  if (body.cohortYear !== null && body.cohortYear !== undefined && body.cohortYear !== '') {
+    if (!Number.isInteger(body.cohortYear) || body.cohortYear < 1990 || body.cohortYear > maxYear) fields.cohortYear = `Elegí un año entre 1990 y ${maxYear}.`;
+    else cohortYear = body.cohortYear;
+  }
+  for (const key of ['showOrigin', 'showArrival']) if (typeof body[key] !== 'boolean') fields[key] = 'Elegí sí o no.';
+  if (Object.keys(fields).length) throw new HttpError(400, 'Revisá los campos indicados.', fields);
+  return { bio: bio || null, avatarColor: body.avatarColor, bannerStyle: body.bannerStyle, interests: interests.length ? interests.join(',') : null, cohortYear, showOrigin: body.showOrigin, showArrival: body.showArrival };
+}
+
+// Cambio de contraseña: la actual se pide siempre; la nueva sigue la misma regla que el registro.
+export function validatePasswordChange(body) {
+  plainObject(body, ['currentPassword', 'newPassword']);
+  const fields = {};
+  if (typeof body.currentPassword !== 'string' || !body.currentPassword) fields.currentPassword = 'Escribí tu contraseña actual.';
+  const next = typeof body.newPassword === 'string' ? body.newPassword : '';
+  if (next.length < 10 || next.length > 72 || Buffer.byteLength(next, 'utf8') > 72) fields.newPassword = 'La nueva contraseña debe tener entre 10 y 72 caracteres.';
+  else if (next === body.currentPassword) fields.newPassword = 'La nueva contraseña tiene que ser distinta de la actual.';
+  if (Object.keys(fields).length) throw new HttpError(400, 'Revisá los campos indicados.', fields);
+  return { currentPassword: body.currentPassword, newPassword: next };
+}
+
+// Advertencia de moderación: motivo de una lista y una explicación que ve la persona advertida.
+export function validateWarning(body) {
+  plainObject(body, ['reason', 'note']);
+  const fields = {};
+  if (!['false', 'offensive', 'spam', 'personal_data', 'other'].includes(body.reason)) fields.reason = 'Elegí un motivo.';
+  const note = typeof body.note === 'string' ? body.note.trim() : '';
+  if (note.length < 10 || note.length > 450) fields.note = 'Explicá el motivo en 10 a 450 caracteres.';
+  if (Object.keys(fields).length) throw new HttpError(400, 'Revisá los campos indicados.', fields);
+  return { reason: body.reason, note };
+}
+
+// Nota interna para ocultar o volver a mostrar una descripción, o revocar una advertencia.
+export function validateModerationNote(body) {
+  plainObject(body, ['note']);
+  const note = typeof body.note === 'string' ? body.note.trim() : '';
+  if (note.length < 5 || note.length > 500) throw new HttpError(400, 'Revisá los campos indicados.', { note: 'Escribí el motivo en 5 a 500 caracteres.' });
+  return { note };
 }
