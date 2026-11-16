@@ -2,6 +2,8 @@ import { describe, it, expect } from 'vitest';
 import { clampOffset, coverScale, cropArea, limits } from './crop';
 import { findMatches, splitMatches } from './search';
 import { withItem } from './shop';
+import { checkStops, stopFromRoute } from './stops';
+import { googleMapsUrl } from './coordinates';
 
 describe('recorte de la foto de perfil', () => {
   it('la imagen cubre el cuadro: el lado corto llena los 300 px', () => {
@@ -54,5 +56,39 @@ describe('vista previa de la tienda', () => {
     expect(withItem(puestas, { category: 'frame', slug: 'marco-prisma' })).toEqual({ ...puestas, frame: 'marco-prisma' });
     expect(withItem(puestas, { category: 'name_color', slug: 'nombre-oro' })).toEqual({ ...puestas, nameColor: 'nombre-oro' });
     expect(withItem(undefined, null)).toEqual({ frame: null, banner: null, effect: null, nameColor: null });
+  });
+});
+
+describe('paradas de una ruta (colectivo del IPF)', () => {
+  const row = (name, coordinates, reference = '') => ({ key: name, name, reference, coordinates });
+
+  it('acepta coordenadas copiadas de Google Maps, con muchos decimales o con el nombre pegado', () => {
+    const { valid, stops } = checkStops([
+      row(' La Virgen ', '-26.155857478439273, -58.18570582851414'),
+      row('Circuito', 'circuito -26.141242, -58.193193', ' Sobre la Ruta Nacional 11 '),
+    ]);
+    expect(valid).toBe(true);
+    expect(stops).toEqual([
+      { name: 'La Virgen', reference: null, latitude: -26.155857, longitude: -58.185706 },
+      { name: 'Circuito', reference: 'Sobre la Ruta Nacional 11', latitude: -26.141242, longitude: -58.193193 },
+    ]);
+  });
+
+  it('marca cada fila con su error', () => {
+    const { valid, errors } = checkStops([row('Plaza San Martín', '-26.186308, -58.173568'), row('x', ''), row('Al revés', '-58.173568, -26.186308')]);
+    expect(valid).toBe(false);
+    expect(errors[0]).toEqual({});
+    expect(errors[1].name).toMatch(/entre 2 y 120/);
+    expect(errors[1].coordinates).toMatch(/Pegá las coordenadas/);
+    expect(errors[2].coordinates).toMatch(/al revés/);
+  });
+
+  it('al editar, muestra las paradas guardadas como texto', () => {
+    expect(stopFromRoute({ id: 4, name: 'IPV', reference: null, latitude: -26.164724, longitude: -58.198354 }))
+      .toEqual({ key: 'stop-4', name: 'IPV', reference: '', coordinates: '-26.164724, -58.198354' });
+  });
+
+  it('arma el enlace a Google Maps con las coordenadas', () => {
+    expect(googleMapsUrl({ latitude: -26.186308, longitude: -58.173568 })).toBe('https://www.google.com/maps/search/?api=1&query=-26.186308,-58.173568');
   });
 });

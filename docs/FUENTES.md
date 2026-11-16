@@ -43,3 +43,20 @@ Consultadas el 16/11/2026. Son resúmenes propios; lo que las páginas no inform
 | Registrá tu SUBE | https://www.argentina.gob.ar/sube/preguntas-frecuentes y https://www.argentina.gob.ar/noticias/como-y-por-que-registrar-la-sube | Para qué sirve registrarla, una sola tarjeta por persona, el saldo no vence, cómo darla de baja (Mi SUBE, app, Centro de Atención, 0800-777-7823 opción 1) y el correo en 72 h hábiles. |
 
 No se cargaron rutas de colectivos: no se encontró una fuente oficial con los recorridos urbanos de Formosa. Las rutas se cargan desde Moderación → Rutas después de que alguien del equipo compruebe el recorrido, con su fecha de revisión.
+
+## Colectivo del IPF y fichas del 16/11/2026 (segundo lote)
+
+**Colectivo gratuito al IPF** (ruta, fuente comunitaria). Lo comprobó Lautaro Villalba, estudiante del IPF, el 16/11/2026. Incluye solo lo que él informó: es gratis para estudiantes del IPF y no hay que mostrar nada; es un colectivo de Puerto Tirol sin cartel; turno mañana con dos salidas desde Plaza San Martín (parada del Correo Argentino), a las 8:00 (levanta en Plaza Temática y La Virgen) y a las 8:10 aproximadamente (Plaza Temática y Circuito, sobre la Ruta Nacional 11); en las demás paradas el horario varía y conviene estar antes de las 8:00; turno tarde alrededor de las 16:15; la vuelta para en las mismas paradas. Las ocho paradas del turno mañana (Plaza San Martín, Plaza Temática, La Virgen, Circuito, Cruz, Homu, Shell e IPV) tienen las coordenadas que él aportó, redondeadas a 6 decimales. No se dibuja el trayecto ni se informa el tiempo de viaje.
+
+| Ficha | Tipo y referencia | Alcance |
+|---|---|---|
+| Beneficios para estudiantes del IPF (solo IPF) | Oficial. AGENFOR, 28/10/2026: https://agenfor.com.ar/2026/10/cerca-de-600-estudiantes-ya-se-preinscribieron-a-las-carreras-del-instituto-politecnico/ | Transporte y comidas garantizados (unas 500 raciones diarias), equipamiento tecnológico, acompañamiento docente, equipo de psicología, psicopedagogía y trabajo social, y la Beca Soberanía Tecnológica (Secretaría de Ciencia y Tecnología, para estudiantes del interior). La nota no da requisitos ni monto. |
+| Carreras del IPF y preinscripción 2027 (solo IPF, actualizada) | Oficial. La misma nota de AGENFOR | Cuatro tecnicaturas, preinscripción 2027 en ipfconecta.formosa.gob.ar hasta diciembre, paso al aula virtual y examen de ingreso. Reemplaza la versión anterior, que tomaba los formularios de 2023 de ipf.edu.ar/carreras. |
+| Parada de Circuito: esperá con cuidado (solo IPF) | Experiencia de Lautaro Villalba | Robos contados por estudiantes en la zona de la parada, consejos para esperar y la Policía al 101 (número de la ficha de emergencias). Sin estigmatizar el barrio. |
+| Alquileres en Marketplace | Experiencia de Lautaro Villalba | Dónde se publican alquileres y cuidados para evitar estafas. Remite a la ficha legal de alquileres. |
+| DiDi o Uber: cuál conviene | Experiencia de Lautaro Villalba | Entre estudiantes se usa más DiDi porque suele ser más barato. Sin precios. |
+| El tereré | Experiencia de Lautaro Villalba | Qué es y cómo se comparte. |
+| El «pa» de las preguntas | Experiencia de Lautaro Villalba | Uso de «pa» al final de las preguntas. El origen guaraní (partícula interrogativa -pa) coincide con Paz y Vidal, «Interrogative Constructions in Guaraní», Languages, 2022 (UNaF y CONICET). |
+| ¿Te faltan útiles? Capítulo, en el centro | Experiencia de Lautaro Villalba | Solo la recomendación. No se cargó dirección ni horario porque nadie los comprobó. |
+
+Quedan pendientes, por falta de datos comprobados: qué banco recomendar y dónde, el nombre exacto y la ubicación de la biblioteca del Colegio Nacional, la dirección de Capítulo y las paradas del turno tarde.

@@ -16,3 +16,6 @@ export function parseCoordinates(text) {
   }
   return { value: { latitude: Number(latitude.toFixed(6)), longitude: Number(longitude.toFixed(6)) } };
 }
+
+// Abre un punto en Google Maps con su formato público de búsqueda por coordenadas.
+export const googleMapsUrl = ({ latitude, longitude }) => `https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}`;

@@ -69,10 +69,11 @@ export const contents = [
     summary: 'Dónde queda el Instituto Politécnico Formosa y por dónde comunicarte con la institución.',
     body: 'El Instituto Politécnico Formosa (IPF) informa su dirección en la Ruta Nacional 81, km 1190, en la ciudad de Formosa.\n\nPara consultas, su página de contacto indica estos canales:\n• Correo: info@ipf.edu.ar\n• WhatsApp: 3704860530\n• Facebook: IPFormosa\n• Instagram: @ipformosa\n\nEl instituto también tiene un aula virtual en aula.ipf.edu.ar. Preguntá en tu carrera si tus materias la usan y cómo se consigue el usuario.\n\nLa página no publica horarios de atención: antes de ir en persona, consultá por WhatsApp o por correo.',
     sourceLabel: 'Instituto Politécnico Formosa — página de contacto', sourceUrl: 'https://www.ipf.edu.ar/contacto' },
-  { slug: 'ipf-carreras-preinscripcion', title: 'Carreras del IPF y preinscripción', categorySlug: 'vida-estudiantil', institutionName: institutions[1].name, reviewedAt: '2026-11-16',
-    summary: 'Las cuatro tecnicaturas superiores que publica el IPF y qué pide el formulario de preinscripción.',
-    body: 'Según su sitio oficial, el IPF ofrece cuatro tecnicaturas superiores:\n• Química Industrial\n• Mecatrónica\n• Telecomunicaciones\n• Desarrollo de Software Multiplataforma\n\nCada carrera tiene un formulario de preinscripción en la página de carreras. Para Mecatrónica y Desarrollo de Software Multiplataforma, el instituto aclara que el formulario pide una cuenta de Gmail y una foto del DNI de los dos lados.\n\nLa página no muestra fechas de inscripción actualizadas: el último aviso publicado es de 2023. Antes de anotarte, confirmá si la inscripción está abierta escribiendo a info@ipf.edu.ar o por WhatsApp al 3704860530.',
-    sourceLabel: 'Instituto Politécnico Formosa — oferta académica', sourceUrl: 'https://www.ipf.edu.ar/carreras' },
+  // Actualizada con la nota de AGENFOR del 28/10/2026 (preinscripción 2027). Ver contentRevisions más abajo.
+  { slug: 'ipf-carreras-preinscripcion', title: 'Carreras del IPF y preinscripción 2027', categorySlug: 'vida-estudiantil', institutionName: institutions[1].name, reviewedAt: '2026-11-16',
+    summary: 'Las cuatro tecnicaturas superiores del IPF y cómo preinscribirte para el ciclo lectivo 2027.',
+    body: 'El IPF ofrece cuatro tecnicaturas superiores:\n• Química Industrial\n• Mecatrónica\n• Telecomunicaciones\n• Desarrollo de Software Multiplataforma\n\nPara el ciclo lectivo 2027, la preinscripción se hace en la plataforma ipfconecta.formosa.gob.ar, completando el formulario de la carrera. Según la Agencia de Noticias Formosa (28/10/2026), queda abierta hasta diciembre.\n\nAl terminar el formulario, la plataforma te lleva al aula virtual del instituto, donde están las materias. Para ser estudiante del IPF hay que aprobar un examen de ingreso.\n\nSi tenés dudas, los canales de contacto del instituto están en la ficha «Tu punto de partida en el IPF».',
+    sourceLabel: 'Agencia de Noticias Formosa (AGENFOR), Gobierno de la Provincia — 28/10/2026', sourceUrl: 'https://agenfor.com.ar/2026/10/cerca-de-600-estudiantes-ya-se-preinscribieron-a-las-carreras-del-instituto-politecnico/' },
   { slug: 'ipf-que-es', title: 'Qué es el IPF', categorySlug: 'vida-estudiantil', institutionName: institutions[1].name, reviewedAt: '2026-11-16',
     summary: 'Un organismo público de la provincia dedicado a la educación técnica superior, creado en 2018.',
     body: 'El Instituto Politécnico Formosa es un organismo descentralizado de la Administración Pública provincial, creado por el Decreto N.º 18 de 2018. Se relaciona con el Poder Ejecutivo a través del Ministerio de Cultura y Educación de la Provincia de Formosa.\n\nEntre sus objetivos, la institución menciona:\n• Dar formación técnica y tecnológica de nivel superior en campos ocupacionales específicos.\n• Ofrecer formación continua para actualizarse y especializarse.\n• Vincular la educación, la ciencia y la tecnología con las necesidades del trabajo, la producción y el desarrollo local.\n• Impulsar la investigación aplicada, la extensión y la divulgación científica.\n• Promover la transferencia de tecnología para un desarrollo local sustentable y el cuidado del ambiente.',
@@ -80,16 +81,79 @@ export const contents = [
   { slug: 'sube-registrala', title: 'Registrá tu SUBE', categorySlug: 'movilidad', reviewedAt: '2026-11-16',
     summary: 'Si tu SUBE está a tu nombre, recuperás el saldo cuando se pierde, te la roban o se rompe.',
     body: 'Con la SUBE se pagan los colectivos de Formosa y el transporte público de 61 localidades del país. Conviene registrarla a tu nombre: si la perdés, te la roban o se rompe, podés darla de baja y recuperar el saldo. Además, ves tus viajes y los descuentos que se aplicaron.\n\nSe registra desde argentina.gob.ar/sube, en la opción «Registrala», o en un Centro de Atención SUBE con tu DNI. Cada persona puede tener una sola SUBE registrada a su nombre. El saldo no vence.\n\nSi la perdés, te la roban o se rompe:\n• Dala de baja desde Mi SUBE o la app SUBE, en un Centro de Atención con tu DNI, o llamando al 0800-777-7823 (opción 1), todos los días a cualquier hora.\n• Asociá tu tarjeta nueva.\n• En 72 horas hábiles te llega un correo que dice si tenías saldo y cómo recuperarlo.\n\nSi encontrás la tarjeta que diste de baja, no la cargues ni la uses: está en proceso de bloqueo.',
-    sourceLabel: 'Argentina.gob.ar — SUBE: preguntas frecuentes y «¿Cómo y por qué registrar la SUBE?»', sourceUrl: 'https://www.argentina.gob.ar/sube/preguntas-frecuentes' },
+    sourceLabel: 'Argentina.gob.ar — SUBE: preguntas frecuentes y «¿Cómo y por qué registrar la SUBE?»', sourceUrl: 'https://www.argentina.gob.ar/sube/preguntas-frecuentes' },  // Lote del 16/11/2026 (2): beneficios del IPF (fuente oficial) y experiencias contadas por un estudiante del IPF.
+  // Las experiencias llevan quién las cuenta (authorLabel). No se agregan precios, direcciones ni horarios que nadie comprobó.
+  { slug: 'ipf-beneficios', title: 'Beneficios para estudiantes del IPF', categorySlug: 'vida-estudiantil', institutionName: institutions[1].name, reviewedAt: '2026-11-16',
+    summary: 'Transporte, comidas, equipamiento, acompañamiento y la Beca Soberanía Tecnológica.',
+    body: 'Según contó el director del instituto a la Agencia de Noticias Formosa (28/10/2026), el IPF garantiza a sus estudiantes:\n• Transporte: colectivos hasta el instituto. Los horarios y las paradas del turno mañana están en Rutas, en «Colectivo gratuito al IPF».\n• Comidas: unas 500 raciones por día entre desayuno, almuerzo, merienda y cena, con cocineros, bromatólogos y nutricionistas.\n• Equipamiento: acceso a equipos tecnológicos para el trabajo de todos los días.\n• Acompañamiento: docentes que acompañan la cursada y un equipo de psicología, psicopedagogía y trabajo social.\n\nBeca Soberanía Tecnológica: la otorga la Secretaría de Ciencia y Tecnología de la provincia a estudiantes que vienen del interior. La nota no informa los requisitos ni el monto: consultalos en el instituto.',
+    sourceLabel: 'Agencia de Noticias Formosa (AGENFOR), Gobierno de la Provincia — 28/10/2026', sourceUrl: 'https://agenfor.com.ar/2026/10/cerca-de-600-estudiantes-ya-se-preinscribieron-a-las-carreras-del-instituto-politecnico/' },
+  { slug: 'circuito-esperar-con-cuidado', title: 'Parada de Circuito: esperá con cuidado', categorySlug: 'lugares-utiles', institutionName: institutions[1].name, reviewedAt: '2026-11-16',
+    sourceType: 'experience', authorLabel: 'Lautaro Villalba, estudiante del IPF',
+    summary: 'Si tomás el colectivo del IPF en Circuito, sobre la Ruta Nacional 11, cuidá tus cosas mientras esperás.',
+    body: 'Estudiantes que toman el colectivo del IPF en la parada de Circuito, sobre la Ruta Nacional 11, cuentan que en la zona hay robos. No hace falta evitar la parada, pero sí esperar con cuidado:\n• Llegá un poco antes del horario y, si podés, esperá con otros estudiantes.\n• Tené el celular guardado mientras esperás.\n• Llevá a mano solo lo que necesitás.\n\nSi te roban o ves algo raro, llamá a la Policía al 101.' },
+  { slug: 'alquileres-marketplace', title: 'Alquileres en Marketplace', categorySlug: 'recomendaciones', reviewedAt: '2026-11-16',
+    sourceType: 'experience', authorLabel: 'Lautaro Villalba, estudiante del IPF',
+    summary: 'Muchas piezas, departamentos y casas se publican en Facebook Marketplace. Algunos cuidados para no caer en una estafa.',
+    body: 'En Formosa, muchos dueños publican piezas, departamentos y casas en alquiler en Facebook Marketplace. Buscá «alquiler» y elegí la ciudad de Formosa como ubicación.\n\nPara alquilar con cuidado:\n• No pagues una seña ni un adelanto sin haber visto el lugar.\n• Si no podés ir, pedile a alguien de confianza que vaya o pedí una videollamada recorriendo el lugar.\n• Desconfiá de los precios muy bajos y de quien te apura para que pagues.\n• Pedí el contrato por escrito y leelo completo antes de pagar.\n• Guardá los mensajes y los comprobantes de cada pago.\n\nLo que dice la ley sobre los alquileres está en la ficha «Antes de alquilar: lo que dice la ley».' },
+  { slug: 'didi-o-uber', title: 'DiDi o Uber: cuál conviene', categorySlug: 'movilidad', reviewedAt: '2026-11-16',
+    sourceType: 'experience', authorLabel: 'Lautaro Villalba, estudiante del IPF',
+    summary: 'Para pedir un auto por aplicación, entre estudiantes se usa más DiDi porque suele salir más barato.',
+    body: 'En la ciudad de Formosa podés pedir viajes por aplicación. Entre estudiantes se usa más DiDi que Uber, porque en general sale más barato.\n\nIgual, el precio cambia según la hora y la cantidad de pedidos: si tenés las dos apps, compará antes de pedir.\n\nPara viajar más tranquilo:\n• Antes de subir, fijate que el auto y la patente coincidan con los de la app.\n• Compartí el viaje con alguien de confianza desde la misma app.' },
+  { slug: 'terere', title: 'El tereré', categorySlug: 'cultura-costumbres', reviewedAt: '2026-11-16',
+    sourceType: 'experience', authorLabel: 'Lautaro Villalba, estudiante del IPF',
+    summary: 'La yerba con agua fría que vas a ver en todas partes, sobre todo cuando hace calor.',
+    body: 'En Formosa vas a ver tereré en todos lados: en la plaza, en el instituto o la facu, en el trabajo y en la Costanera.\n\nEs yerba mate con agua bien fría o con jugo, en vez de agua caliente. Muchos le agregan yuyos o hielo al termo, y viene muy bien con el calor.\n\nSe toma en ronda, como el mate: una persona ceba y le pasa el vaso a cada uno. Si te convidan, es una buena forma de empezar a conocer gente.' },
+  { slug: 'el-pa', title: 'El «pa» de las preguntas', categorySlug: 'cultura-costumbres', reviewedAt: '2026-11-16',
+    sourceType: 'experience', authorLabel: 'Lautaro Villalba, estudiante del IPF',
+    summary: 'Vas a escuchar «pa» al final de muchas preguntas. Viene del guaraní y no quiere decir «para».',
+    body: 'En Formosa es muy común terminar una pregunta con «pa»: «¿Vas a venir pa?», «¿Qué hora es pa?».\n\nViene del guaraní, donde «pa» marca que la frase es una pregunta; por ejemplo, «Mba\'éichapa?» quiere decir «¿cómo estás?». El español de Formosa tiene mucha influencia del guaraní que se habla en Paraguay, y por eso se escucha tanto.\n\nNo es el «pa» de «para» («voy pa\' la facu»): en una pregunta no cambia lo que preguntás, es parte de la forma de hablar de la zona.' },
+  { slug: 'capitulo-utiles', title: '¿Te faltan útiles? Capítulo, en el centro', categorySlug: 'lugares-utiles', reviewedAt: '2026-11-16',
+    sourceType: 'experience', authorLabel: 'Lautaro Villalba, estudiante del IPF',
+    summary: 'Un lugar del centro de la ciudad donde conseguir útiles para la cursada.',
+    body: 'Si te faltan útiles para la cursada, podés ir a Capítulo, en el centro de la ciudad.\n\nPara ubicarlo, buscá «Capítulo» en Google Maps o preguntá en la comunidad de Forbook.' },
 ];
 
-// Rutas orientativas (FF-22). Vacío hasta tener referencias comprobadas: nada de recorridos inventados.
-// Ejemplo de formato (los pasos van separados por \n):
-// { slug: 'centro-campus-unaf', institutionName: institutions[0].name, destinationSlug: 'unaf-campus',
-//   title: 'Del centro al Campus de la UNaF', originLabel: 'Plaza San Martín', mode: 'bus',
-//   steps: 'Primer paso con una referencia\nSegundo paso', durationLabel: null,
-//   sourceType: 'community', sourceLabel: 'Quién lo comprobó y cuándo', sourceUrl: null }
-export const travelRoutes = [];
+// Fichas ya cargadas por una versión anterior del catálogo. db:seed las actualiza a la versión de arriba
+// solo si siguen exactamente como se cargaron (nadie las editó desde la página).
+export const contentRevisions = [
+  { slug: 'ipf-carreras-preinscripcion', previous: {
+    title: 'Carreras del IPF y preinscripción',
+    summary: 'Las cuatro tecnicaturas superiores que publica el IPF y qué pide el formulario de preinscripción.',
+    body: 'Según su sitio oficial, el IPF ofrece cuatro tecnicaturas superiores:\n• Química Industrial\n• Mecatrónica\n• Telecomunicaciones\n• Desarrollo de Software Multiplataforma\n\nCada carrera tiene un formulario de preinscripción en la página de carreras. Para Mecatrónica y Desarrollo de Software Multiplataforma, el instituto aclara que el formulario pide una cuenta de Gmail y una foto del DNI de los dos lados.\n\nLa página no muestra fechas de inscripción actualizadas: el último aviso publicado es de 2023. Antes de anotarte, confirmá si la inscripción está abierta escribiendo a info@ipf.edu.ar o por WhatsApp al 3704860530.',
+    sourceLabel: 'Instituto Politécnico Formosa — oferta académica', sourceUrl: 'https://www.ipf.edu.ar/carreras',
+  } },
+];
+
+// Rutas orientativas (FF-22). Solo recorridos comprobados: nada de recorridos inventados.
+// Los pasos van separados por \n. Las paradas son opcionales y se marcan en el mapa, sin dibujar el trayecto.
+// db:seed agrega las paradas solo cuando crea la ruta: si después se editan desde la página, no se pisan.
+export const travelRoutes = [
+  // Colectivo del IPF, comprobado el 16/11/2026 por un estudiante del instituto. Solo turno mañana:
+  // las paradas del turno tarde todavía no están comprobadas. El orden de las paradas no es el del recorrido.
+  { slug: 'colectivo-ipf', institutionName: institutions[1].name, destinationSlug: 'ipf-campus',
+    title: 'Colectivo gratuito al IPF', originLabel: 'Plaza San Martín, en la parada del Correo Argentino', mode: 'bus',
+    steps: [
+      'Es gratis y es solo para estudiantes del IPF: no tenés que mostrar nada, subís y listo.',
+      'Es un colectivo de la empresa Puerto Tirol y no lleva cartel: así lo reconocés.',
+      'Turno mañana, 8:00: sale el primer colectivo de Plaza San Martín (parada del Correo Argentino). Levanta en Plaza Temática y en La Virgen.',
+      'Turno mañana, 8:10 más o menos: sale el segundo de Plaza San Martín. Levanta en Plaza Temática y en Circuito (Ruta Nacional 11).',
+      'En las demás paradas el horario cambia según el colectivo (más o menos entre las 8:00 y las 8:30). Conviene estar antes de las 8:00.',
+      'Turno tarde: los estudiantes suben alrededor de las 16:15. Las paradas de esta página son las del turno mañana.',
+      'A la vuelta, el colectivo para en las mismas paradas.',
+    ].join('\n'),
+    durationLabel: null,
+    sourceType: 'community', sourceLabel: 'Comprobado por Lautaro Villalba, estudiante del IPF', sourceUrl: null, reviewedAt: '2026-11-16',
+    stops: [
+      { name: 'Plaza San Martín', reference: 'En la parada del Correo Argentino. De acá salen dos colectivos: 8:00 y 8:10.', latitude: -26.186308, longitude: -58.173568 },
+      { name: 'Plaza Temática', reference: null, latitude: -26.173484, longitude: -58.178913 },
+      { name: 'La Virgen', reference: null, latitude: -26.155857, longitude: -58.185706 },
+      { name: 'Circuito', reference: 'Sobre la Ruta Nacional 11.', latitude: -26.141242, longitude: -58.193193 },
+      { name: 'Cruz', reference: null, latitude: -26.195778, longitude: -58.213190 },
+      { name: 'Homu', reference: null, latitude: -26.177325, longitude: -58.208491 },
+      { name: 'Shell', reference: null, latitude: -26.188277, longitude: -58.214626 },
+      { name: 'IPV', reference: null, latitude: -26.164724, longitude: -58.198354 },
+    ] },
+];
 
 // Épica 6: espacios de integración. Son secciones públicas que Forbook ya tiene;
 // no hay membresía ni chat privado. linkPath con {institutionId} se completa al cargar.

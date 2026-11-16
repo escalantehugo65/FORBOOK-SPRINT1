@@ -42,7 +42,7 @@ export default function RoutesPage() {
         <div className="content-grid">{routes.result.data.map(route => <article className="content-card" key={route.id}>
           <p className="card-category">{routeModes[route.mode]}</p>
           <h3><Link to={`/rutas/${route.id}`}>{route.title}</Link></h3>
-          <p className="summary">Desde {route.originLabel}</p>
+          <p className="summary">Desde {route.originLabel}{route.stopsCount > 0 ? ` · ${route.stopsCount} ${route.stopsCount === 1 ? 'parada' : 'paradas'} en el mapa` : ''}</p>
           <div className="card-meta"><span className={sourceBadge[route.sourceType]}>{sourceNames[route.sourceType]}</span></div>
         </article>)}</div>
       </>

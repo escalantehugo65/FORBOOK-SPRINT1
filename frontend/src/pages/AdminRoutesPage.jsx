@@ -7,14 +7,17 @@ import { usePageTitle } from '../hooks/usePageTitle';
 import { Loading, ErrorMessage } from '../components/Feedback';
 import Field from '../components/Field';
 import ModerationNav from '../components/ModerationNav';
+import RouteStopsEditor from '../components/RouteStopsEditor';
+import { checkStops, stopFromRoute } from '../utils/stops';
 import { formatDate, sourceBadge, sourceNames } from '../utils/content';
 import { routeModes } from '../utils/places';
 
 const today = () => new Date().toISOString().slice(0, 10);
-const empty = () => ({ title: '', institutionId: '', destinationPlaceId: '', originLabel: '', mode: 'bus', steps: '', durationLabel: '', status: 'published', sourceType: 'community', sourceLabel: '', sourceUrl: '', reviewedAt: today() });
+const empty = () => ({ title: '', institutionId: '', destinationPlaceId: '', originLabel: '', mode: 'bus', steps: '', durationLabel: '', status: 'published', sourceType: 'community', sourceLabel: '', sourceUrl: '', reviewedAt: today(), stops: [] });
 const fromRoute = route => ({
   title: route.title, institutionId: String(route.institutionId), destinationPlaceId: route.destinationPlaceId ? String(route.destinationPlaceId) : '', originLabel: route.originLabel,
   mode: route.mode, steps: route.steps, durationLabel: route.durationLabel || '', status: route.status, sourceType: route.sourceType, sourceLabel: route.sourceLabel || '', sourceUrl: route.sourceUrl || '', reviewedAt: route.reviewedAt || today(),
+  stops: (route.stops || []).map(stopFromRoute),
 });
 // Los pasos van uno por línea; las líneas vacías no cuentan (igual que en el backend).
 const stepsOf = text => text.split('\n').map(step => step.trim()).filter(Boolean);
@@ -30,7 +33,7 @@ function RouteForm({ route, institutions, places, onSaved, onCancel }) {
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
   const prefix = route ? `route-${route.id}` : 'route-new';
-  const set = (key, value) => { setValues(previous => ({ ...previous, [key]: value })); setErrors(previous => ({ ...previous, [key]: undefined })); setError(''); };
+  const set = (key, value) => { setValues(previous => ({ ...previous, [key]: value })); setErrors(previous => ({ ...previous, [key]: undefined, ...(key === 'stops' ? { stopRows: undefined } : {}) })); setError(''); };
   const steps = stepsOf(values.steps);
   const ownPlaces = places.filter(place => String(place.institutionId) === values.institutionId);
   const otherPlaces = places.filter(place => String(place.institutionId) !== values.institutionId);
@@ -39,7 +42,9 @@ function RouteForm({ route, institutions, places, onSaved, onCancel }) {
   async function submit(event) {
     event.preventDefault();
     if (busy) return;
-    const clean = Object.fromEntries(Object.entries(values).map(([key, value]) => [key, value.trim()]));
+    const { stops: stopRows, ...texts } = values;
+    const clean = Object.fromEntries(Object.entries(texts).map(([key, value]) => [key, value.trim()]));
+    const stops = checkStops(stopRows);
     const invalid = {};
     if (clean.title.length < 5 || clean.title.length > 180) invalid.title = 'Escribí entre 5 y 180 caracteres.';
     if (!clean.institutionId) invalid.institutionId = 'Elegí la institución a la que llega la ruta.';
@@ -53,9 +58,10 @@ function RouteForm({ route, institutions, places, onSaved, onCancel }) {
     if (clean.sourceType === 'official' && !clean.sourceUrl) invalid.sourceUrl = 'Pegá el enlace a la publicación oficial.';
     if (!clean.reviewedAt) invalid.reviewedAt = 'Indicá cuándo comprobaste el recorrido.';
     else if (clean.reviewedAt > today()) invalid.reviewedAt = 'La fecha no puede ser futura.';
+    if (!stops.valid) invalid.stopRows = stops.errors;
     setErrors(invalid);
     if (Object.keys(invalid).length) { setError('Revisá los campos marcados.'); return; }
-    const body = { ...clean, steps: steps.join('\n'), institutionId: Number(clean.institutionId), destinationPlaceId: clean.destinationPlaceId ? Number(clean.destinationPlaceId) : null };
+    const body = { ...clean, steps: steps.join('\n'), institutionId: Number(clean.institutionId), destinationPlaceId: clean.destinationPlaceId ? Number(clean.destinationPlaceId) : null, stops: stops.stops };
     setBusy(true);
     try {
       const response = route ? await moderationService.updateRoute(route.id, body) : await moderationService.createRoute(body);
@@ -88,12 +94,13 @@ function RouteForm({ route, institutions, places, onSaved, onCancel }) {
       <label htmlFor={`${prefix}-steps`}>Pasos <span aria-hidden="true">*</span></label>
       <textarea id={`${prefix}-steps`} rows="7" value={values.steps} disabled={busy} onChange={event => set('steps', event.target.value)}
         aria-invalid={!!errors.steps} aria-describedby={`${prefix}-steps-hint${errors.steps ? ` ${prefix}-steps-error` : ''}`}/>
-      <small id={`${prefix}-steps-hint`}>Un paso por línea, con referencias de la calle (no solo coordenadas). {steps.length} {steps.length === 1 ? 'paso' : 'pasos'} de 20.</small>
+      <small id={`${prefix}-steps-hint`}>Un paso o dato por línea (por ejemplo, un horario), con referencias de la calle. {steps.length} {steps.length === 1 ? 'paso' : 'pasos'} de 20.</small>
       {errors.steps && <small id={`${prefix}-steps-error`} className="field-error">{errors.steps}</small>}
     </div>
     {steps.length > 0 && <div className="steps-preview" aria-label="Así se van a ver los pasos">
       <ol className="route-steps">{steps.slice(0, 20).map((step, index) => <li key={index}>{step}</li>)}</ol>
     </div>}
+    <RouteStopsEditor prefix={prefix} stops={values.stops} onChange={value => set('stops', value)} errors={errors.stopRows} error={errors.stops} disabled={busy}/>
     <Field label="Tiempo aproximado" name={`${prefix}-duration`} value={values.durationLabel} onChange={event => set('durationLabel', event.target.value)} error={errors.durationLabel} maxLength={120} disabled={busy}
       hint="Opcional. Si la fuente no es oficial, se muestra como aproximado y no como un dato exacto."/>
     <fieldset className="choice-group" disabled={busy}>
@@ -166,7 +173,7 @@ export default function AdminRoutesPage() {
           <div className="admin-row-main">
             <p className="card-category">{routeModes[route.mode]} · {route.institution?.name}</p>
             <h3>{route.title}</h3>
-            <p>Desde {route.originLabel}{route.destination ? ` hasta ${route.destination.name}` : ''} · {stepsOf(route.steps).length} pasos</p>
+            <p>Desde {route.originLabel}{route.destination ? ` hasta ${route.destination.name}` : ''} · {stepsOf(route.steps).length} pasos{route.stops?.length ? ` · ${route.stops.length} ${route.stops.length === 1 ? 'parada' : 'paradas'}` : ''}</p>
             <div className="admin-badges">
               <span className={sourceBadge[route.sourceType]}>{sourceNames[route.sourceType]}</span>
               {route.status !== 'published' && <span className="badge badge-soon">Borrador</span>}

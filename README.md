@@ -64,7 +64,7 @@ El backend necesita TEST_DB_NAME terminada en `_test` para ejecutar la integraci
 
 No se incluyen .git, .env, dependencias instaladas, compilaciones ni bases/cuentas de prueba. No se crean administradores con contraseñas conocidas. Los roles se asignan con `npm run user:role` en backend, solo a cuentas existentes.
 
-El mapa no es un GPS. Incluye seis puntos con coordenadas aportadas por el usuario y enlaces de Google Maps. Las rutas orientativas se cargan desde Moderación → Rutas: todavía no hay ninguna, porque cada recorrido tiene que comprobarlo alguien del equipo. Los espacios no tienen membresía ni chat privado. Las sanciones públicas y la guía temática ampliada siguen pendientes.
+El mapa no es un GPS. Incluye seis puntos con coordenadas aportadas por el usuario y enlaces de Google Maps. Las rutas orientativas se cargan desde Moderación → Rutas; la única cargada es el colectivo gratuito del IPF, comprobado por un estudiante del instituto (horarios del turno mañana y ocho paradas). Los espacios no tienen membresía ni chat privado. Las sanciones públicas y la guía temática ampliada siguen pendientes.
 
 ## Perfiles
 
@@ -81,3 +81,10 @@ El mapa no es un GPS. Incluye seis puntos con coordenadas aportadas por el usuar
 - `/buscar?q=…`: personas, fichas y preguntas. Conozcamos Formosa y Preguntas también tienen su buscador.
 - Administración: Moderación → Fichas (crear y editar fichas completas) y Moderación → Rutas (rutas orientativas, FF-22).
 - Después de bajar estos cambios: `npm run db:migrate` (migración 013) y `npm run db:seed` (carga el catálogo de la tienda, cuatro fichas nuevas y tres espacios). Las cuentas que ya existían reciben los 100 puntos de bienvenida una sola vez.
+
+## Colectivo del IPF y fichas nuevas
+
+- `/rutas`, en la institución IPF → «Colectivo gratuito al IPF»: horarios del turno mañana (8:00 y 8:10 desde Plaza San Martín), el turno tarde (16:15) y ocho paradas en un mapa. No se dibuja el trayecto: cada parada tiene «Ver en el mapa» y «Google Maps».
+- Las rutas ahora pueden tener paradas (hasta 30). Se cargan en Moderación → Rutas pegando las coordenadas de Google Maps; el formulario muestra una vista previa.
+- Fichas nuevas: beneficios del IPF y la Beca Soberanía Tecnológica (fuente oficial), y experiencias de un estudiante del IPF: alquileres en Marketplace, DiDi o Uber, el tereré, el «pa», útiles en Capítulo y cuidados en la parada de Circuito. La ficha de preinscripción del IPF pasa a la información de 2027.
+- Después de bajar estos cambios: `npm run db:migrate` (migración 014) y `npm run db:seed`. El seed solo actualiza la ficha de preinscripción si nadie la editó desde la página.

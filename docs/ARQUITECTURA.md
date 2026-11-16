@@ -125,6 +125,16 @@ Búsqueda (`helpers/search.helper.js`): `LIKE` con `%`, `_` y `\` escapados, par
 | GET / POST / PUT `/api/admin/contents` | Administración | Fichas completas, con historial. |
 | GET / POST / PUT `/api/admin/routes` | Administración | Rutas orientativas (FF-22): pasos en texto, fuente y fecha de revisión obligatorias. |
 
+## Paradas de las rutas
+
+Migración 014. **RouteStop** (`route_stops`): nombre, referencia opcional, latitud y longitud (`DECIMAL(9,6)`) y `position`, que solo ordena la lista. Pertenece a una ruta con `ON DELETE CASCADE`.
+
+- `POST` y `PUT /api/admin/routes` aceptan `stops: [{ name, reference, latitude, longitude }]`, hasta 30. Se revisan juntas y el error dice qué parada está mal («Parada 2: …»): nombre de 2 a 120 caracteres, referencia de hasta 250, coordenadas numéricas dentro de Formosa y ningún otro campo. Las coordenadas se redondean a 6 decimales.
+- Al editar, si no viene `stops` se conservan las que había; una lista vacía las borra. Si llega la misma lista, no se guarda ni se registra nada. Un cambio se anota en el historial («paradas (ahora 8 paradas)»).
+- `GET /api/routes/:id` devuelve `stops` en orden, con las coordenadas como números. `GET /api/routes` agrega `stopsCount`.
+- En el frontend, `StopsMap` dibuja solo los puntos (sin trayecto) y se carga aparte, como el mapa, para no sumar Leaflet al paquete principal.
+- `db:seed` crea las paradas del catálogo solo cuando crea la ruta: lo que se edite después desde la página no se pisa. Las fichas listadas en `contentRevisions` se actualizan solo si siguen igual a como las cargó la versión anterior.
+
 ## Cambios de esquema
 
 La migración inicial crea tablas e índices y se registra una sola vez. MySQL no garantiza rollback de todo DDL; ante fallo se revisa el error y se reejecuta. No se borra información. Para cambios posteriores agregá una migración nueva y su registro en el ejecutor; no edites una migración ya aplicada para intentar actualizar una base existente. Nunca uses sincronización destructiva para actualizar datos reales.

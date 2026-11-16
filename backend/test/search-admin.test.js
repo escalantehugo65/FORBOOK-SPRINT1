@@ -13,6 +13,7 @@ import { Question } from '../src/models/question.model.js';
 import { Answer } from '../src/models/answer.model.js';
 import { Place } from '../src/models/place.model.js';
 import { TravelRoute } from '../src/models/travel_route.model.js';
+import { RouteStop } from '../src/models/route_stop.model.js';
 import { ModerationLog } from '../src/models/moderation_log.model.js';
 import { runMigrations } from '../migrations/runner.js';
 import { app } from '../app.js';
@@ -165,7 +166,7 @@ test('búsqueda, inicio y administración de fichas y rutas sobre MySQL', { skip
       routeId = created.id;
       assert.equal(created.steps, 'Salí por la puerta principal.\nTomá el colectivo en la parada de enfrente.\nBajate frente al instituto.');
       const list = (await send('zoe', 'get', '/api/routes').expect(200)).body.data;
-      assert.ok(list.some(route => route.id === created.id));
+      assert.equal(list.find(route => route.id === created.id).stopsCount, 0);
       const detail = (await send('zoe', 'get', `/api/routes/${created.id}`).expect(200)).body.data;
       assert.equal(detail.steps.length, 3);
       assert.equal(detail.destination.name, 'Destino de prueba');
@@ -179,8 +180,62 @@ test('búsqueda, inicio y administración de fichas y rutas sobre MySQL', { skip
       await send('admin', 'put', '/api/admin/routes/999999999', valid).expect(404);
     });
 
+    let stopsRouteId;
+    await t.test('FF-22: paradas de una ruta (colectivo del IPF)', async () => {
+      const stops = [
+        { name: '  Plaza San Martín ', reference: 'Frente al Correo Argentino', latitude: -26.186308, longitude: -58.173568 },
+        { name: 'La Virgen', reference: '', latitude: -26.155857478439273, longitude: -58.18570582851414 },
+      ];
+      const valid = { title: `Colectivo de prueba ${tag}`, institutionId: mine.id, destinationPlaceId: null, originLabel: 'Plaza San Martín', mode: 'bus', steps: 'Sale a las 8:00.', durationLabel: null, status: 'published', sourceType: 'community', sourceLabel: 'Comprobado por un estudiante', sourceUrl: '', reviewedAt: '2026-11-16', stops };
+      const bad = async (changes, message) => {
+        const { fields } = (await send('admin', 'post', '/api/admin/routes', { ...valid, ...changes }).expect(400)).body.error;
+        assert.match(fields.stops, message);
+      };
+      await bad({ stops: 'Plaza' }, /hasta 30/);
+      await bad({ stops: Array.from({ length: 31 }, () => stops[1]) }, /hasta 30/);
+      await bad({ stops: [stops[0], { ...stops[1], name: 'x' }] }, /^Parada 2: el nombre/);
+      await bad({ stops: [{ ...stops[0], latitude: '-26.1' }] }, /latitud/);
+      await bad({ stops: [{ ...stops[0], longitude: undefined }] }, /latitud/);
+      await bad({ stops: [{ ...stops[0], latitude: -58.173568, longitude: -26.186308 }] }, /fuera de la provincia/);
+      await bad({ stops: [{ ...stops[0], color: 'rojo' }] }, /no permitidos/);
+      await bad({ stops: [null] }, /formato/);
+      await bad({ stops: [{ ...stops[0], reference: 'x'.repeat(251) }] }, /referencia/);
+      const created = (await send('admin', 'post', '/api/admin/routes', valid).expect(201)).body.data;
+      stopsRouteId = created.id;
+      assert.deepEqual(created.stops.map(({ id, ...stop }) => stop), [
+        { name: 'Plaza San Martín', reference: 'Frente al Correo Argentino', latitude: -26.186308, longitude: -58.173568 },
+        { name: 'La Virgen', reference: null, latitude: -26.155857, longitude: -58.185706 },
+      ], 'se guardan limpias, en orden y con 6 decimales');
+      const detail = (await send('zoe', 'get', `/api/routes/${created.id}`).expect(200)).body.data;
+      assert.deepEqual(detail.stops.map(stop => stop.name), ['Plaza San Martín', 'La Virgen']);
+      assert.equal(typeof detail.stops[0].latitude, 'number');
+      assert.equal(detail.destination, null);
+      assert.equal((await send('zoe', 'get', '/api/routes').expect(200)).body.data.find(route => route.id === created.id).stopsCount, 2);
+      assert.match((await ModerationLog.findOne({ where: { action: 'route_create', targetId: created.id } })).note, /con 2 paradas/);
+
+      // Sin "stops" se conservan; con la misma lista no se registra nada; una lista nueva las reemplaza en ese orden.
+      const { stops: _omit, ...withoutStops } = valid;
+      assert.equal((await send('admin', 'put', `/api/admin/routes/${created.id}`, withoutStops).expect(200)).body.data.stops.length, 2);
+      const logs = () => ModerationLog.count({ where: { targetType: 'route', targetId: created.id } });
+      const before = await logs();
+      await send('admin', 'put', `/api/admin/routes/${created.id}`, valid).expect(200);
+      assert.equal(await logs(), before, 'mismas paradas: sin cambios');
+      const reordered = (await send('admin', 'put', `/api/admin/routes/${created.id}`, { ...valid, stops: [stops[1], stops[0], { name: 'Circuito', reference: 'Sobre la Ruta Nacional 11', latitude: -26.141242, longitude: -58.193193 }] }).expect(200)).body.data;
+      assert.deepEqual(reordered.stops.map(stop => stop.name), ['La Virgen', 'Plaza San Martín', 'Circuito']);
+      assert.match((await ModerationLog.findOne({ where: { action: 'route_update', targetId: created.id }, order: [['id', 'DESC']] })).note, /paradas \(ahora 3 paradas\)/);
+      assert.equal((await send('admin', 'put', `/api/admin/routes/${created.id}`, { ...valid, stops: [] }).expect(200)).body.data.stops.length, 0);
+      assert.deepEqual((await send('zoe', 'get', `/api/routes/${created.id}`).expect(200)).body.data.stops, []);
+      assert.equal(await RouteStop.count({ where: { routeId: created.id } }), 0);
+      await send('admin', 'put', `/api/admin/routes/${created.id}`, valid).expect(200);
+    });
+
     // Limpieza de lo creado por las pruebas de administración.
     if (routeId) await TravelRoute.destroy({ where: { id: routeId } });
+    // Al borrar la ruta, la base borra sus paradas (ON DELETE CASCADE).
+    if (stopsRouteId) {
+      await TravelRoute.destroy({ where: { id: stopsRouteId } });
+      assert.equal(await RouteStop.count({ where: { routeId: stopsRouteId } }), 0);
+    }
     if (contentId) await Content.destroy({ where: { id: contentId } });
   } finally {
     const userIds = Object.values(users).map(user => user.id);

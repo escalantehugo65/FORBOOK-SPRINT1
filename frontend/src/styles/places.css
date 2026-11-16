@@ -35,6 +35,7 @@ p.place-source { color: var(--ink-3); }
 .place-popup .leaflet-popup-content-wrapper { border-radius: var(--radius-s); }
 .place-popup small { font-size: 12px; font-weight: 800; letter-spacing: 0.04em; text-transform: uppercase; color: #3f4a70; }
 .place-popup .leaflet-popup-content { display: grid; gap: 4px; margin: 12px 16px; font-family: var(--font-body); font-size: 14px; color: #0e1a3f; }
+.place-popup .leaflet-popup-content > div { display: grid; gap: 4px; }
 .place-popup strong { font-family: var(--font-display); font-size: 16px; }
 .leaflet-container { font-family: var(--font-body); }
 :root[data-theme='dark'] .leaflet-tile-pane { filter: brightness(0.82) saturate(0.9); }
@@ -59,6 +60,32 @@ p.place-source { color: var(--ink-3); }
 .route-steps { display: grid; gap: 14px; margin: 0; padding-left: 1.4em; }
 .route-steps li::marker { font-weight: 800; color: var(--link); }
 .route-destination { padding: 16px 20px; border-radius: var(--radius-m); background: var(--surface-soft); border: 2px solid var(--line); }
+
+/* Paradas de una ruta (colectivo del IPF): puntos en el mapa y lista, sin dibujar el recorrido */
+.pin-stop { --pin: #0f8f6a; }
+.route-stops { display: grid; gap: 14px; }
+.route-stops-note { font-size: 15px; color: var(--ink-3); }
+.stops-frame { border: 2px solid var(--line); border-radius: var(--radius-l); overflow: hidden; background: var(--map-bg); scroll-margin-top: 96px; }
+.stops-map, .stops-map-loading { height: 380px; z-index: 0; }
+.stops-map-loading { display: grid; place-items: center; margin: 0; color: var(--ink-2); font-weight: 700; }
+.stop-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(320px, 100%), 1fr)); gap: 10px; margin: 0; padding: 0; list-style: none; }
+.stop-item { display: flex; align-items: flex-start; gap: 4px; padding: 14px 18px; border: 2px solid var(--line); border-radius: var(--radius-m); background: var(--surface); line-height: 1.5; }
+.stop-item .kind-dot { margin-top: 7px; }
+.stop-item strong { font-size: 17px; }
+.stop-item p { color: var(--ink-2); font-size: 15px; }
+.stop-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+
+/* Editor de paradas en la administración de rutas */
+.stops-editor { display: grid; gap: 12px; justify-items: start; min-width: 0; margin: 0; padding: 16px 18px; border: 2px solid var(--line); border-radius: var(--radius-m); }
+.stops-editor legend { padding: 0 6px; font-weight: 700; font-size: 14px; }
+.stops-editor > small { font-size: 13px; color: var(--ink-3); }
+.stops-editor > .field-error { color: var(--danger); font-weight: 700; font-size: 13px; }
+.stop-rows { display: grid; gap: 12px; width: 100%; margin: 0; padding-left: 1.4em; }
+.stop-rows li::marker { font-weight: 800; color: var(--link); }
+.stop-row { display: grid; gap: 10px; justify-items: start; padding-bottom: 12px; border-bottom: 2px solid var(--line); }
+.stop-row .form-pair, .stop-row > .field { width: 100%; }
+.stops-editor .stops-frame { width: 100%; }
+.stops-editor .stops-map, .stops-editor .stops-map-loading { height: 300px; }
 
 /* Espacios (FF-30 y FF-31) */
 .home-section.first { margin-top: 0; }

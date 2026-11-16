@@ -10,9 +10,8 @@ import PlaceMap from '../components/PlaceMap';
 import PlacesNav from '../components/PlacesNav';
 import SourceLine from '../components/SourceLine';
 import { placeKinds, sensitiveKinds } from '../utils/places';
-
-// Abre el lugar en Google Maps, que sí es un servicio de navegación (Forbook no lo es).
-const googleMapsUrl = ({ latitude, longitude }) => `https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}`;
+// Google Maps abre el lugar con navegación (Forbook no es un servicio de navegación).
+import { googleMapsUrl } from '../utils/coordinates';
 
 // Mapa (FF-21) y lugares útiles (FF-23). Se pide la lista completa una sola vez y se filtra en la
 // página: así el mapa no se vuelve a crear ni cambia de encuadre al elegir otra categoría.
