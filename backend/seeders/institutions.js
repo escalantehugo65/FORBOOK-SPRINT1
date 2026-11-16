@@ -1,7 +1,9 @@
 import { readFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
+import { Institution } from '../src/models/institution.model.js';
+import { Career } from '../src/models/career.model.js';
 export const tertiaryCatalog = JSON.parse(readFileSync(new URL('./data/formosa-institutions.json', import.meta.url), 'utf8'));
-export async function seedTertiaryInstitutions({ Institution, Career }, transaction) {
+export async function seedTertiaryInstitutions(transaction) {
   for (const item of tertiaryCatalog.institutions) {
     const [institution] = await Institution.findOrCreate({ where: { name: item.name }, defaults: { sourceUrl: item.sourceUrl }, transaction });
     for (const name of item.careers) {

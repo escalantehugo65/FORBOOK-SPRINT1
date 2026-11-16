@@ -1,47 +1,36 @@
+import './setup.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import request from 'supertest';
 import bcrypt from 'bcryptjs';
-import { createDatabase } from '../src/config/database.js';
-import { defineModels } from '../src/models/index.js';
-import { MysqlSessionStore } from '../src/config/sessionStore.js';
-import { createApp } from '../src/app.js';
-import { up as initial } from '../migrations/001-initial.js';
-import { up as careers } from '../migrations/002-careers.js';
-import { up as resources } from '../migrations/003-institution-resources.js';
-import { up as nationalOrigin } from '../migrations/005-national-origin.js';
-import { up as localities } from '../migrations/004-origin-localities.js';
-import { up as questions } from '../migrations/005-questions.js';
-import { up as answers } from '../migrations/006-answers.js';
-import { up as votes } from '../migrations/007-answer-votes.js';
-import { up as moderation } from '../migrations/008-moderation.js';
-import { up as places } from '../migrations/009-places.js';
-import { up as groups } from '../migrations/010-groups.js';
-import { up as placeAdmin } from '../migrations/011-place-admin.js';
+import { config } from '../src/config/env.js';
+import { sequelize } from '../src/config/database.js';
+import { Answer } from '../src/models/answer.model.js';
+import { AnswerVote } from '../src/models/answer_vote.model.js';
+import { Category } from '../src/models/category.model.js';
+import { Institution } from '../src/models/institution.model.js';
+import { ModerationLog } from '../src/models/moderation_log.model.js';
+import { Question } from '../src/models/question.model.js';
+import { Report } from '../src/models/report.model.js';
+import { User } from '../src/models/user.model.js';
+import { UserWarning } from '../src/models/user_warning.model.js';
+import { runMigrations } from '../migrations/runner.js';
 import { up as profiles } from '../migrations/012-profiles.js';
+import { app } from '../app.js';
 
 // Perfiles: ver, editar, privacidad, contraseña, reportes y advertencias de moderación.
 test('perfiles de usuario sobre MySQL', { skip: !process.env.TEST_DB_NAME }, async t => {
-  if (!process.env.TEST_DB_NAME.endsWith('_test')) throw new Error('TEST_DB_NAME debe terminar en _test.');
-  const config = {
-    db: { host: process.env.TEST_DB_HOST || '127.0.0.1', port: Number(process.env.TEST_DB_PORT || 3306), database: process.env.TEST_DB_NAME, username: process.env.TEST_DB_USER || 'root', password: process.env.TEST_DB_PASSWORD || '' },
-    sessionSecret: 'test-only-secret-at-least-32-characters-long', sessionTtl: 3600000,
-    frontendUrl: 'http://localhost:5173', production: false, trustProxy: false,
-  };
-  const db = createDatabase(config);
-  const models = defineModels(db);
   const suffix = `${Date.now()}-${Math.random().toString(36).slice(2)}`;
   const users = {};
   let institution, category;
   try {
-    await db.authenticate();
-    for (const migration of [initial, careers, resources, localities, nationalOrigin, questions, answers, votes, moderation, places, groups, placeAdmin, profiles]) await migration(db, models);
-    await profiles(db, models); // se puede repetir sin romper nada
-    institution = await models.Institution.create({ name: `Institución perfiles ${suffix}`, sourceUrl: 'https://example.com' });
-    category = await models.Category.create({ name: `Perfiles ${suffix}`, slug: `perfiles-${suffix}`, description: 'Datos ficticios para pruebas' });
+    await sequelize.authenticate();
+    await runMigrations();
+    await profiles(); // se puede repetir sin romper nada
+    institution = await Institution.create({ name: `Institución perfiles ${suffix}`, sourceUrl: 'https://example.com' });
+    category = await Category.create({ name: `Perfiles ${suffix}`, slug: `perfiles-${suffix}`, description: 'Datos ficticios para pruebas' });
     const passwordHash = await bcrypt.hash('Una-clave-segura-123', 4);
-    for (const [key, role] of [['owner', 'student'], ['other', 'student'], ['moderator', 'moderator']]) users[key] = await models.User.create({ name: `${key} Perfil Prueba`, email: `${key}-perfil-${suffix}@example.com`, passwordHash, origin: 'Clorinda, Formosa', institutionId: institution.id, career: 'Carrera de prueba', arrivalStatus: 'arrived', role });
-    const app = createApp({ models, store: new MysqlSessionStore(models.Session, config.sessionTtl), config, db });
+    for (const [key, role] of [['owner', 'student'], ['other', 'student'], ['moderator', 'moderator']]) users[key] = await User.create({ name: `${key} Perfil Prueba`, email: `${key}-perfil-${suffix}@example.com`, passwordHash, origin: 'Clorinda, Formosa', institutionId: institution.id, career: 'Carrera de prueba', arrivalStatus: 'arrived', role });
     const agents = {};
     const login = async (key, password = 'Una-clave-segura-123') => {
       agents[key] = request.agent(app);
@@ -83,7 +72,7 @@ test('perfiles de usuario sobre MySQL', { skip: !process.env.TEST_DB_NAME }, asy
       await bad({ cohortYear: 1800 }, 'cohortYear');
       await bad({ showOrigin: 'si' }, 'showOrigin');
       await send('owner', 'put', '/api/profile', { ...valid, role: 'admin' }).expect(400);
-      assert.equal((await models.User.findByPk(users.owner.id)).role, 'student');
+      assert.equal((await User.findByPk(users.owner.id)).role, 'student');
       await send('other', 'get', '/api/users/999999999').expect(404);
     });
 
@@ -98,7 +87,7 @@ test('perfiles de usuario sobre MySQL', { skip: !process.env.TEST_DB_NAME }, asy
       assert.equal(seen.recentAnswers[0].questionId, question.id);
       assert.ok(seen.badges.includes('helpful'));
       assert.ok((await send('other', 'get', `/api/users/${users.moderator.id}`).expect(200)).body.data.badges.includes('moderation'));
-      await models.Question.update({ hiddenAt: new Date() }, { where: { id: question.id } });
+      await Question.update({ hiddenAt: new Date() }, { where: { id: question.id } });
       assert.deepEqual((await send('other', 'get', `/api/users/${users.owner.id}`).expect(200)).body.data.stats, { questions: 0, answers: 0, helpful: 0 });
     });
 
@@ -135,7 +124,7 @@ test('perfiles de usuario sobre MySQL', { skip: !process.env.TEST_DB_NAME }, asy
       await send('moderator', 'post', `/api/moderation/warnings/${seen.warnings[0].id}/revoke`, { note: 'Se comprobó que el dato era correcto.' }).expect(200);
       await send('moderator', 'post', `/api/moderation/warnings/${seen.warnings[0].id}/revoke`, { note: 'De nuevo' }).expect(404);
       assert.equal((await send('other', 'get', `/api/users/${users.owner.id}`).expect(200)).body.data.warnings.length, 0);
-      const actions = (await models.ModerationLog.findAll({ where: { targetType: 'profile', targetId: users.owner.id } })).map(row => row.action).sort();
+      const actions = (await ModerationLog.findAll({ where: { targetType: 'profile', targetId: users.owner.id } })).map(row => row.action).sort();
       assert.deepEqual(actions, ['bio_show', 'hide', 'warn', 'warning_revoke']);
     });
 
@@ -150,16 +139,16 @@ test('perfiles de usuario sobre MySQL', { skip: !process.env.TEST_DB_NAME }, asy
   } finally {
     const ids = Object.values(users).map(user => user.id);
     if (ids.length) {
-      await models.ModerationLog.destroy({ where: { targetType: 'profile', targetId: ids } });
-      await models.Report.destroy({ where: { reporterId: ids } });
-      await models.UserWarning.destroy({ where: { userId: ids } });
-      await models.AnswerVote.destroy({ where: { userId: ids } });
-      await models.Answer.destroy({ where: { userId: ids } });
-      await models.Question.destroy({ where: { userId: ids } });
-      await models.User.destroy({ where: { id: ids } });
+      await ModerationLog.destroy({ where: { targetType: 'profile', targetId: ids } });
+      await Report.destroy({ where: { reporterId: ids } });
+      await UserWarning.destroy({ where: { userId: ids } });
+      await AnswerVote.destroy({ where: { userId: ids } });
+      await Answer.destroy({ where: { userId: ids } });
+      await Question.destroy({ where: { userId: ids } });
+      await User.destroy({ where: { id: ids } });
     }
     if (category) await category.destroy();
     if (institution) await institution.destroy();
-    await db.close();
+    await sequelize.close();
   }
 });

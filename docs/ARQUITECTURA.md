@@ -6,20 +6,22 @@
 
 ### Backend
 
+La estructura sigue la del trabajo práctico integrador: un archivo por modelo, controlador, router y validación.
+
 | Archivo o carpeta | Responsabilidad |
 |---|---|
-| `src/app.js` | Construir Express y ordenar CORS, validación de origen, JSON, sesiones, rutas y errores. Se puede probar sin iniciar el servidor de producción. |
-| `src/server.js` | Validar entorno, conectar MySQL, comprobar tabla de sesiones, limpiar vencidas, escuchar y cerrar ordenadamente. |
-| `src/config/` | Configuración, conexión y adaptador SQL de express-session. |
-| `src/models/` | Usuario, Institución, Categoría, Contenido y Sesión con relaciones. |
-| `src/controllers/` | Registro, autenticación, sesión y consultas de catálogo y contenido. |
-| `src/routes/` | Declarar método, URL, protección y controlador. |
-| `src/middlewares/` | Validación, control de acceso, origen, límite de intentos y errores. |
-| `src/helpers/` | Errores HTTP, selección explícita de datos públicos y llamadas de sesión. |
-| `migrations/` | Evolución del esquema, con registro de migraciones aplicadas. |
+| `app.js` | Entrada del backend: CORS, validación de origen, JSON, sesiones, routers y errores. Con `npm run dev` conecta MySQL, limpia las sesiones vencidas, abre el puerto y cierra ordenadamente. Los tests importan `app` sin abrir el puerto. |
+| `src/config/` | `env.js` lee y valida `.env`; `database.js` exporta la conexión `sequelize` y `startDB`; `session.js` guarda las sesiones de express-session en MySQL. |
+| `src/models/` | Un archivo por modelo (`user.model.js`, `question.model.js`, …). Cada relación se declara en el archivo del modelo que tiene la clave foránea. No hay un `index.js` que defina todos juntos. |
+| `src/controllers/` | Un archivo por entidad (`*.controller.js`) con una función exportada por acción. Toman los datos validados con `matchedData(req)`; los errores de negocio se lanzan con `HttpError`. |
+| `src/routes/` | Un router por entidad (`*.route.js`): método, URL, sesión, rol, límite de intentos, validaciones y controlador. `app.js` los monta en `/api`. |
+| `src/middlewares/` | `auth` (sesión iniciada), `role` (moderación y administración, leído de la base en cada pedido), `validator` (arma la respuesta de error), `security`, `rate_limit` y `error`. |
+| `src/middlewares/validations/` | Reglas de express-validator por entidad (`*.validation.js`). Rechazan campos que no corresponden y normalizan los datos (recortes, minúsculas, números). |
+| `src/helpers/` | `bcrypt.helper.js`, `HttpError`, datos públicos de usuarios y preguntas, sesiones, catálogos e historial de moderación. |
+| `migrations/` | Evolución del esquema. `runner.js` aplica las pendientes en orden y las anota en `schema_migrations`. |
 | `seeders/` | Catálogo verificable, sin cuentas ni contraseñas de demostración. |
-| `scripts/` | Ejecutar migraciones y seeds de forma explícita. |
-| `test/` | Validaciones y recorrido de API sobre MySQL. |
+| `scripts/` | Ejecutar migraciones, seeds, roles y ubicaciones de forma explícita. |
+| `test/` | Validaciones y recorrido de API sobre MySQL. `setup.js` apunta la API a la base de pruebas. |
 
 ### Frontend
 
@@ -28,11 +30,11 @@
 | `components/` | Layout, marca, campos, tarjetas, carga y errores reutilizables. |
 | `pages/` | Bienvenida, registro/login, inicio, exploración, detalle y 404. |
 | `hooks/` | `useForm` propio y `useFetch` con cancelación al desmontar. |
-| `router/` | Guardas públicas y privadas; cargando/error/sesión válida son estados distintos. |
+| `router/` | `AppRouter.jsx` declara la navegación. `PrivateRoutes`, `PublicRoutes` y `RoleRoutes` agrupan rutas con `Outlet`; cargando/error/sesión válida son estados distintos. |
 | `services/` | Cliente HTTP central y operaciones de autenticación y catálogo. |
 | `context/` | Usuario autenticado y comprobación de sesión; no contraseñas ni tokens. |
 
-`main.jsx` monta React, BrowserRouter y AuthProvider. `App.jsx` declara la navegación. `index.css` contiene el sistema visual adaptable. No se crea `assets/` vacío: la ilustración es CSS original y no requiere imágenes descargadas.
+`main.jsx` monta React, BrowserRouter y AuthProvider. `App.jsx` muestra `AppRouter`, que declara la navegación. `index.css` contiene el sistema visual adaptable. No se crea `assets/` vacío: la ilustración es CSS original y no requiere imágenes descargadas.
 
 ## Modelo de datos
 

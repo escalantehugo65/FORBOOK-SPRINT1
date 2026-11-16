@@ -1,5 +1,7 @@
-export async function up(db, models) {
-  const model = models.InstitutionResource;
-  const attributes = Object.fromEntries(Object.entries(model.getAttributes()).map(([key, value]) => [value.field || key, value]));
-  await db.getQueryInterface().createTable(model.getTableName(), attributes);
+import { sequelize } from '../src/config/database.js';
+import { tableColumns } from '../src/helpers/migration.helper.js';
+import { InstitutionResource } from '../src/models/institution_resource.model.js';
+
+export async function up() {
+  await sequelize.getQueryInterface().createTable(InstitutionResource.getTableName(), tableColumns(InstitutionResource));
 }

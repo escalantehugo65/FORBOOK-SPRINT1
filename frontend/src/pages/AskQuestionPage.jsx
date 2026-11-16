@@ -11,7 +11,7 @@ import { ArrowIcon } from '../components/Icons';
 
 const empty = { title: '', body: '', categoryId: '', forMyInstitution: false };
 
-// Publicar una pregunta (FF-25). Solo se llega con sesión, porque la ruta está dentro de PrivateRoute.
+// Publicar una pregunta (FF-25). Solo se llega con sesión, porque la ruta está dentro de PrivateRoutes.
 export default function AskQuestionPage() {
   usePageTitle('Hacer una pregunta');
   const { user } = useAuth();

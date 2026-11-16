@@ -1,12 +1,16 @@
-// Migración inicial. Sequelize genera el DDL a partir de los atributos definidos.
+import { sequelize } from '../src/config/database.js';
+import { tableColumns } from '../src/helpers/migration.helper.js';
+import { Institution } from '../src/models/institution.model.js';
+import { Category } from '../src/models/category.model.js';
+import { User } from '../src/models/user.model.js';
+import { Content } from '../src/models/content.model.js';
+import { Session } from '../src/models/session.model.js';
+
+// Migración inicial. Sequelize genera el DDL a partir de los atributos de cada modelo.
 // No se llama a sync() ni se eliminan tablas existentes.
-export async function up(db, models) {
-  const query = db.getQueryInterface();
-  for (const name of ['Institution', 'Category', 'User', 'Content', 'Session']) {
-    const model = models[name];
-    const attributes = Object.fromEntries(Object.entries(model.getAttributes()).map(([key, value]) => [value.field || key, value]));
-    await query.createTable(model.getTableName(), attributes);
-  }
+export async function up() {
+  const query = sequelize.getQueryInterface();
+  for (const model of [Institution, Category, User, Content, Session]) await query.createTable(model.getTableName(), tableColumns(model));
   const indexes = await query.showIndex('contents');
   if (!indexes.some(index => index.name === 'contents_status_category')) await query.addIndex('contents', ['status', 'category_id'], { name: 'contents_status_category' });
   const sessionIndexes = await query.showIndex('sessions');

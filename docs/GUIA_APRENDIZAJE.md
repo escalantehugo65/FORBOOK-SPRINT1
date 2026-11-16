@@ -8,7 +8,7 @@ El navegador ejecuta React. Node.js ejecuta Express en el servidor. MySQL conser
 
 No son tres copias de los mismos datos. React mantiene lo necesario para presentar una pantalla; la información persistente y la validación real viven en el servidor y la base.
 
-`app.js` crea la aplicación Express; `server.js` abre el puerto con `listen`. Separarlos permite probar los endpoints sin arrancar el servidor habitual.
+`backend/app.js` (en la raíz del backend, como en el trabajo integrador) crea la aplicación Express, monta los routers de `src/routes/` en `/api` y abre el puerto con `listen`. Los tests importan `app` sin abrir el puerto: `test/setup.js` pone `NODE_ENV=test` y apunta a la base de pruebas.
 
 ## 2. Componentes, props y listas
 
@@ -65,8 +65,8 @@ Este es el recorrido completo de registro:
 3. El envío llama a `register` del contexto y al servicio.
 4. El cliente HTTP serializa el body y realiza POST.
 5. Express comprueba origen, tamaño y JSON.
-6. La ruta selecciona el controlador.
-7. El controlador valida el cuerpo y consulta la institución.
+6. La ruta (`auth.route.js`) aplica el límite de intentos y las reglas de `validations/auth.validation.js`; si algo no cumple, `validator.middleware.js` responde 400 con un mensaje por campo.
+7. El controlador (`auth.controller.js`) toma los datos ya validados con `matchedData(req)` y consulta la institución.
 8. bcryptjs crea el hash; Sequelize inserta el usuario en MySQL.
 9. Se regenera y guarda la sesión SQL.
 10. El controlador devuelve 201 y el perfil público.

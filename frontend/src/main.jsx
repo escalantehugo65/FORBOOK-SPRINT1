@@ -5,7 +5,7 @@ import '@fontsource-variable/bricolage-grotesque/opsz.css';
 import '@fontsource-variable/nunito-sans';
 import { AuthProvider } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
-import App from './App';
+import { App } from './App';
 import './styles/tokens.css';
 import './styles/base.css';
 import './styles/layout.css';

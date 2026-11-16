@@ -1,49 +1,36 @@
+import './setup.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import request from 'supertest';
 import bcrypt from 'bcryptjs';
-import { createDatabase } from '../src/config/database.js';
-import { defineModels } from '../src/models/index.js';
-import { MysqlSessionStore } from '../src/config/sessionStore.js';
-import { createApp } from '../src/app.js';
-import { up as initial } from '../migrations/001-initial.js';
-import { up as careers } from '../migrations/002-careers.js';
-import { up as resources } from '../migrations/003-institution-resources.js';
-import { up as nationalOrigin } from '../migrations/005-national-origin.js';
-import { up as localities } from '../migrations/004-origin-localities.js';
-import { up as questions } from '../migrations/005-questions.js';
-import { up as answers } from '../migrations/006-answers.js';
-import { up as votes } from '../migrations/007-answer-votes.js';
-import { up as moderation } from '../migrations/008-moderation.js';
-import { up as places } from '../migrations/009-places.js';
-import { up as groups } from '../migrations/010-groups.js';
-import { up as placeAdmin } from '../migrations/011-place-admin.js';
-import { up as profiles } from '../migrations/012-profiles.js';
+import { config } from '../src/config/env.js';
+import { sequelize } from '../src/config/database.js';
+import { Answer } from '../src/models/answer.model.js';
+import { Category } from '../src/models/category.model.js';
+import { Content } from '../src/models/content.model.js';
+import { Institution } from '../src/models/institution.model.js';
+import { ModerationLog } from '../src/models/moderation_log.model.js';
+import { Question } from '../src/models/question.model.js';
+import { Report } from '../src/models/report.model.js';
+import { User } from '../src/models/user.model.js';
+import { runMigrations } from '../migrations/runner.js';
+import { app } from '../app.js';
 
 // Épica 7 sobre MySQL real: reportes, permisos por rol, resolución, historial y catálogo.
 test('moderación FF-34 a FF-39 sobre MySQL', { skip: !process.env.TEST_DB_NAME }, async t => {
-  if (!process.env.TEST_DB_NAME.endsWith('_test')) throw new Error('TEST_DB_NAME debe terminar en _test.');
-  const config = {
-    db: { host: process.env.TEST_DB_HOST || '127.0.0.1', port: Number(process.env.TEST_DB_PORT || 3306), database: process.env.TEST_DB_NAME, username: process.env.TEST_DB_USER || 'root', password: process.env.TEST_DB_PASSWORD || '' },
-    sessionSecret: 'test-only-secret-at-least-32-characters-long', sessionTtl: 3600000,
-    frontendUrl: 'http://localhost:5173', production: false, trustProxy: false,
-  };
-  const db = createDatabase(config);
-  const models = defineModels(db);
   const suffix = `${Date.now()}-${Math.random().toString(36).slice(2)}`;
   const users = {};
   let institution, category, content;
   try {
-    await db.authenticate();
-    for (const migration of [initial, careers, resources, localities, nationalOrigin, questions, answers, votes, moderation, places, groups, placeAdmin, profiles]) await migration(db, models);
-    institution = await models.Institution.create({ name: `Institución moderación ${suffix}`, sourceUrl: 'https://example.com' });
-    category = await models.Category.create({ name: `Moderación ${suffix}`, slug: `mod-${suffix}`, description: 'Datos ficticios exclusivos para pruebas' });
-    content = await models.Content.create({ slug: `mod-content-${suffix}`, title: 'Ficha de prueba', summary: 'Dato ficticio', body: 'No es información real.', categoryId: category.id, sourceType: 'official', sourceLabel: 'Organismo de prueba', sourceUrl: 'https://example.com', reviewedAt: '2026-10-20', status: 'published' });
+    await sequelize.authenticate();
+    await runMigrations();
+    institution = await Institution.create({ name: `Institución moderación ${suffix}`, sourceUrl: 'https://example.com' });
+    category = await Category.create({ name: `Moderación ${suffix}`, slug: `mod-${suffix}`, description: 'Datos ficticios exclusivos para pruebas' });
+    content = await Content.create({ slug: `mod-content-${suffix}`, title: 'Ficha de prueba', summary: 'Dato ficticio', body: 'No es información real.', categoryId: category.id, sourceType: 'official', sourceLabel: 'Organismo de prueba', sourceUrl: 'https://example.com', reviewedAt: '2026-10-20', status: 'published' });
     const passwordHash = await bcrypt.hash('Una-clave-segura-123', 4);
     for (const [key, role] of [['author', 'student'], ['reader', 'student'], ['moderator', 'moderator'], ['admin', 'admin']]) {
-      users[key] = await models.User.create({ name: `${key} Prueba`, email: `${key}-${suffix}@example.com`, passwordHash, origin: 'Pruebas, Formosa', institutionId: institution.id, career: 'Carrera de prueba', arrivalStatus: 'arrived', role });
+      users[key] = await User.create({ name: `${key} Prueba`, email: `${key}-${suffix}@example.com`, passwordHash, origin: 'Pruebas, Formosa', institutionId: institution.id, career: 'Carrera de prueba', arrivalStatus: 'arrived', role });
     }
-    const app = createApp({ models, store: new MysqlSessionStore(models.Session, config.sessionTtl), config, db });
     const agents = {};
     for (const key of Object.keys(users)) {
       agents[key] = request.agent(app);
@@ -61,7 +48,7 @@ test('moderación FF-34 a FF-39 sobre MySQL', { skip: !process.env.TEST_DB_NAME 
       assert.deepEqual(Object.keys(created.body.data), ['message']);
       await send('reader', 'post', '/api/reports', { targetType: 'answer', targetId: answer.id, reason: 'false' }).expect(200);
       await send('reader', 'post', '/api/reports', { targetType: 'content', targetId: content.id, reason: 'outdated' }).expect(201);
-      assert.equal(await models.Report.count({ where: { reporterId: users.reader.id } }), 2);
+      assert.equal(await Report.count({ where: { reporterId: users.reader.id } }), 2);
       const detail = await send('reader', 'get', `/api/contents/${content.id}`).expect(200);
       assert.equal(detail.body.data.reviewedAt, '2026-10-20');
       assert.equal((await send('reader', 'get', `/api/questions/${question.id}`).expect(200)).body.data.answers.length, 1);
@@ -87,7 +74,7 @@ test('moderación FF-34 a FF-39 sobre MySQL', { skip: !process.env.TEST_DB_NAME 
       assert.equal(done.body.data.status, 'actioned');
       await send('moderator', 'post', `/api/moderation/reports/${reportId}/resolve`, { decision: 'hide', note: 'Motivo de prueba' }).expect(409);
       assert.equal((await send('reader', 'get', `/api/questions/${question.id}`).expect(200)).body.data.answers.length, 0);
-      assert.ok((await models.Answer.findByPk(answer.id)).hiddenAt);
+      assert.ok((await Answer.findByPk(answer.id)).hiddenAt);
       await send('reader', 'put', `/api/answers/${answer.id}/helpful`).expect(404);
     });
 
@@ -114,14 +101,14 @@ test('moderación FF-34 a FF-39 sobre MySQL', { skip: !process.env.TEST_DB_NAME 
     // Solo elimina los datos que creó esta ejecución, nunca las tablas.
     const ids = Object.values(users).map(user => user.id);
     if (ids.length) {
-      await models.ModerationLog.destroy({ where: { moderatorId: ids } });
-      await models.Report.destroy({ where: { reporterId: ids } });
-      await models.Question.destroy({ where: { userId: ids } });
-      await models.User.destroy({ where: { id: ids } });
+      await ModerationLog.destroy({ where: { moderatorId: ids } });
+      await Report.destroy({ where: { reporterId: ids } });
+      await Question.destroy({ where: { userId: ids } });
+      await User.destroy({ where: { id: ids } });
     }
     if (content) await content.destroy();
     if (category) await category.destroy();
     if (institution) await institution.destroy();
-    await db.close();
+    await sequelize.close();
   }
 });

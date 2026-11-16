@@ -1,5 +1,7 @@
-export async function up(db, models) {
-  const model = models.Career;
-  const attributes = Object.fromEntries(Object.entries(model.getAttributes()).map(([key, value]) => [value.field || key, value]));
-  await db.getQueryInterface().createTable('careers', attributes);
+import { sequelize } from '../src/config/database.js';
+import { tableColumns } from '../src/helpers/migration.helper.js';
+import { Career } from '../src/models/career.model.js';
+
+export async function up() {
+  await sequelize.getQueryInterface().createTable(Career.getTableName(), tableColumns(Career));
 }

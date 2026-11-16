@@ -38,6 +38,10 @@ npm run dev --prefix frontend
 
 Abrí http://localhost:5173. La API responde en http://localhost:3001/api/health. Conservá localhost en FRONTEND_URL y en el navegador. Si esos puertos ya están ocupados por otra copia, detené aquella copia primero.
 
+## Estructura del backend
+
+Sigue la del trabajo práctico integrador. `backend/app.js` es la entrada (arma Express, monta los routers en `/api` y abre el puerto). En `backend/src` hay un archivo por cada modelo (`models/user.model.js`), controlador (`controllers/question.controller.js`), router (`routes/place.route.js`) y validación con express-validator (`middlewares/validations/report.validation.js`). Detalle en [docs/ARQUITECTURA.md](docs/ARQUITECTURA.md).
+
 ## Comprobar
 
 ```powershell

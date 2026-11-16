@@ -1,7 +1,8 @@
+import { sequelize } from '../src/config/database.js';
+import { tableColumns } from '../src/helpers/migration.helper.js';
+import { Group } from '../src/models/group.model.js';
+
 // Épica 6: espacios de integración. Se puede ejecutar más de una vez.
-export async function up(db, models) {
-  const query = db.getQueryInterface();
-  const model = models.Group;
-  const attributes = Object.fromEntries(Object.entries(model.getAttributes()).map(([key, value]) => [value.field || key, value]));
-  await query.createTable(model.getTableName(), attributes);
+export async function up() {
+  await sequelize.getQueryInterface().createTable(Group.getTableName(), tableColumns(Group));
 }

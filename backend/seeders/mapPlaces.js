@@ -1,7 +1,9 @@
 import { readFileSync } from 'node:fs';
+import { Institution } from '../src/models/institution.model.js';
+import { Place } from '../src/models/place.model.js';
 export const studentMapPlaces = JSON.parse(readFileSync(new URL('./data/student-map-places.json', import.meta.url), 'utf8'));
 const oldSource = 'https://servicios.infoleg.gob.ar/infolegInternet/anexos/410000-414999/412386/res566.pdf';
-export async function seedMapPlaces({ Institution, Place }, transaction) {
+export async function seedMapPlaces(transaction) {
   for (const { institutionName, ...item } of studentMapPlaces) {
     const institution = institutionName ? await Institution.findOne({ where: { name: institutionName }, transaction }) : null;
     if (institutionName && !institution) throw new Error(`Falta la institución: ${institutionName}`);
