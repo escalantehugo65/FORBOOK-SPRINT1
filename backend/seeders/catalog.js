@@ -107,15 +107,24 @@ export const contents = [
     sourceType: 'experience', authorLabel: 'Lautaro Villalba, estudiante del IPF',
     summary: 'Vas a escuchar «pa» al final de muchas preguntas. Viene del guaraní y no quiere decir «para».',
     body: 'En Formosa es muy común terminar una pregunta con «pa»: «¿Vas a venir pa?», «¿Qué hora es pa?».\n\nViene del guaraní, donde «pa» marca que la frase es una pregunta; por ejemplo, «Mba\'éichapa?» quiere decir «¿cómo estás?». El español de Formosa tiene mucha influencia del guaraní que se habla en Paraguay, y por eso se escucha tanto.\n\nNo es el «pa» de «para» («voy pa\' la facu»): en una pregunta no cambia lo que preguntás, es parte de la forma de hablar de la zona.' },
+  // Actualizada el 16/11/2026 con la dirección (ver contentRevisions y docs/FUENTES.md).
   { slug: 'capitulo-utiles', title: '¿Te faltan útiles? Capítulo, en el centro', categorySlug: 'lugares-utiles', reviewedAt: '2026-11-16',
     sourceType: 'experience', authorLabel: 'Lautaro Villalba, estudiante del IPF',
-    summary: 'Un lugar del centro de la ciudad donde conseguir útiles para la cursada.',
-    body: 'Si te faltan útiles para la cursada, podés ir a Capítulo, en el centro de la ciudad.\n\nPara ubicarlo, buscá «Capítulo» en Google Maps o preguntá en la comunidad de Forbook.' },
+    summary: 'Una librería del centro, en Av. 25 de Mayo 799, donde conseguir útiles para la cursada.',
+    body: 'Si te faltan útiles para la cursada, podés ir a Capítulo, en Av. 25 de Mayo 799, en el centro de la ciudad. Además de útiles, tiene artículos de oficina e impresiones.\n\nLa encontrás en el mapa, en Servicios.' },
+  { slug: 'caja-de-ahorro', title: 'Abrí una caja de ahorro: es gratis y con tu DNI', categorySlug: 'lugares-utiles', reviewedAt: '2026-11-16',
+    summary: 'Lo que dice el Banco Central sobre abrir una caja de ahorro, y dónde está la casa central del Banco Formosa.',
+    body: 'Según el Banco Central (BCRA), la caja de ahorro es una cuenta de apertura gratuita y sin costo de mantenimiento. Te sirve para guardar plata, recibir transferencias y pagar con tarjeta de débito.\n\nSe abre en el banco que elijas, presentando tu DNI. El banco puede pedirte algún requisito más, pero no puede obligarte a sacar otro producto, como una tarjeta de crédito o un préstamo.\n\nNo tienen costo:\n• La apertura y el mantenimiento.\n• La tarjeta de débito.\n• Los cajeros y terminales de tu propio banco.\n• El homebanking.\n• Un reemplazo por año de la tarjeta si se rompe o se desmagnetiza.\n\nSí pueden cobrarte por usar cajeros de otros bancos o de shoppings y estaciones de servicio: el banco tiene que publicar esos costos.\n\nEn la ciudad, la casa central del Banco Formosa está en Av. 25 de Mayo 102, esquina Belgrano. La encontrás en el mapa, en Servicios.',
+    sourceLabel: 'Banco Central de la República Argentina — Caja de ahorro: cómo usarla de forma segura', sourceUrl: 'https://www.bcra.gob.ar/caja-de-ahorro-caracteristicas-y-uso/' },
 ];
 
 // Fichas ya cargadas por una versión anterior del catálogo. db:seed las actualiza a la versión de arriba
 // solo si siguen exactamente como se cargaron (nadie las editó desde la página).
 export const contentRevisions = [
+  { slug: 'capitulo-utiles', previous: {
+    summary: 'Un lugar del centro de la ciudad donde conseguir útiles para la cursada.',
+    body: 'Si te faltan útiles para la cursada, podés ir a Capítulo, en el centro de la ciudad.\n\nPara ubicarlo, buscá «Capítulo» en Google Maps o preguntá en la comunidad de Forbook.',
+  } },
   { slug: 'ipf-carreras-preinscripcion', previous: {
     title: 'Carreras del IPF y preinscripción',
     summary: 'Las cuatro tecnicaturas superiores que publica el IPF y qué pide el formulario de preinscripción.',
@@ -153,6 +162,23 @@ export const travelRoutes = [
       { name: 'Shell', reference: null, latitude: -26.188277, longitude: -58.214626 },
       { name: 'IPV', reference: null, latitude: -26.164724, longitude: -58.198354 },
     ] },
+];
+
+// Lugares del mapa que se agregan con el catálogo (además de los de data/student-map-places.json).
+// Sin coordenadas comprobadas, el lugar se muestra con su dirección y sin punto en el mapa.
+export const places = [
+  { slug: 'banco-formosa-casa-central', name: 'Banco Formosa — Casa Central', kind: 'services',
+    addressLabel: 'Av. 25 de Mayo 102, esquina Belgrano, ciudad de Formosa',
+    studentNote: 'Casa central del Banco Formosa. Para abrir una caja de ahorro en pesos alcanza con el DNI y es gratis.',
+    latitude: -26.182508, longitude: -58.166416,
+    sourceType: 'official', sourceLabel: 'Banco Central (BCRA) — Entidades financieras, filiales y cajeros (Formosa)',
+    sourceUrl: 'https://www.bcra.gob.ar/entidades-financieras-filiales-y-cajeros-filtros/?Provincia=FORMOSA&bco=AAA10&Tit=2&Tipo=1', reviewedAt: '2026-11-16' },
+  { slug: 'capitulo-libreria', name: 'Capítulo (librería)', kind: 'services',
+    addressLabel: 'Av. 25 de Mayo 799, ciudad de Formosa',
+    studentNote: 'Útiles escolares, artículos de oficina e impresiones.',
+    latitude: null, longitude: null,
+    sourceType: 'community', sourceLabel: 'Dirección publicada en la lista de librerías de la canasta escolar 2025 (Guau Formosa, 13/02/2025)',
+    sourceUrl: 'https://www.guauformosa.com.ar/noticias/2025/02/13/27930-librerias-formosenas-se-suman-a-la-canasta-escolar-con-descuentos-y-financiacion', reviewedAt: '2026-11-16' },
 ];
 
 // Épica 6: espacios de integración. Son secciones públicas que Forbook ya tiene;

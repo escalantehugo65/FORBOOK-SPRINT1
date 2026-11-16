@@ -11,7 +11,7 @@ import { Place } from '../src/models/place.model.js';
 import { TravelRoute } from '../src/models/travel_route.model.js';
 import { RouteStop } from '../src/models/route_stop.model.js';
 import { Group } from '../src/models/group.model.js';
-import { institutions, categories, contents, contentRevisions, travelRoutes, groups } from '../seeders/catalog.js';
+import { institutions, categories, contents, contentRevisions, places, travelRoutes, groups } from '../seeders/catalog.js';
 import { careerCatalog } from '../seeders/careers.js';
 import { institutionResources } from '../seeders/institutionResources.js';
 import { seedLocalities } from '../seeders/localities.js';
@@ -52,6 +52,7 @@ try {
       revised += 1;
     }
     await seedMapPlaces(transaction);
+    for (const item of places) await Place.findOrCreate({ where: { slug: item.slug }, defaults: { ...item, status: 'published' }, transaction });
     for (const { institutionName, destinationSlug, stops = [], ...item } of travelRoutes) {
       const destination = destinationSlug ? await Place.findOne({ where: { slug: destinationSlug }, transaction }) : null;
       const [route, created] = await TravelRoute.findOrCreate({ where: { slug: item.slug }, defaults: { ...item, institutionId: await institutionId(institutionName), destinationPlaceId: destination?.id ?? null, status: 'published' }, transaction });

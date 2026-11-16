@@ -59,4 +59,13 @@ No se cargaron rutas de colectivos: no se encontró una fuente oficial con los r
 | El «pa» de las preguntas | Experiencia de Lautaro Villalba | Uso de «pa» al final de las preguntas. El origen guaraní (partícula interrogativa -pa) coincide con Paz y Vidal, «Interrogative Constructions in Guaraní», Languages, 2022 (UNaF y CONICET). |
 | ¿Te faltan útiles? Capítulo, en el centro | Experiencia de Lautaro Villalba | Solo la recomendación. No se cargó dirección ni horario porque nadie los comprobó. |
 
-Quedan pendientes, por falta de datos comprobados: qué banco recomendar y dónde, el nombre exacto y la ubicación de la biblioteca del Colegio Nacional, la dirección de Capítulo y las paradas del turno tarde.
+## Banco y Capítulo (16/11/2026, tercer lote)
+
+| Dato | Tipo y referencia | Alcance |
+|---|---|---|
+| Lugar: Banco Formosa — Casa Central | Oficial. BCRA, Entidades financieras, filiales y cajeros (Formosa): https://www.bcra.gob.ar/entidades-financieras-filiales-y-cajeros-filtros/?Provincia=FORMOSA&bco=AAA10&Tit=2&Tipo=1 | Dirección (Av. 25 de Mayo 102 y Belgrano) y coordenadas (-26.182508, -58.166416) tal como las publica el BCRA para la casa central. |
+| Lugar: Capítulo (librería) | Comunitaria. Lista de librerías de la canasta escolar 2025, Guau Formosa, 13/02/2025: https://www.guauformosa.com.ar/noticias/2025/02/13/27930-librerias-formosenas-se-suman-a-la-canasta-escolar-con-descuentos-y-financiacion | Dirección (Av. 25 de Mayo 799). Coincide con la canasta escolar 2018 (Sensación Formosa) y con la página del comercio. Sin coordenadas comprobadas: se muestra con la dirección y sin punto en el mapa. |
+| Ficha: Abrí una caja de ahorro (nueva) | Oficial. BCRA, «Caja de ahorro: cómo usarla de forma segura»: https://www.bcra.gob.ar/caja-de-ahorro-caracteristicas-y-uso/ | Apertura y mantenimiento sin costo, DNI, no pueden obligarte a otro producto, qué es gratis y qué se puede cobrar. La dirección del Banco Formosa sale de la fila del BCRA de arriba. |
+| Ficha: ¿Te faltan útiles? Capítulo (actualizada) | Experiencia de Lautaro Villalba, más la dirección de la fila de arriba | Ahora dice la dirección y remite al mapa. El seed la actualiza solo si nadie la editó. |
+
+Quedan pendientes: cuál es la biblioteca del Colegio Nacional (el ex Colegio Nacional «Juan José Silva» hoy es la EPES N.º 54; también existe la Biblioteca Municipal Popular «Prof. Blanca Boreau de Simonotto», que lleva el nombre de una ex rectora de ese colegio) y las paradas del turno tarde.

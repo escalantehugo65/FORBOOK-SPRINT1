@@ -1,8 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { categories, contents, contentRevisions, institutions, travelRoutes } from '../seeders/catalog.js';
+import { categories, contents, contentRevisions, institutions, places, travelRoutes } from '../seeders/catalog.js';
 import { studentMapPlaces } from '../seeders/mapPlaces.js';
-import { isInsideFormosa } from '../src/helpers/place.helper.js';
+import { isInsideFormosa, placeKinds } from '../src/helpers/place.helper.js';
 
 // El catálogo se carga sin pasar por las validaciones de la API: acá se revisan las mismas reglas.
 // No usa la base de datos.
@@ -50,4 +50,18 @@ test('catálogo: rutas con pasos y paradas válidas (colectivo del IPF)', () => 
   const ipf = travelRoutes.find(route => route.slug === 'colectivo-ipf');
   assert.deepEqual(ipf.stops.map(stop => stop.name), ['Plaza San Martín', 'Plaza Temática', 'La Virgen', 'Circuito', 'Cruz', 'Homu', 'Shell', 'IPV']);
   assert.equal(ipf.durationLabel, null, 'sin tiempo: nadie lo midió');
+});
+
+test('catálogo: lugares agregados con fuente y, si tienen coordenadas, dentro de Formosa', () => {
+  const slugs = new Set(studentMapPlaces.map(place => place.slug));
+  for (const place of places) {
+    assert.ok(!slugs.has(place.slug), `slug repetido: ${place.slug}`);
+    slugs.add(place.slug);
+    assert.ok(placeKinds.includes(place.kind), `${place.slug}: categoría`);
+    assert.ok(['official', 'community'].includes(place.sourceType) && place.sourceLabel && place.reviewedAt, `${place.slug}: fuente`);
+    if (place.sourceType === 'official') assert.match(place.sourceUrl, /^https:\/\//, `${place.slug}: enlace`);
+    assert.equal(place.latitude === null, place.longitude === null, `${place.slug}: las dos coordenadas o ninguna`);
+    if (place.latitude !== null) assert.ok(isInsideFormosa(place.latitude, place.longitude), `${place.slug}: fuera de Formosa`);
+    assert.ok(place.addressLabel.length <= 250 && (place.studentNote ?? '').length <= 450, `${place.slug}: textos`);
+  }
 });
