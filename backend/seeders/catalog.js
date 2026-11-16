@@ -164,6 +164,8 @@ export const travelRoutes = [
     ] },
 ];
 
+const cajerosSource = { sourceType: 'community', sourceLabel: 'Ubicación aportada por un compañero del IPF (16/11/2026)', sourceUrl: null, reviewedAt: '2026-11-16' };
+
 // Lugares del mapa que se agregan con el catálogo (además de los de data/student-map-places.json).
 // Sin coordenadas comprobadas, el lugar se muestra con su dirección y sin punto en el mapa.
 export const places = [
@@ -178,7 +180,25 @@ export const places = [
     studentNote: 'Útiles escolares, artículos de oficina e impresiones.',
     latitude: null, longitude: null,
     sourceType: 'community', sourceLabel: 'Dirección publicada en la lista de librerías de la canasta escolar 2025 (Guau Formosa, 13/02/2025)',
-    sourceUrl: 'https://www.guauformosa.com.ar/noticias/2025/02/13/27930-librerias-formosenas-se-suman-a-la-canasta-escolar-con-descuentos-y-financiacion', reviewedAt: '2026-11-16' },
+    sourceUrl: 'https://www.guauformosa.com.ar/noticias/2025/02/13/27930-librerias-formosenas-se-suman-a-la-canasta-escolar-con-descuentos-y-financiacion', reviewedAt: '2026-11-16' },  // Bancos y cajeros aportados por un compañero del IPF el 16/11/2026 (coordenadas de Google Maps).
+  { slug: 'cajero-red-link-1', name: 'Cajero automático Red Link', kind: 'services', addressLabel: null, studentNote: null,
+    latitude: -26.172009, longitude: -58.192702, ...cajerosSource },
+  { slug: 'cajero-banco-formosa-1', name: 'Cajero automático Banco Formosa', kind: 'services', addressLabel: null, studentNote: null,
+    latitude: -26.184173, longitude: -58.199378, ...cajerosSource },
+  { slug: 'cajero-banco-formosa-2', name: 'Cajero automático Banco Formosa', kind: 'services', addressLabel: null, studentNote: null,
+    latitude: -26.191446, longitude: -58.177722, ...cajerosSource },
+  { slug: 'cajero-red-link-2', name: 'Cajero automático Red Link', kind: 'services', addressLabel: null, studentNote: null,
+    latitude: -26.1847, longitude: -58.172054, ...cajerosSource },
+  { slug: 'banco-formosa-sucursal', name: 'Banco Formosa', kind: 'services', addressLabel: null, studentNote: null,
+    latitude: -26.182852, longitude: -58.171461, ...cajerosSource },
+  { slug: 'cajeros-banco-formosa-moreno', name: 'Cajeros Banco Formosa (Moreno)', kind: 'services', addressLabel: null, studentNote: null,
+    latitude: -26.18284, longitude: -58.167582, ...cajerosSource },
+  { slug: 'cajero-bbva-25-de-mayo', name: 'Cajero automático BBVA', kind: 'services', addressLabel: 'Av. 25 de Mayo 311', studentNote: null,
+    latitude: -26.182893, longitude: -58.167711, ...cajerosSource },
+  { slug: 'cajero-naranja-x', name: 'Cajero automático Naranja X', kind: 'services', addressLabel: null, studentNote: null,
+    latitude: -26.182412, longitude: -58.166218, ...cajerosSource },
+  { slug: 'cajeros-pago24', name: 'Cajeros Pago24', kind: 'services', addressLabel: null, studentNote: null,
+    latitude: -26.182194, longitude: -58.165454, ...cajerosSource },
 ];
 
 // Épica 6: espacios de integración. Son secciones públicas que Forbook ya tiene;

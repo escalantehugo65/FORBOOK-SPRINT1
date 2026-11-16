@@ -68,4 +68,6 @@ No se cargaron rutas de colectivos: no se encontró una fuente oficial con los r
 | Ficha: Abrí una caja de ahorro (nueva) | Oficial. BCRA, «Caja de ahorro: cómo usarla de forma segura»: https://www.bcra.gob.ar/caja-de-ahorro-caracteristicas-y-uso/ | Apertura y mantenimiento sin costo, DNI, no pueden obligarte a otro producto, qué es gratis y qué se puede cobrar. La dirección del Banco Formosa sale de la fila del BCRA de arriba. |
 | Ficha: ¿Te faltan útiles? Capítulo (actualizada) | Experiencia de Lautaro Villalba, más la dirección de la fila de arriba | Ahora dice la dirección y remite al mapa. El seed la actualiza solo si nadie la editó. |
 
+Bancos y cajeros (16/11/2026): nueve puntos del mapa, en Servicios, con las coordenadas de Google Maps que pasó un compañero del IPF (fuente comunitaria): dos cajeros Red Link, dos cajeros y una sucursal del Banco Formosa, los cajeros del Banco Formosa sobre Moreno, un cajero BBVA (25 de Mayo 311), un cajero Naranja X y cajeros Pago24. No tienen dirección cargada salvo el de BBVA.
+
 Quedan pendientes: cuál es la biblioteca del Colegio Nacional (el ex Colegio Nacional «Juan José Silva» hoy es la EPES N.º 54; también existe la Biblioteca Municipal Popular «Prof. Blanca Boreau de Simonotto», que lleva el nombre de una ex rectora de ese colegio) y las paradas del turno tarde.

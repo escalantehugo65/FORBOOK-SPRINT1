@@ -62,6 +62,6 @@ test('catálogo: lugares agregados con fuente y, si tienen coordenadas, dentro d
     if (place.sourceType === 'official') assert.match(place.sourceUrl, /^https:\/\//, `${place.slug}: enlace`);
     assert.equal(place.latitude === null, place.longitude === null, `${place.slug}: las dos coordenadas o ninguna`);
     if (place.latitude !== null) assert.ok(isInsideFormosa(place.latitude, place.longitude), `${place.slug}: fuera de Formosa`);
-    assert.ok(place.addressLabel.length <= 250 && (place.studentNote ?? '').length <= 450, `${place.slug}: textos`);
+    assert.ok((place.addressLabel ?? '').length <= 250 && (place.studentNote ?? '').length <= 450, `${place.slug}: textos`);
   }
 });
