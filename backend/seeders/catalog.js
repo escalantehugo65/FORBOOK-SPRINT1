@@ -112,10 +112,30 @@ export const contents = [
     sourceType: 'experience', authorLabel: 'Lautaro Villalba, estudiante del IPF',
     summary: 'Una librería del centro, en Av. 25 de Mayo 799, donde conseguir útiles para la cursada.',
     body: 'Si te faltan útiles para la cursada, podés ir a Capítulo, en Av. 25 de Mayo 799, en el centro de la ciudad. Además de útiles, tiene artículos de oficina e impresiones.\n\nLa encontrás en el mapa, en Servicios.' },
+  { slug: 'biblioteca-ex-colegio-nacional', title: 'Para estudiar: la biblioteca del ex Colegio Nacional', categorySlug: 'lugares-utiles', reviewedAt: '2026-11-16',
+    sourceType: 'experience', authorLabel: 'Lautaro Villalba, estudiante del IPF',
+    summary: 'Un lugar tranquilo para estudiar en el centro, cerca de la Plaza San Martín.',
+    body: 'Si necesitás un lugar tranquilo para estudiar, podés ir a la biblioteca del ex Colegio Nacional, hoy EPES N.º 54 «Gobernador Juan José Silva», en Sarmiento 885, cerca de la Plaza San Martín.\n\nAntes de ir, preguntá en la escuela los horarios de la biblioteca.\n\nLa encontrás en el mapa, en Servicios.' },
   { slug: 'caja-de-ahorro', title: 'Abrí una caja de ahorro: es gratis y con tu DNI', categorySlug: 'lugares-utiles', reviewedAt: '2026-11-16',
     summary: 'Lo que dice el Banco Central sobre abrir una caja de ahorro, y dónde está la casa central del Banco Formosa.',
     body: 'Según el Banco Central (BCRA), la caja de ahorro es una cuenta de apertura gratuita y sin costo de mantenimiento. Te sirve para guardar plata, recibir transferencias y pagar con tarjeta de débito.\n\nSe abre en el banco que elijas, presentando tu DNI. El banco puede pedirte algún requisito más, pero no puede obligarte a sacar otro producto, como una tarjeta de crédito o un préstamo.\n\nNo tienen costo:\n• La apertura y el mantenimiento.\n• La tarjeta de débito.\n• Los cajeros y terminales de tu propio banco.\n• El homebanking.\n• Un reemplazo por año de la tarjeta si se rompe o se desmagnetiza.\n\nSí pueden cobrarte por usar cajeros de otros bancos o de shoppings y estaciones de servicio: el banco tiene que publicar esos costos.\n\nEn la ciudad, la casa central del Banco Formosa está en Av. 25 de Mayo 102, esquina Belgrano. La encontrás en el mapa, en Servicios.',
     sourceLabel: 'Banco Central de la República Argentina — Caja de ahorro: cómo usarla de forma segura', sourceUrl: 'https://www.bcra.gob.ar/caja-de-ahorro-caracteristicas-y-uso/' },
+];
+
+// Lugares y rutas ya cargados por una versión anterior: se actualizan igual que las fichas de contentRevisions.
+export const placeRevisions = [
+  { slug: 'capitulo-libreria', previous: { latitude: null, longitude: null, studentNote: 'Útiles escolares, artículos de oficina e impresiones.' } },
+];
+export const routeRevisions = [
+  { slug: 'colectivo-ipf', previous: { steps: [
+    'Es gratis y es solo para estudiantes del IPF: no tenés que mostrar nada, subís y listo.',
+    'Es un colectivo de la empresa Puerto Tirol y no lleva cartel: así lo reconocés.',
+    'Turno mañana, 8:00: sale el primer colectivo de Plaza San Martín (parada del Correo Argentino). Levanta en Plaza Temática y en La Virgen.',
+    'Turno mañana, 8:10 más o menos: sale el segundo de Plaza San Martín. Levanta en Plaza Temática y en Circuito (Ruta Nacional 11).',
+    'En las demás paradas el horario cambia según el colectivo (más o menos entre las 8:00 y las 8:30). Conviene estar antes de las 8:00.',
+    'Turno tarde: los estudiantes suben alrededor de las 16:15. Las paradas de esta página son las del turno mañana.',
+    'A la vuelta, el colectivo para en las mismas paradas.',
+  ].join('\n') } },
 ];
 
 // Fichas ya cargadas por una versión anterior del catálogo. db:seed las actualiza a la versión de arriba
@@ -137,8 +157,8 @@ export const contentRevisions = [
 // Los pasos van separados por \n. Las paradas son opcionales y se marcan en el mapa, sin dibujar el trayecto.
 // db:seed agrega las paradas solo cuando crea la ruta: si después se editan desde la página, no se pisan.
 export const travelRoutes = [
-  // Colectivo del IPF, comprobado el 16/11/2026 por un estudiante del instituto. Solo turno mañana:
-  // las paradas del turno tarde todavía no están comprobadas. El orden de las paradas no es el del recorrido.
+  // Colectivo del IPF, comprobado el 16/11/2026 por un estudiante del instituto. El turno tarde usa las mismas paradas.
+  // El orden de las paradas no es el del recorrido.
   { slug: 'colectivo-ipf', institutionName: institutions[1].name, destinationSlug: 'ipf-campus',
     title: 'Colectivo gratuito al IPF', originLabel: 'Plaza San Martín, en la parada del Correo Argentino', mode: 'bus',
     steps: [
@@ -147,7 +167,7 @@ export const travelRoutes = [
       'Turno mañana, 8:00: sale el primer colectivo de Plaza San Martín (parada del Correo Argentino). Levanta en Plaza Temática y en La Virgen.',
       'Turno mañana, 8:10 más o menos: sale el segundo de Plaza San Martín. Levanta en Plaza Temática y en Circuito (Ruta Nacional 11).',
       'En las demás paradas el horario cambia según el colectivo (más o menos entre las 8:00 y las 8:30). Conviene estar antes de las 8:00.',
-      'Turno tarde: los estudiantes suben alrededor de las 16:15. Las paradas de esta página son las del turno mañana.',
+      'Turno tarde: los estudiantes suben alrededor de las 16:15, en las mismas paradas.',
       'A la vuelta, el colectivo para en las mismas paradas.',
     ].join('\n'),
     durationLabel: null,
@@ -177,10 +197,16 @@ export const places = [
     sourceUrl: 'https://www.bcra.gob.ar/entidades-financieras-filiales-y-cajeros-filtros/?Provincia=FORMOSA&bco=AAA10&Tit=2&Tipo=1', reviewedAt: '2026-11-16' },
   { slug: 'capitulo-libreria', name: 'Capítulo (librería)', kind: 'services',
     addressLabel: 'Av. 25 de Mayo 799, ciudad de Formosa',
-    studentNote: 'Útiles escolares, artículos de oficina e impresiones.',
-    latitude: null, longitude: null,
-    sourceType: 'community', sourceLabel: 'Dirección publicada en la lista de librerías de la canasta escolar 2025 (Guau Formosa, 13/02/2025)',
-    sourceUrl: 'https://www.guauformosa.com.ar/noticias/2025/02/13/27930-librerias-formosenas-se-suman-a-la-canasta-escolar-con-descuentos-y-financiacion', reviewedAt: '2026-11-16' },  // Bancos y cajeros aportados por un compañero del IPF el 16/11/2026 (coordenadas de Google Maps).
+    studentNote: 'Útiles escolares, artículos de oficina e impresiones. A unas dos cuadras de la Plaza San Martín.',
+    latitude: -26.184686, longitude: -58.173144,
+    sourceType: 'community', sourceLabel: 'Dirección: lista de librerías de la canasta escolar 2025 (Guau Formosa, 13/02/2025). Ubicación: Google Maps',
+    sourceUrl: 'https://www.guauformosa.com.ar/noticias/2025/02/13/27930-librerias-formosenas-se-suman-a-la-canasta-escolar-con-descuentos-y-financiacion', reviewedAt: '2026-11-16' },  { slug: 'biblioteca-epes-54', name: 'Biblioteca de la EPES N.º 54 (ex Colegio Nacional)', kind: 'services',
+    addressLabel: 'Sarmiento 885, ciudad de Formosa',
+    studentNote: 'La biblioteca del ex Colegio Nacional «Gobernador Juan José Silva», cerca de la Plaza San Martín. Antes de ir, consultá los horarios en la escuela.',
+    latitude: -26.186668, longitude: -58.17534,
+    sourceType: 'community', sourceLabel: 'Dirección: página de la EPES N.º 54. Ubicación: Google Maps. Recomendada por un estudiante del IPF',
+    sourceUrl: 'https://www.facebook.com/p/EPES-Nro-54-Gdor-Juan-Jose-Silva-100069537255009/', reviewedAt: '2026-11-16' },
+  // Bancos y cajeros aportados por un compañero del IPF el 16/11/2026 (coordenadas de Google Maps).
   { slug: 'cajero-red-link-1', name: 'Cajero automático Red Link', kind: 'services', addressLabel: null, studentNote: null,
     latitude: -26.172009, longitude: -58.192702, ...cajerosSource },
   { slug: 'cajero-banco-formosa-1', name: 'Cajero automático Banco Formosa', kind: 'services', addressLabel: null, studentNote: null,

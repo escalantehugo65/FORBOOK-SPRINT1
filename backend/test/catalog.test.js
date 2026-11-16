@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { categories, contents, contentRevisions, institutions, places, travelRoutes } from '../seeders/catalog.js';
+import { categories, contents, contentRevisions, institutions, placeRevisions, places, routeRevisions, travelRoutes } from '../seeders/catalog.js';
 import { studentMapPlaces } from '../seeders/mapPlaces.js';
 import { isInsideFormosa, placeKinds } from '../src/helpers/place.helper.js';
 
@@ -23,8 +23,8 @@ test('catálogo: las fichas cumplen las reglas de fuente', () => {
 });
 
 test('catálogo: las revisiones apuntan a fichas que existen y cambian algo', () => {
-  for (const { slug, previous } of contentRevisions) {
-    const current = contents.find(item => item.slug === slug);
+  for (const [list, catalog] of [[contentRevisions, contents], [placeRevisions, places], [routeRevisions, travelRoutes]]) for (const { slug, previous } of list) {
+    const current = catalog.find(item => item.slug === slug);
     assert.ok(current, slug);
     assert.ok(Object.keys(previous).some(key => previous[key] !== current[key]), `${slug}: la revisión no cambia nada`);
   }

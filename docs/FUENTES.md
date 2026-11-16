@@ -70,4 +70,9 @@ No se cargaron rutas de colectivos: no se encontró una fuente oficial con los r
 
 Bancos y cajeros (16/11/2026): nueve puntos del mapa, en Servicios, con las coordenadas de Google Maps que pasó un compañero del IPF (fuente comunitaria): dos cajeros Red Link, dos cajeros y una sucursal del Banco Formosa, los cajeros del Banco Formosa sobre Moreno, un cajero BBVA (25 de Mayo 311), un cajero Naranja X y cajeros Pago24. No tienen dirección cargada salvo el de BBVA.
 
-Quedan pendientes: cuál es la biblioteca del Colegio Nacional (el ex Colegio Nacional «Juan José Silva» hoy es la EPES N.º 54; también existe la Biblioteca Municipal Popular «Prof. Blanca Boreau de Simonotto», que lleva el nombre de una ex rectora de ese colegio) y las paradas del turno tarde.
+Actualización del 16/11/2026 (cuarto lote):
+- Turno tarde del colectivo del IPF: según Lautaro Villalba, usa las mismas paradas que el turno mañana. Se cambió ese paso de la ruta.
+- Capítulo: ahora tiene coordenadas (-26.184686, -58.173144), tomadas de Google Maps. Dos directorios que lo copian coinciden con una diferencia de unos 10 m.
+- Biblioteca: la que recomendó Lautaro es la del ex Colegio Nacional, hoy EPES N.º 54 «Gobernador Juan José Silva». La dirección (Sarmiento 885) sale de la página de la escuela; la ubicación (-26.186668, -58.175340), de Google Maps. Algunos padrones escolares registran la escuela en Av. 25 de Mayo 1050, barrio Don Bosco: se usó la dirección que publica la propia escuela. No hay horarios publicados: la ficha y el lugar piden consultarlos.
+
+El seed actualiza la ruta del colectivo y el lugar de Capítulo solo si nadie los editó desde la página (`routeRevisions` y `placeRevisions` en el catálogo).

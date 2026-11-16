@@ -1,6 +1,6 @@
 // npm run db:seed: carga el catálogo inicial. findOrCreate no pisa lo que ya existe:
 // las cuentas, las fichas editadas y las coordenadas cargadas a mano se conservan.
-// La única excepción son las fichas de contentRevisions, y solo si nadie las editó desde la página.
+// La única excepción son las fichas, lugares y rutas de *Revisions en el catálogo, y solo si nadie los editó desde la página.
 import { sequelize } from '../src/config/database.js';
 import { Institution } from '../src/models/institution.model.js';
 import { Career } from '../src/models/career.model.js';
@@ -11,7 +11,7 @@ import { Place } from '../src/models/place.model.js';
 import { TravelRoute } from '../src/models/travel_route.model.js';
 import { RouteStop } from '../src/models/route_stop.model.js';
 import { Group } from '../src/models/group.model.js';
-import { institutions, categories, contents, contentRevisions, places, travelRoutes, groups } from '../seeders/catalog.js';
+import { institutions, categories, contents, contentRevisions, places, placeRevisions, travelRoutes, routeRevisions, groups } from '../seeders/catalog.js';
 import { careerCatalog } from '../seeders/careers.js';
 import { institutionResources } from '../seeders/institutionResources.js';
 import { seedLocalities } from '../seeders/localities.js';
@@ -43,21 +43,27 @@ try {
       // Con institutionName, la ficha solo la ven estudiantes de esa institución (FF-18).
       await Content.findOrCreate({ where: { slug: item.slug }, defaults: { sourceType: 'official', reviewedAt: '2026-10-20', ...item, categoryId: category.id, institutionId: await institutionId(institutionName), status: 'published' }, transaction });
     }
-    // Fichas que cambiaron en el catálogo: se actualizan solo si siguen tal cual las cargó una versión anterior.
-    for (const { slug, previous } of contentRevisions) {
-      const stored = await Content.findOne({ where: { slug }, transaction });
-      if (!stored || Object.entries(previous).some(([key, value]) => stored[key] !== value)) continue;
-      const { categorySlug, institutionName, ...current } = contents.find(item => item.slug === slug);
-      await stored.update(current, { transaction });
-      revised += 1;
-    }
+    // Datos que cambiaron en el catálogo: se actualizan solo si siguen tal cual los cargó una versión anterior.
+    // MySQL devuelve DECIMAL como texto: las coordenadas se comparan como números.
+    const same = (stored, value) => (value === null ? stored === null : typeof value === 'number' ? stored !== null && Number(stored) === value : stored === value);
+    const revise = async (Model, revisions, catalog, pick) => {
+      for (const { slug, previous } of revisions) {
+        const stored = await Model.findOne({ where: { slug }, transaction });
+        if (!stored || Object.entries(previous).some(([key, value]) => !same(stored[key], value))) continue;
+        await stored.update(pick(catalog.find(item => item.slug === slug)), { transaction });
+        revised += 1;
+      }
+    };
+    await revise(Content, contentRevisions, contents, ({ categorySlug, institutionName, ...current }) => current);
     await seedMapPlaces(transaction);
     for (const item of places) await Place.findOrCreate({ where: { slug: item.slug }, defaults: { ...item, status: 'published' }, transaction });
+    await revise(Place, placeRevisions, places, ({ slug, ...current }) => current);
     for (const { institutionName, destinationSlug, stops = [], ...item } of travelRoutes) {
       const destination = destinationSlug ? await Place.findOne({ where: { slug: destinationSlug }, transaction }) : null;
       const [route, created] = await TravelRoute.findOrCreate({ where: { slug: item.slug }, defaults: { ...item, institutionId: await institutionId(institutionName), destinationPlaceId: destination?.id ?? null, status: 'published' }, transaction });
       if (created && stops.length) await RouteStop.bulkCreate(stops.map((stop, index) => ({ ...stop, routeId: route.id, position: index + 1 })), { transaction });
     }
+    await revise(TravelRoute, routeRevisions, travelRoutes, ({ steps }) => ({ steps }));
     for (const { institutionName, ...item } of groups) {
       const id = await institutionId(institutionName);
       await Group.findOrCreate({ where: { slug: item.slug }, defaults: { ...item, institutionId: id, linkPath: item.linkPath?.replace('{institutionId}', id), status: 'published' }, transaction });
@@ -65,7 +71,7 @@ try {
     await seedShopItems(transaction);
   });
   console.log('Catálogo inicial cargado. No se modificaron cuentas ni contenidos editados.');
-  if (revised) console.log(revised === 1 ? 'Se actualizó 1 ficha del catálogo que nadie había editado.' : `Se actualizaron ${revised} fichas del catálogo que nadie había editado.`);
+  if (revised) console.log(revised === 1 ? 'Se actualizó 1 dato del catálogo que nadie había editado.' : `Se actualizaron ${revised} datos del catálogo que nadie había editado.`);
 } catch (error) {
   console.error('Falló la carga inicial:', error.message);
   process.exitCode = 1;
