@@ -98,6 +98,7 @@ El backend omite la integración SQL si TEST_DB_NAME no está configurada. Para 
 - Rutas orientativas y espacios sugeridos por institución, procedencia y llegada.
 - Puntos, niveles y tienda de decoraciones; foto de perfil; búsqueda de personas, fichas y preguntas.
 - Administración de fichas completas y de rutas orientativas, con paradas en el mapa.
+- Comunidades con chat (texto, imágenes y audios), roles, avisos, bloqueo de personas y misiones que dan puntos.
 
 El seed incorpora seis lugares con coordenadas aportadas por el usuario: IPF, UNaF, Hospital Interdistrital Evita, Comisaría Seccional Tercera, Registro Civil 2da Sección y Casita del Estudiante. Son referencias comunitarias con enlaces de Google Maps. Además suma la casa central del Banco Formosa (ubicación publicada por el BCRA) y la librería Capítulo (solo con dirección). Trae una sola ruta: el colectivo gratuito del IPF, con sus horarios y ocho paradas comprobadas por un estudiante del instituto. Las demás rutas se cargan desde Moderación → Rutas cuando alguien del equipo comprueba un recorrido.
 

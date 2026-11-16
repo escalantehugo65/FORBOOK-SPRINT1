@@ -4,6 +4,7 @@ import { useFetch } from '../hooks/useFetch';
 import { usePageTitle } from '../hooks/usePageTitle';
 import { Loading, ErrorMessage, EmptyState } from '../components/Feedback';
 import GroupCard from '../components/GroupCard';
+import CommunitiesNav from '../components/CommunitiesNav';
 
 // Espacios de integración sugeridos (FF-30). No hay chat privado entre desconocidos:
 // cada espacio lleva a una sección pública de Forbook.
@@ -18,6 +19,7 @@ export default function GroupsPage() {
       <h1>Una primera puerta para conocer gente.</h1>
       <p className="lead">Espacios pensados según tu institución, de dónde venís y si ya llegaste a Formosa.</p>
     </header>
+    <CommunitiesNav/>
     {loading ? <Loading text="Buscando espacios para vos…"/>
       : error ? <ErrorMessage message={error.message} retry={retry}/>
       : <>
@@ -32,6 +34,6 @@ export default function GroupsPage() {
           <div className="content-grid">{result.data.general.map(group => <GroupCard key={group.id} group={group}/>)}</div>
         </section>}
       </>}
-    <p className="note">Forbook no tiene chat privado: todo lo que se comparte en estos espacios es público.</p>
+    <p className="note">Forbook no tiene chat privado entre dos personas: lo que se comparte en estos espacios es público. Para charlar en grupo están las Comunidades.</p>
   </div>;
 }

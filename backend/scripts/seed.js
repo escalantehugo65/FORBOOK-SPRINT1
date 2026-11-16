@@ -11,7 +11,8 @@ import { Place } from '../src/models/place.model.js';
 import { TravelRoute } from '../src/models/travel_route.model.js';
 import { RouteStop } from '../src/models/route_stop.model.js';
 import { Group } from '../src/models/group.model.js';
-import { institutions, categories, contents, contentRevisions, places, placeRevisions, travelRoutes, routeRevisions, groups } from '../seeders/catalog.js';
+import { Community } from '../src/models/community.model.js';
+import { institutions, categories, contents, contentRevisions, places, placeRevisions, travelRoutes, routeRevisions, groups, communities } from '../seeders/catalog.js';
 import { careerCatalog } from '../seeders/careers.js';
 import { institutionResources } from '../seeders/institutionResources.js';
 import { seedLocalities } from '../seeders/localities.js';
@@ -68,6 +69,7 @@ try {
       const id = await institutionId(institutionName);
       await Group.findOrCreate({ where: { slug: item.slug }, defaults: { ...item, institutionId: id, linkPath: item.linkPath?.replace('{institutionId}', id), status: 'published' }, transaction });
     }
+    for (const item of communities) await Community.findOrCreate({ where: { slug: item.slug }, defaults: { ...item, kind: 'default', ownerId: null }, transaction });
     await seedShopItems(transaction);
   });
   console.log('Catálogo inicial cargado. No se modificaron cuentas ni contenidos editados.');

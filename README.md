@@ -82,6 +82,16 @@ El mapa no es un GPS. Incluye seis puntos con coordenadas aportadas por el usuar
 - Administración: Moderación → Fichas (crear y editar fichas completas) y Moderación → Rutas (rutas orientativas, FF-22).
 - Después de bajar estos cambios: `npm run db:migrate` (migración 013) y `npm run db:seed` (carga el catálogo de la tienda, cuatro fichas nuevas y tres espacios). Las cuentas que ya existían reciben los 100 puntos de bienvenida una sola vez.
 
+## Comunidades, chat y misiones
+
+- `/comunidades`: grupos con un único chat general. Hay 9 predeterminadas (Personas del Centro, Personas de Circuito, Nueva Formosa, Instituto Politécnico Formosa, UNaF y otras) y cada estudiante puede crear hasta 2. Tienen buscador y filtro por tema.
+- Jerarquía: quien creó la comunidad > sus administradores (los nombra el dueño) > miembros. El dueño, sus administradores y la administración de Forbook crean roles propios (nombre, color y, si el dueño quiere, permiso para borrar mensajes) y los asignan. Se puede expulsar y volver a permitir la entrada.
+- Chat: texto, imágenes (se pasan a JPG sin metadatos) y audios de hasta 60 segundos grabados desde el navegador. Los mensajes nuevos llegan solos cada 4 segundos. Cada persona borra los suyos; quien modera, cualquiera.
+- Avisos: número de mensajes sin leer en el menú y en cada tarjeta. Cada comunidad se puede silenciar.
+- Desde el perfil de otra persona: ocultarla (dejo de ver sus mensajes) o bloquearla (ninguna ve a la otra y no puede ver mi perfil). La lista está en `/perfil`.
+- `/misiones`: metas diarias, semanales y de una sola vez (chatear, mandar una imagen o un audio, responder preguntas, apoyar respuestas) que dan puntos para la tienda. No dan reputación.
+- Después de bajar estos cambios: `npm run db:migrate` (migración 015) y `npm run db:seed` (carga las comunidades predeterminadas). Detalle en [docs/COMUNIDADES.md](docs/COMUNIDADES.md).
+
 ## Colectivo del IPF y fichas nuevas
 
 - `/rutas`, en la institución IPF → «Colectivo gratuito al IPF»: horarios del turno mañana (8:00 y 8:10 desde Plaza San Martín), el turno tarde (16:15) y ocho paradas en un mapa. No se dibuja el trayecto: cada parada tiene «Ver en el mapa» y «Google Maps».

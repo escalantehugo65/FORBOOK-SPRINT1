@@ -6,6 +6,7 @@ import Avatar from './Avatar';
 import DecoratedName from './DecoratedName';
 import UserMenu from './UserMenu';
 import { canModerate } from '../utils/moderation';
+import { communityService } from '../services/communities';
 import { formatPoints, pointsLabel } from '../utils/shop';
 import AuthModal from './AuthModal';
 import ThemeToggle from './ThemeToggle';
@@ -27,6 +28,20 @@ export default function Layout() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
+  const [unread, setUnread] = useState(0);
+
+  // Mensajes sin leer de las comunidades: se consulta al entrar, cada medio minuto y cuando el chat avisa que leyó.
+  const userId = user?.id;
+  useEffect(() => {
+    if (!userId) { setUnread(0); return undefined; }
+    let active = true;
+    const check = () => { if (!document.hidden) communityService.unread().then(result => { if (active) setUnread(result.data.total); }).catch(() => {}); };
+    check();
+    const timer = setInterval(check, 30000);
+    window.addEventListener('forbook:unread', check);
+    document.addEventListener('visibilitychange', check);
+    return () => { active = false; clearInterval(timer); window.removeEventListener('forbook:unread', check); document.removeEventListener('visibilitychange', check); };
+  }, [userId]);
 
   const openAccess = useCallback((mode, returnTo) => { setMenuOpen(false); setAccess({ mode, returnTo }); }, []);
   const closeAccess = useCallback(() => setAccess(null), []);
@@ -65,7 +80,7 @@ export default function Layout() {
   }
 
   const links = user
-    ? <><NavLink to="/inicio">Mi inicio</NavLink><NavLink to="/conozcamos">Conozcamos Formosa</NavLink><NavLink to="/preguntas">Preguntas</NavLink><NavLink to="/mapa" className={({ isActive }) => isActive || location.pathname.startsWith('/rutas') ? 'active' : undefined}>Mapa</NavLink><NavLink to="/espacios">Espacios</NavLink>{canModerate(user) && <NavLink to="/moderacion">Moderación</NavLink>}</>
+    ? <><NavLink to="/inicio">Mi inicio</NavLink><NavLink to="/conozcamos">Conozcamos Formosa</NavLink><NavLink to="/preguntas">Preguntas</NavLink><NavLink to="/mapa" className={({ isActive }) => isActive || location.pathname.startsWith('/rutas') ? 'active' : undefined}>Mapa</NavLink><NavLink to="/comunidades" className={({ isActive }) => isActive || ['/espacios', '/misiones'].some(path => location.pathname.startsWith(path)) ? 'active' : undefined}>Comunidades{unread > 0 && <span className="nav-count" aria-label={`: ${unread} mensajes sin leer`}>{unread > 99 ? '99+' : unread}</span>}</NavLink>{canModerate(user) && <NavLink to="/moderacion">Moderación</NavLink>}</>
     : sections.map(([id, label]) => <Link key={id} to={{ pathname: '/', hash: `#${id}` }}>{label}</Link>);
 
   return <PublicAccessContext.Provider value={{ openAccess }}>

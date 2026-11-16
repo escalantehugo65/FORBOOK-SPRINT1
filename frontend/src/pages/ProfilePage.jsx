@@ -6,6 +6,7 @@ import { usePageTitle } from '../hooks/usePageTitle';
 import { Loading, ErrorMessage } from '../components/Feedback';
 import Field from '../components/Field';
 import ProfileView from '../components/ProfileView';
+import { BlockedPeople } from '../components/BlockActions';
 import AvatarUploader from '../components/AvatarUploader';
 import { avatarColors, bannerStyles, interestNames, maxInterests, initials } from '../utils/profile';
 
@@ -154,6 +155,7 @@ export default function ProfilePage() {
       {editing && <EditProfile profile={profile} onCancel={() => setEditing(false)} onSaved={saved => { setProfile(saved); setEditing(false); setNotice('Listo, guardamos tu perfil.'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}/>}
       <AvatarUploader profile={profile} inputRef={photoInput} onChanged={avatarVersion => setProfile(previous => ({ ...previous, avatarVersion }))}/>
       <ChangePassword/>
+      <BlockedPeople/>
     </div>
   </div>;
 }

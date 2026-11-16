@@ -21,3 +21,4 @@ export const passwordLimit = rateLimit(); // cambio de contraseña
 export const reportLimit = rateLimit(); // reportes
 export const shopLimit = rateLimit(); // compras en la tienda
 export const uploadLimit = rateLimit(); // fotos de perfil
+export const communityLimit = rateLimit(); // creación de comunidades

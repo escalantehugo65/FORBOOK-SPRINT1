@@ -26,10 +26,17 @@ import ShopPage from '../pages/ShopPage';
 import SearchPage from '../pages/SearchPage';
 import AdminContentsPage from '../pages/AdminContentsPage';
 import AdminRoutesPage from '../pages/AdminRoutesPage';
+import CommunitiesPage from '../pages/CommunitiesPage';
+
 
 // El mapa (Leaflet) se descarga solo cuando alguien entra a /mapa.
 const MapPage = lazy(() => import('../pages/MapPage'));
 const AdminPlacesPage = lazy(() => import('../pages/AdminPlacesPage'));
+// Las pantallas de una comunidad (chat, administración) y las misiones se descargan recién al entrar.
+const CommunityPage = lazy(() => import('../pages/CommunityPage'));
+const CommunityFormPage = lazy(() => import('../pages/CommunityFormPage'));
+const MissionsPage = lazy(() => import('../pages/MissionsPage'));
+const pageFallback = <div className="container page"><Loading/></div>;
 const mapFallback = <div className="container page"><Loading text="Cargando el mapa…"/></div>;
 
 export const AppRouter = () => {
@@ -60,6 +67,11 @@ export const AppRouter = () => {
         <Route path="mapa" element={<Suspense fallback={mapFallback}><MapPage/></Suspense>}/>
         <Route path="rutas" element={<RoutesPage/>}/>
         <Route path="rutas/:id" element={<RouteDetailPage/>}/>
+        <Route path="comunidades" element={<CommunitiesPage/>}/>
+        <Route path="comunidades/nueva" element={<Suspense fallback={pageFallback}><CommunityFormPage/></Suspense>}/>
+        <Route path="comunidades/:id" element={<Suspense fallback={pageFallback}><CommunityPage/></Suspense>}/>
+        <Route path="comunidades/:id/editar" element={<Suspense fallback={pageFallback}><CommunityFormPage/></Suspense>}/>
+        <Route path="misiones" element={<Suspense fallback={pageFallback}><MissionsPage/></Suspense>}/>
         <Route path="espacios" element={<GroupsPage/>}/>
         <Route path="espacios/:id" element={<GroupDetailPage/>}/>
         <Route path="perfil" element={<ProfilePage/>}/>

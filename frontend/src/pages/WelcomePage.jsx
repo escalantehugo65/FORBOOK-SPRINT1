@@ -10,7 +10,7 @@ const features = [
   { id: 'conozcamos', title: 'Conozcamos Formosa', text: 'Fichas organizadas por categoría, con la fuente y la fecha de revisión a la vista.', icon: BookIcon, tile: 'tile-mint', path: '/conozcamos', cta: 'Explorar' },
   { id: 'inicio', title: 'Tu inicio personalizado', text: 'Armado con tu procedencia, tu institución, tu carrera y si ya llegaste a la ciudad.', icon: HomeIcon, tile: 'tile-yellow', path: '/inicio', cta: 'Ir a mi inicio' },
   { id: 'mapa', title: 'Mapa de lugares', text: 'Los puntos importantes de la ciudad y rutas orientativas hacia tu institución.', icon: PinIcon, tile: 'tile-tint', path: '/mapa', cta: 'Abrir el mapa' },
-  { id: 'comunidades', title: 'Espacios de integración', text: 'Espacios sugeridos según tu institución, de dónde venís y si ya llegaste a la ciudad.', icon: UsersIcon, tile: 'tile-tint', path: '/espacios', cta: 'Ver espacios' },
+  { id: 'comunidades', title: 'Comunidades', text: 'Grupos con chat por barrio, institución o intereses. Unite, creá el tuyo y cumplí misiones para sumar puntos.', icon: UsersIcon, tile: 'tile-tint', path: '/comunidades', cta: 'Ver comunidades' },
   { id: 'preguntas', title: 'Preguntas y respuestas', text: 'Preguntá lo que no sabés: la comunidad responde y marca lo más útil.', icon: ChatIcon, tile: 'tile-tint', path: '/preguntas', cta: 'Ver preguntas' },
   { id: 'guia', title: 'Cómo vivir en Formosa', text: 'Una guía por temas, con consejos de seguridad y de cuidado con los alimentos.', icon: ShieldIcon, tile: 'tile-tint' },
 ];

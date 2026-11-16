@@ -269,3 +269,26 @@ export const groups = [
     purpose: `Junta la información de ${institution.name} que se publicó en Forbook, con su fuente y su fecha de revisión.\n\nSolo la ven estudiantes de ${['la UNaF', 'el IPF'][index]}. Si falta algo, preguntalo en público: puede servirle a alguien más.`,
     linkPath: '/conozcamos?scope=institution', linkLabel: 'Ver las fichas de tu institución' })),
 ];
+
+// Comunidades predeterminadas: no tienen dueño y las administra el equipo de Forbook.
+// Cada estudiante puede crear hasta 2 más desde la página.
+export const communities = [
+  { slug: 'personas-del-centro', name: 'Personas del Centro', topic: 'barrio', color: 'azul',
+    description: 'Para quienes viven o se mueven por el centro de la ciudad: datos, juntadas y ayuda entre vecinos.' },
+  { slug: 'personas-de-circuito', name: 'Personas de Circuito', topic: 'barrio', color: 'menta',
+    description: 'Para quienes viven en la zona de Circuito: avisos del barrio, colectivos y compañía para ir y volver.' },
+  { slug: 'nueva-formosa', name: 'Nueva Formosa', topic: 'barrio', color: 'amarillo',
+    description: 'Para quienes viven en el barrio Nueva Formosa: novedades, recomendaciones y gente cerca.' },
+  { slug: 'instituto-politecnico-formosa', name: 'Instituto Politécnico Formosa', topic: 'institucion', color: 'violeta',
+    description: 'Estudiantes del IPF: cursada, colectivo, comedor y todo lo del día a día en el instituto.' },
+  { slug: 'unaf', name: 'UNaF', topic: 'institucion', color: 'rio',
+    description: 'Estudiantes de la Universidad Nacional de Formosa: carreras, trámites, apuntes y vida en el campus.' },
+  { slug: 'recien-llegados', name: 'Recién llegados', topic: 'vida', color: 'coral',
+    description: '¿Llegaste hace poco a Formosa? Presentate, preguntá lo que no sabés y conocé a otros que están en la misma.' },
+  { slug: 'alquileres-y-convivencia', name: 'Alquileres y convivencia', topic: 'vida', color: 'azul',
+    description: 'Piezas, departamentos, compañeros de alquiler y consejos para convivir. Sin datos personales de terceros.' },
+  { slug: 'estudio-y-apuntes', name: 'Estudio y apuntes', topic: 'estudio', color: 'menta',
+    description: 'Grupos de estudio, apuntes, dudas de materias y fechas de parciales, de cualquier carrera.' },
+  { slug: 'juegos-y-tiempo-libre', name: 'Juegos y tiempo libre', topic: 'intereses', color: 'violeta',
+    description: 'Videojuegos, deportes, música y planes para cuando no hay que estudiar.' },
+];

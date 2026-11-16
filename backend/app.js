@@ -23,6 +23,9 @@ import { moderationLogRouter } from './src/routes/moderation_log.route.js';
 import { shopRouter } from './src/routes/shop.route.js';
 import { pointRouter } from './src/routes/point.route.js';
 import { userAvatarRouter } from './src/routes/user_avatar.route.js';
+import { communityRouter } from './src/routes/community.route.js';
+import { userBlockRouter } from './src/routes/user_block.route.js';
+import { missionRouter } from './src/routes/mission.route.js';
 
 const store = new MysqlSessionStore(config.sessionTtl);
 export const app = express();
@@ -33,9 +36,11 @@ app.use(securityHeaders);
 app.use(cors({ origin: config.frontendUrl, credentials: true }));
 app.use(checkOrigin(config.frontendUrl));
 // Los pedidos chicos van como JSON de hasta 16 kB. La foto de perfil pesa más y usa su propio límite
-// (src/routes/user_avatar.route.js), por eso esa dirección se saltea acá.
+// (src/routes/user_avatar.route.js), por eso esa dirección se saltea acá. Lo mismo pasa con los mensajes
+// de las comunidades, que pueden llevar una imagen o un audio (src/routes/community.route.js).
 const jsonBody = express.json({ limit: '16kb' });
-app.use((req, res, next) => (req.path === '/api/profile/avatar' ? next() : jsonBody(req, res, next)));
+const ownLimit = (req) => req.path === '/api/profile/avatar' || (req.method === 'POST' && /^\/api\/communities\/\d+\/messages$/.test(req.path));
+app.use((req, res, next) => (ownLimit(req) ? next() : jsonBody(req, res, next)));
 
 // Antes de las sesiones: comprobar que la API anda no crea una sesión nueva.
 app.get('/api/health', async (req, res) => {
@@ -70,6 +75,9 @@ app.use('/api', moderationLogRouter);
 app.use('/api', shopRouter);
 app.use('/api', pointRouter);
 app.use('/api', userAvatarRouter);
+app.use('/api', communityRouter);
+app.use('/api', userBlockRouter);
+app.use('/api', missionRouter);
 
 app.use(notFound);
 app.use(errorHandler);

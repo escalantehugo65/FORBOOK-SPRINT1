@@ -6,6 +6,7 @@ import { Question } from '../models/question.model.js';
 import { Answer } from '../models/answer.model.js';
 import { AnswerVote } from '../models/answer_vote.model.js';
 import { UserWarning } from '../models/user_warning.model.js';
+import { UserBlock } from '../models/user_block.model.js';
 import { HttpError } from '../helpers/error.helper.js';
 import { comparePassword, hashPassword } from '../helpers/bcrypt.helper.js';
 import { startSession } from '../helpers/session.helper.js';
@@ -153,7 +154,12 @@ export const getUserProfile = async (req, res) => {
   const { id } = matchedData(req, { locations: ['params'] });
   const person = await findPerson(id);
   if (!person) throw new HttpError(404, 'No encontramos ese perfil.');
-  res.json({ data: await present(person, viewer) });
+  // Si esa persona me bloqueó, no veo su perfil (moderación sí, para poder actuar).
+  const blockedMe = await UserBlock.count({ where: { userId: person.id, targetId: viewer.id, kind: 'blocked' } });
+  if (blockedMe && !staffRoles.includes(viewer.role)) throw new HttpError(403, 'No podés ver este perfil.');
+  // relation: si yo la oculté ('hidden') o la bloqueé ('blocked').
+  const mine = person.id === viewer.id ? null : await UserBlock.findOne({ where: { userId: viewer.id, targetId: person.id }, attributes: ['kind'] });
+  res.json({ data: { ...await present(person, viewer), relation: mine?.kind ?? null } });
 };
 
 // Moderación: ocultar o volver a mostrar la descripción de un perfil. La cuenta sigue activa.

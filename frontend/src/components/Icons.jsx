@@ -25,3 +25,14 @@ export const ChevronIcon = () => <Icon strokeWidth={2.4}><path d="M6.5 9.5L12 15
 export const LogoutIcon = () => <Icon><path d="M14 4h5v16h-5"/><path d="M10 8l-4 4 4 4"/><path d="M6 12h10"/></Icon>;
 export const UserIcon = () => <Icon><circle cx="12" cy="8.5" r="3.8"/><path d="M4.5 20c.8-3.8 3.8-6 7.5-6s6.7 2.2 7.5 6"/></Icon>;
 export const SparkleIcon = () => <Icon><path d="M12 3.5l1.8 5.2 5.2 1.8-5.2 1.8L12 17.5l-1.8-5.2L5 10.5l5.2-1.8z"/><path d="M18.5 16.5l.7 1.8 1.8.7-1.8.7-.7 1.8-.7-1.8-1.8-.7 1.8-.7z"/></Icon>;
+
+// Comunidades y chat.
+export const BellIcon = () => <Icon><path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15z"/><path d="M10 20.5a2.2 2.2 0 0 0 4 0"/></Icon>;
+export const BellOffIcon = () => <Icon><path d="M6 16V11a6 6 0 0 1 1.3-3.7M10 5.3A6 6 0 0 1 18 11v4"/><path d="M4.5 18h12"/><path d="M10 20.5a2.2 2.2 0 0 0 4 0"/><path d="M4 4l16 16"/></Icon>;
+export const ImageIcon = () => <Icon><rect x="3.5" y="5" width="17" height="14" rx="2.5"/><circle cx="9" cy="10" r="1.6"/><path d="M4.5 17l4.5-4 3.5 3 3-2.5 4 3.5"/></Icon>;
+export const MicIcon = () => <Icon><rect x="9" y="3.5" width="6" height="11" rx="3"/><path d="M5.5 11.5a6.5 6.5 0 0 0 13 0"/><path d="M12 18v3"/></Icon>;
+export const StopIcon = () => <Icon><rect x="6.5" y="6.5" width="11" height="11" rx="2"/></Icon>;
+export const SendIcon = () => <Icon><path d="M4 12l16-7-6 16-2.5-6.5z"/><path d="M11.5 14.5L20 5"/></Icon>;
+export const TrashIcon = () => <Icon><path d="M5 7h14"/><path d="M9.5 7V4.5h5V7"/><path d="M7 7l.8 12.5h8.4L17 7"/></Icon>;
+export const PlusIcon = () => <Icon strokeWidth={2.4}><path d="M12 5v14M5 12h14"/></Icon>;
+export const TargetIcon = () => <Icon><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="0.8"/></Icon>;

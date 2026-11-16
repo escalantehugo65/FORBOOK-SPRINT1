@@ -7,6 +7,7 @@ import { usePageTitle } from '../hooks/usePageTitle';
 import { Loading, ErrorMessage } from '../components/Feedback';
 import ProfileView from '../components/ProfileView';
 import ReportAction from '../components/ReportAction';
+import BlockActions from '../components/BlockActions';
 import { warningReasons } from '../utils/profile';
 
 // Herramientas de moderación sobre un perfil: advertir, revocar advertencias, ocultar la descripción y quitar la foto.
@@ -76,7 +77,9 @@ export default function UserProfilePage() {
   const { user } = useAuth();
   const loader = useCallback(signal => profileService.user(id, signal), [id]);
   const { result, loading, error, retry } = useFetch(loader);
-  const profile = result?.data;
+  // Ocultar o bloquear cambia solo "relation": se actualiza sin volver a cargar todo el perfil.
+  const [relation, setRelation] = useState(undefined);
+  const profile = result?.data && { ...result.data, ...(relation !== undefined ? { relation } : {}) };
   usePageTitle(profile?.name || 'Perfil');
   if (String(user.id) === id) return <Navigate to="/perfil" replace/>;
   if (loading) return <div className="container page"><Loading text="Cargando el perfil…"/></div>;
@@ -84,6 +87,7 @@ export default function UserProfilePage() {
   return <div className="container page">
     <ProfileView profile={profile}/>
     <div className="profile-settings">
+      <BlockActions profile={profile} onChanged={setRelation}/>
       {profile.canModerate && <ModerationTools profile={profile} onChanged={retry}/>}
       <ReportAction targetType="profile" targetId={profile.id} label="Reportar este perfil" reasons={['offensive', 'personal_data', 'spam', 'false', 'other']} className="profile-report"/>
     </div>

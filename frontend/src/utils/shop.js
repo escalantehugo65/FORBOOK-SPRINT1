@@ -31,6 +31,7 @@ export const reasonNames = {
   hidden: 'Moderación ocultó una publicación tuya',
   warning: 'Advertencia de moderación',
   warning_revoked: 'Se revocó una advertencia',
+  mission: 'Cumpliste una misión',
 };
 
 export const formatPoints = value => new Intl.NumberFormat('es-AR').format(value);

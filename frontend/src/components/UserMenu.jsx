@@ -3,7 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import Avatar from './Avatar';
 import DecoratedName from './DecoratedName';
 import LevelBadge from './LevelBadge';
-import { BagIcon, ChevronIcon, LogoutIcon, PointsIcon, UserIcon } from './Icons';
+import { BagIcon, ChevronIcon, LogoutIcon, PointsIcon, TargetIcon, UserIcon } from './Icons';
 import { firstName } from '../utils/content';
 import { pointsLabel } from '../utils/shop';
 
@@ -43,6 +43,7 @@ export default function UserMenu({ user, busy, onLogout }) {
       <nav aria-label="Tu cuenta">
         <Link to="/perfil"><UserIcon/>Mi perfil</Link>
         <Link to="/tienda"><BagIcon/>Tienda de decoraciones</Link>
+        <Link to="/misiones"><TargetIcon/>Misiones</Link>
         <Link to="/tienda?ver=puntos"><PointsIcon/>Mis puntos <span className="menu-points">{pointsLabel(user.points ?? 0)}</span></Link>
       </nav>
       <button className="user-menu-logout" type="button" onClick={onLogout} disabled={busy}><LogoutIcon/>{busy ? 'Cerrando…' : 'Cerrar sesión'}</button>
