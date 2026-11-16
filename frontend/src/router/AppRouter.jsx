@@ -22,6 +22,10 @@ import GroupsPage from '../pages/GroupsPage';
 import GroupDetailPage from '../pages/GroupDetailPage';
 import ProfilePage from '../pages/ProfilePage';
 import UserProfilePage from '../pages/UserProfilePage';
+import ShopPage from '../pages/ShopPage';
+import SearchPage from '../pages/SearchPage';
+import AdminContentsPage from '../pages/AdminContentsPage';
+import AdminRoutesPage from '../pages/AdminRoutesPage';
 
 // El mapa (Leaflet) se descarga solo cuando alguien entra a /mapa.
 const MapPage = lazy(() => import('../pages/MapPage'));
@@ -60,6 +64,8 @@ export const AppRouter = () => {
         <Route path="espacios/:id" element={<GroupDetailPage/>}/>
         <Route path="perfil" element={<ProfilePage/>}/>
         <Route path="usuarios/:id" element={<UserProfilePage/>}/>
+        <Route path="tienda" element={<ShopPage/>}/>
+        <Route path="buscar" element={<SearchPage/>}/>
 
         {/* Moderación y administración */}
         <Route element={<RoleRoutes roles={['moderator', 'admin']}/>}>
@@ -68,6 +74,8 @@ export const AppRouter = () => {
         <Route element={<RoleRoutes roles={['admin']}/>}>
           <Route path="moderacion/historial" element={<ModerationLogPage/>}/>
           <Route path="moderacion/catalogo" element={<AdminCatalogPage/>}/>
+          <Route path="moderacion/fichas" element={<AdminContentsPage/>}/>
+          <Route path="moderacion/rutas" element={<AdminRoutesPage/>}/>
           <Route path="moderacion/lugares" element={<Suspense fallback={mapFallback}><AdminPlacesPage/></Suspense>}/>
         </Route>
       </Route>

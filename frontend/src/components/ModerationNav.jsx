@@ -8,7 +8,9 @@ export default function ModerationNav() {
   return <nav className="mod-nav" aria-label="Secciones de moderación">
     <NavLink to="/moderacion" end>Reportes</NavLink>
     <NavLink to="/moderacion/historial">Historial</NavLink>
+    <NavLink to="/moderacion/fichas">Fichas</NavLink>
     <NavLink to="/moderacion/catalogo">Categorías y fuentes</NavLink>
     <NavLink to="/moderacion/lugares">Lugares del mapa</NavLink>
+    <NavLink to="/moderacion/rutas">Rutas</NavLink>
   </nav>;
 }

@@ -14,6 +14,7 @@ import { careerCatalog } from '../seeders/careers.js';
 import { institutionResources } from '../seeders/institutionResources.js';
 import { seedLocalities } from '../seeders/localities.js';
 import { seedMapPlaces } from '../seeders/mapPlaces.js';
+import { seedShopItems } from '../seeders/shop.js';
 
 try {
   await sequelize.authenticate();
@@ -32,13 +33,13 @@ try {
       await InstitutionResource.findOrCreate({ where: { slug: resource.slug }, defaults: { ...resource, institutionId: institution.id }, transaction });
     }
     for (const item of categories) await Category.findOrCreate({ where: { slug: item.slug }, defaults: item, transaction });
-    const institution = await Institution.findOne({ where: { name: institutions[0].name }, transaction });
-    for (const { categorySlug, institutional, ...item } of contents) {
+    const institutionId = async name => (name ? (await Institution.findOne({ where: { name }, transaction })).id : null);
+    for (const { categorySlug, institutionName, ...item } of contents) {
       const category = await Category.findOne({ where: { slug: categorySlug }, transaction });
       // Cada ficha puede traer su propia fecha de revisión; las primeras se revisaron el 20/10/2026.
-      await Content.findOrCreate({ where: { slug: item.slug }, defaults: { sourceType: 'official', reviewedAt: '2026-10-20', ...item, categoryId: category.id, institutionId: institutional ? institution.id : null, status: 'published' }, transaction });
+      // Con institutionName, la ficha solo la ven estudiantes de esa institución (FF-18).
+      await Content.findOrCreate({ where: { slug: item.slug }, defaults: { sourceType: 'official', reviewedAt: '2026-10-20', ...item, categoryId: category.id, institutionId: await institutionId(institutionName), status: 'published' }, transaction });
     }
-    const institutionId = async name => (name ? (await Institution.findOne({ where: { name }, transaction })).id : null);
     await seedMapPlaces(transaction);
     for (const { institutionName, destinationSlug, ...item } of travelRoutes) {
       const destination = destinationSlug ? await Place.findOne({ where: { slug: destinationSlug }, transaction }) : null;
@@ -48,6 +49,7 @@ try {
       const id = await institutionId(institutionName);
       await Group.findOrCreate({ where: { slug: item.slug }, defaults: { ...item, institutionId: id, linkPath: item.linkPath?.replace('{institutionId}', id), status: 'published' }, transaction });
     }
+    await seedShopItems(transaction);
   });
   console.log('Catálogo inicial cargado. No se modificaron cuentas ni contenidos existentes.');
 } catch (error) {

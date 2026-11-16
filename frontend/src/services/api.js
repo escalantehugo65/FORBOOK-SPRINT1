@@ -1,4 +1,6 @@
 const BASE = (import.meta.env.VITE_API_URL || 'http://localhost:3001/api').replace(/\/$/, '');
+// Dirección completa de un recurso de la API que no se pide con fetch (por ejemplo, la foto de perfil en un <img>).
+export const apiUrl = path => `${BASE}${path}`;
 export class ApiError extends Error {
   constructor(message, status, fields) { super(message); this.status = status; this.fields = fields; }
 }

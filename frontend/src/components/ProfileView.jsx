@@ -1,12 +1,21 @@
 import { Link } from 'react-router-dom';
 import Avatar from './Avatar';
+import DecoratedName from './DecoratedName';
+import LevelBadge from './LevelBadge';
+import ProfileEffect from './ProfileEffect';
+import { CameraIcon, PointsIcon } from './Icons';
 import { formatDate } from '../utils/content';
+import { pointsLabel } from '../utils/shop';
 import { arrivalNames, ownArrivalNames, badgeNames, interestNames, warningReasons } from '../utils/profile';
 
 const statusNames = { open: 'Abierta', answered: 'Respondida', closed: 'Cerrada' };
 
 // Vista de un perfil: la usan /perfil (el propio) y /usuarios/:id (el de otra persona).
-export default function ProfileView({ profile, actions }) {
+// Las decoraciones de la tienda (fondo, marco, efecto y color del nombre) reemplazan a las básicas.
+// onChangePhoto: en el perfil propio, el botón de la cámara sobre la foto abre el selector de imágenes.
+export default function ProfileView({ profile, actions, onChangePhoto }) {
+  const decorations = profile.decorations || {};
+  const banner = decorations.banner || profile.bannerStyle;
   const arrival = profile.arrivalStatus && (profile.own ? ownArrivalNames : arrivalNames)[profile.arrivalStatus];
   const details = [
     profile.institution && ['Estudia en', profile.institution.name],
@@ -18,16 +27,24 @@ export default function ProfileView({ profile, actions }) {
   ].filter(Boolean);
   return <article className="profile" aria-labelledby="profile-name">
     <header className="user-profile-head">
-      <div className={`profile-banner banner-${profile.bannerStyle}`} aria-hidden="true"/>
+      <div className={`profile-banner banner-${banner}`} aria-hidden="true"/>
+      <ProfileEffect effect={decorations.effect}/>
       <div className="profile-identity">
-        <Avatar name={profile.name} color={profile.avatarColor} size="xl"/>
-        <div className="profile-title">
-          <h1 id="profile-name">{profile.name}</h1>
-          {profile.badges.length > 0 && <ul className="profile-badges" aria-label="Insignias">
-            {profile.badges.map(badge => <li key={badge} className={`badge profile-badge-${badge}`}>{badgeNames[badge]}</li>)}
-          </ul>}
+        <div className="profile-avatar">
+          <Avatar person={profile} size="xl"/>
+          {onChangePhoto && <button className="photo-button" type="button" onClick={onChangePhoto} aria-label={profile.avatarVersion ? 'Cambiar la foto de perfil' : 'Agregar una foto de perfil'}><CameraIcon/></button>}
         </div>
-        {actions && <div className="profile-actions">{actions}</div>}
+        <div className="profile-title">
+          <DecoratedName as="h1" id="profile-name" name={profile.name} color={decorations.nameColor}/>
+          <ul className="profile-badges" aria-label="Insignias">
+            {profile.level && <li><LevelBadge level={profile.level} reputation={profile.reputation}/></li>}
+            {profile.badges.map(badge => <li key={badge} className={`badge profile-badge-${badge}`}>{badgeNames[badge]}</li>)}
+          </ul>
+        </div>
+        {(actions || profile.own) && <div className="profile-actions">
+          {profile.own && profile.points !== undefined && <Link className="points-link" to="/tienda"><PointsIcon/>{pointsLabel(profile.points)}<span className="sr-only">. Ir a la tienda</span></Link>}
+          {actions}
+        </div>}
       </div>
     </header>
 

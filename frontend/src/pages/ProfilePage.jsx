@@ -6,6 +6,7 @@ import { usePageTitle } from '../hooks/usePageTitle';
 import { Loading, ErrorMessage } from '../components/Feedback';
 import Field from '../components/Field';
 import ProfileView from '../components/ProfileView';
+import AvatarUploader from '../components/AvatarUploader';
 import { avatarColors, bannerStyles, interestNames, maxInterests, initials } from '../utils/profile';
 
 const currentYear = new Date().getFullYear();
@@ -57,6 +58,7 @@ function EditProfile({ profile, onSaved, onCancel }) {
         <input type="radio" name="avatarColor" value={value} checked={values.avatarColor === value} onChange={() => set('avatarColor', value)}/>
         <span className={`avatar avatar-${value}`} aria-hidden="true">{initials(profile.name)}</span><span>{label}</span>
       </label>)}</div>
+      <small>Se ve cuando no tenés foto de perfil.</small>
     </fieldset>
 
     <fieldset className="choice-group" disabled={busy}>
@@ -65,6 +67,7 @@ function EditProfile({ profile, onSaved, onCancel }) {
         <input type="radio" name="bannerStyle" value={value} checked={values.bannerStyle === value} onChange={() => set('bannerStyle', value)}/>
         <span className={`banner-preview banner-${value}`} aria-hidden="true"/><span>{label}</span>
       </label>)}</div>
+      {profile.decorations?.banner && <small>Ahora tenés puesto un fondo de la tienda: se ve ese. Podés sacártelo en Tienda → Mis decoraciones.</small>}
     </fieldset>
 
     <fieldset className="choice-group" disabled={busy} aria-describedby="interests-hint">
@@ -137,16 +140,19 @@ export default function ProfilePage() {
   const [editing, setEditing] = useState(false);
   const [notice, setNotice] = useState('');
   const formRef = useRef(null);
+  const photoInput = useRef(null);
   useEffect(() => { if (result) setProfile(result.data); }, [result]);
   useEffect(() => { if (editing) formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, [editing]);
 
   if (loading || (!profile && !error)) return <div className="container page"><Loading text="Cargando tu perfil…"/></div>;
   if (error) return <div className="container page"><ErrorMessage message={error.message} retry={retry}/></div>;
   return <div className="container page">
-    <ProfileView profile={profile} actions={!editing && <button className="btn btn-primary btn-small" type="button" onClick={() => { setEditing(true); setNotice(''); }}>Editar perfil</button>}/>
+    <ProfileView profile={profile} onChangePhoto={() => photoInput.current?.click()}
+      actions={!editing && <button className="btn btn-primary btn-small" type="button" onClick={() => { setEditing(true); setNotice(''); }}>Editar perfil</button>}/>
     {notice && <p className="report-done profile-notice" role="status">{notice}</p>}
     <div className="profile-settings" ref={formRef}>
       {editing && <EditProfile profile={profile} onCancel={() => setEditing(false)} onSaved={saved => { setProfile(saved); setEditing(false); setNotice('Listo, guardamos tu perfil.'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}/>}
+      <AvatarUploader profile={profile} inputRef={photoInput} onChanged={avatarVersion => setProfile(previous => ({ ...previous, avatarVersion }))}/>
       <ChangePassword/>
     </div>
   </div>;

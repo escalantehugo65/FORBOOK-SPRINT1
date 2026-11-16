@@ -14,7 +14,7 @@ const empty = { title: '', body: '', categoryId: '', forMyInstitution: false };
 // Publicar una pregunta (FF-25). Solo se llega con sesión, porque la ruta está dentro de PrivateRoutes.
 export default function AskQuestionPage() {
   usePageTitle('Hacer una pregunta');
-  const { user } = useAuth();
+  const { user, reloadUser } = useAuth();
   const navigate = useNavigate();
   const loader = useCallback(signal => catalogService.categories(signal), []);
   const categories = useFetch(loader);
@@ -46,7 +46,8 @@ export default function AskQuestionPage() {
     try {
       const { data } = await questionService.create({ title: values.title.trim(), body: values.body.trim(), categoryId: Number(values.categoryId), forMyInstitution: values.forMyInstitution });
       // La lista muestra el aviso de confirmación y resalta la pregunta nueva.
-      navigate('/preguntas', { state: { publishedId: data.id } });
+      if (data.pointsEarned) reloadUser(); // el saldo del encabezado se actualiza
+      navigate('/preguntas', { state: { publishedId: data.id, pointsEarned: data.pointsEarned || 0 } });
     } catch (failure) {
       setError(failure.message); setErrors(failure.fields || {}); setBusy(false);
     }

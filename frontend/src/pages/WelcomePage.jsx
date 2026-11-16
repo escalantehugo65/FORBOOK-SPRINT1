@@ -3,6 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import { usePublicAccess } from '../context/PublicAccessContext';
 import { usePageTitle } from '../hooks/usePageTitle';
 import { ArrowIcon, BookIcon, ChatIcon, CheckIcon, HomeIcon, PinIcon, ShieldIcon, UsersIcon } from '../components/Icons';
+import ShopItemPreview from '../components/ShopItemPreview';
 
 // Funciones de la plataforma: path indica a dónde lleva cada una que ya funciona; sin path, llega más adelante.
 const features = [
@@ -14,6 +15,13 @@ const features = [
   { id: 'guia', title: 'Cómo vivir en Formosa', text: 'Una guía por temas, con consejos de seguridad y de cuidado con los alimentos.', icon: ShieldIcon, tile: 'tile-tint' },
 ];
 const categories = ['Lugares útiles', 'Movilidad', 'Vida estudiantil', 'Cultura y costumbres', 'Recomendaciones'];
+// Ejemplos reales de la tienda (seeders/shop.js), dibujados sobre un perfil de ejemplo.
+const sample = { name: 'Flor', avatarColor: 'coral' };
+const rewards = [
+  { category: 'frame', slug: 'marco-lapacho', rarity: 'rare' },
+  { category: 'banner', slug: 'fondo-aurora', rarity: 'epic' },
+  { category: 'name_color', slug: 'nombre-prisma', rarity: 'legendary' },
+];
 
 function Soon({ onBand = false }) { return <span className={onBand ? 'badge badge-on-band' : 'badge badge-soon'}>Próximamente</span>; }
 
@@ -35,7 +43,7 @@ function HeroArt() {
       </dl>
     </div>
     <div className="art-card art-card-c">
-      <div className="art-head"><p className="art-title">Tu confianza</p><p className="art-eyebrow">Próximamente</p></div>
+      <div className="art-head"><p className="art-title">Tu confianza</p><p className="art-eyebrow">Aportante</p></div>
       <div className="art-bar"><span/></div>
     </div>
   </div>;
@@ -131,14 +139,15 @@ export default function WelcomePage() {
     <section id="puntos" className="section band" aria-labelledby="points-title">
       <div className="container split">
         <div className="split-copy">
-          <div className="eyebrow-row"><p className="eyebrow">Puntos y confianza</p><Soon onBand/></div>
+          <div className="eyebrow-row"><p className="eyebrow">Puntos y confianza</p></div>
           <h2 id="points-title" className="section-title">Tu cuenta vale. Cuidala.</h2>
-          <p>Vas a ganar puntos cuando compartas información útil y verificada. Los puntos van a mostrar qué tan confiable sos y se van a poder canjear en la tienda. Si alguien manda información falsa para perjudicar a otros, la sanción se va a ver en su perfil: por eso conviene cuidar lo que construiste.</p>
+          <p>Ganás puntos cuando ayudás: al preguntar, al responder y, sobre todo, cuando otros marcan tu respuesta como útil. Tu reputación muestra qué tan confiable sos (Nuevo, Aportante o Confiable) y los puntos se canjean en la tienda por marcos, fondos, efectos y colores para tu nombre. Si alguien publica información falsa, moderación la oculta y le descuenta puntos: por eso conviene cuidar lo que construiste.</p>
           <ol className="steps-list">
             <li><span className="step-number">1</span>Compartís información útil</li>
-            <li><span className="step-number">2</span>La comunidad la valida</li>
-            <li><span className="step-number">3</span>Sumás puntos y los canjeás</li>
+            <li><span className="step-number">2</span>La comunidad la marca como útil</li>
+            <li><span className="step-number">3</span>Sumás puntos y decorás tu perfil</li>
           </ol>
+          {user ? <Link className="btn btn-light" to="/tienda">Ver la tienda <ArrowIcon/></Link> : <button className="btn btn-light" type="button" onClick={start}>Crear cuenta y recibir 100 puntos <ArrowIcon/></button>}
         </div>
         <div className="points-stack" aria-hidden="true">
           <div className="points-card">
@@ -147,8 +156,8 @@ export default function WelcomePage() {
             <div className="level-bar"><span/></div>
           </div>
           <div className="points-card">
-            <h3>Tienda de puntos</h3>
-            <div className="reward-grid"><span className="reward-slot">Muy pronto</span><span className="reward-slot">Muy pronto</span><span className="reward-slot">Muy pronto</span></div>
+            <h3>Tienda de decoraciones</h3>
+            <div className="reward-grid">{rewards.map(item => <ShopItemPreview key={item.slug} item={item} person={sample} className="reward-stage"/>)}</div>
           </div>
         </div>
       </div>

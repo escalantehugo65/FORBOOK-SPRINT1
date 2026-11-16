@@ -28,6 +28,12 @@ export const User = sequelize.define(
     showArrival: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: true },
     // Fecha en que moderación ocultó la descripción. null = visible.
     bioHiddenAt: { type: DataTypes.DATE, allowNull: true },
+    // Economía: points es el saldo para la tienda; reputation suma solo lo ganado participando
+    // (menos las sanciones) y define el nivel: Nuevo, Aportante o Confiable (helpers/point.helper.js).
+    points: { type: DataTypes.INTEGER.UNSIGNED, allowNull: false, defaultValue: 0 },
+    reputation: { type: DataTypes.INTEGER.UNSIGNED, allowNull: false, defaultValue: 0 },
+    // Cuándo subió su foto de perfil. null = sin foto (se muestran las iniciales).
+    avatarUpdatedAt: { type: DataTypes.DATE, allowNull: true },
   },
   {
     tableName: 'users',

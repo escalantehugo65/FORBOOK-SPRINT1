@@ -16,7 +16,10 @@ Esta entrega local reúne el diseño nuevo y el registro nacional/internacional 
 - Preguntas públicas, respuestas, votos útiles y filtros.
 - Reportes, cola y decisiones de moderación, historial, administración de categorías y fuentes.
 - Mapa con filtros, referencias, fuentes y fechas; carga/edición de lugares por administración; selector de ubicación.
-- Rutas orientativas y espacios públicos sugeridos por procedencia, institución y etapa de llegada.
+- Rutas orientativas y espacios públicos sugeridos por procedencia, institución y etapa de llegada; administración de rutas y de fichas completas.
+- Puntos, reputación y niveles (Nuevo, Aportante, Confiable); tienda de decoraciones al estilo Discord: marcos, fondos, efectos y colores del nombre.
+- Foto de perfil elegida de la galería o la cámara, recortada en el navegador y guardada sin datos EXIF.
+- Búsqueda de personas, fichas y preguntas, sin importar tildes ni mayúsculas.
 
 ## Ejecutar
 
@@ -61,7 +64,7 @@ El backend necesita TEST_DB_NAME terminada en `_test` para ejecutar la integraci
 
 No se incluyen .git, .env, dependencias instaladas, compilaciones ni bases/cuentas de prueba. No se crean administradores con contraseñas conocidas. Los roles se asignan con `npm run user:role` en backend, solo a cuentas existentes.
 
-El mapa no es un GPS. Incluye seis puntos con coordenadas aportadas por el usuario y enlaces de Google Maps; las rutas de colectivos todavía no están cargadas. Los espacios no tienen membresía ni chat privado. Puntos/tienda, sanciones públicas y guía temática ampliada siguen pendientes.
+El mapa no es un GPS. Incluye seis puntos con coordenadas aportadas por el usuario y enlaces de Google Maps. Las rutas orientativas se cargan desde Moderación → Rutas: todavía no hay ninguna, porque cada recorrido tiene que comprobarlo alguien del equipo. Los espacios no tienen membresía ni chat privado. Las sanciones públicas y la guía temática ampliada siguen pendientes.
 
 ## Perfiles
 
@@ -69,3 +72,12 @@ El mapa no es un GPS. Incluye seis puntos con coordenadas aportadas por el usuar
 - `/usuarios/:id`: perfil de otra persona, solo con sesión iniciada. Muestra actividad (preguntas, respuestas y respuestas marcadas como útiles), insignias y advertencias de moderación. El correo no se muestra nunca y no hay mensajes privados.
 - Moderación puede dar y revocar advertencias y ocultar o volver a mostrar una descripción. Los perfiles se pueden reportar. Todo queda en el historial.
 - Después de bajar estos cambios: `npm run db:migrate` (migración 012).
+
+## Puntos, tienda, foto y búsqueda
+
+- `/tienda`: catálogo de 21 decoraciones en 4 colecciones, con vista previa sobre tu propio perfil. `?ver=inventario` muestra lo que compraste para ponértelo o sacártelo; `?ver=puntos`, el saldo, el nivel, las reglas, lo ganado hoy y los movimientos.
+- Se gana: 100 de bienvenida, +2 por pregunta (2 por día), +5 por respuesta a otra persona (3 por día) y +10 cuando marcan tu respuesta como útil (10 por día). Se pierde: −15 si moderación oculta algo tuyo y −30 por advertencia (se devuelve si se revoca). Gastar en la tienda no baja la reputación. Detalle en [docs/PUNTOS_Y_TIENDA.md](docs/PUNTOS_Y_TIENDA.md).
+- Foto de perfil desde `/perfil` (botón de la cámara o “Elegir una foto”). Moderación puede quitarla desde el perfil de la persona.
+- `/buscar?q=…`: personas, fichas y preguntas. Conozcamos Formosa y Preguntas también tienen su buscador.
+- Administración: Moderación → Fichas (crear y editar fichas completas) y Moderación → Rutas (rutas orientativas, FF-22).
+- Después de bajar estos cambios: `npm run db:migrate` (migración 013) y `npm run db:seed` (carga el catálogo de la tienda, cuatro fichas nuevas y tres espacios). Las cuentas que ya existían reciben los 100 puntos de bienvenida una sola vez.

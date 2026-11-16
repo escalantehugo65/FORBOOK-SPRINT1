@@ -30,6 +30,12 @@ export const idParam = (message = 'Identificador inválido.') => param('id', mes
 
 export const pageQuery = () => query('page', 'Página inválida.').optional().custom(isId).toInt();
 
+// Texto para buscar: de 2 a 80 caracteres. Se usa en fichas, preguntas y perfiles.
+export const searchQuery = ({ required = false } = {}) => {
+  const chain = query('search', 'Escribí entre 2 y 80 caracteres para buscar.');
+  return (required ? chain : chain.optional()).isString().trim().isLength({ min: 2, max: 80 });
+};
+
 // Nota interna de moderación: revocar una advertencia u ocultar/mostrar una descripción.
 export const moderationNote = () => onlyTheseFields([
   body('note', 'Escribí el motivo en 5 a 500 caracteres.').isString().trim().isLength({ min: 5, max: 500 }),

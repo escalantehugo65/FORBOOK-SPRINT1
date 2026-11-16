@@ -19,3 +19,5 @@ export const authLimit = rateLimit(); // registro e inicio de sesión
 export const participationLimit = rateLimit(); // preguntas, respuestas y marcas de útil
 export const passwordLimit = rateLimit(); // cambio de contraseña
 export const reportLimit = rateLimit(); // reportes
+export const shopLimit = rateLimit(); // compras en la tienda
+export const uploadLimit = rateLimit(); // fotos de perfil

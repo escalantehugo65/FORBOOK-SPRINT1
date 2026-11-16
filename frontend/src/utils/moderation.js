@@ -20,12 +20,17 @@ export const actionNames = {
   source_update: 'Fuente actualizada',
   place_create: 'Lugar agregado',
   place_update: 'Lugar editado',
+  content_create: 'Ficha creada',
+  content_update: 'Ficha editada',
+  route_create: 'Ruta agregada',
+  route_update: 'Ruta editada',
+  avatar_remove: 'Foto de perfil quitada',
   warn: 'Advertencia',
   warning_revoke: 'Advertencia revocada',
   bio_hide: 'Descripción ocultada',
   bio_show: 'Descripción visible otra vez',
 };
-export const targetNames = { question: 'Pregunta', answer: 'Respuesta', content: 'Ficha', category: 'Categoría', place: 'Lugar', profile: 'Perfil' };
+export const targetNames = { question: 'Pregunta', answer: 'Respuesta', content: 'Ficha', category: 'Categoría', place: 'Lugar', profile: 'Perfil', route: 'Ruta' };
 export const canModerate = user => ['moderator', 'admin'].includes(user?.role);
 export function formatDateTime(value) {
   if (!value) return '';

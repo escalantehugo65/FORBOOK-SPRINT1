@@ -30,3 +30,16 @@ Para ampliar instituciones, agregá registros verificables al seed y ejecutalo. 
 ## V1.1 — instituciones y carreras (03/11/2026)
 
 El catálogo académico proviene del listado público de SIU Guaraní de UNaF y la página de carreras del IPF. Las fuentes exactas, filtros, límites de vigencia y denominaciones históricas están documentados en `CAMBIOS_V1_1.md`. Cada carrera persistida tiene `sourceUrl` y `reviewedAt`. No se presentan estos listados como inscripción abierta ni se copian requisitos antiguos.
+
+## Fichas agregadas el 16/11/2026
+
+Consultadas el 16/11/2026. Son resúmenes propios; lo que las páginas no informan (horarios de atención, fechas de inscripción vigentes) no se completó.
+
+| Ficha | Referencia | Alcance verificado |
+|---|---|---|
+| Tu punto de partida en el IPF (solo IPF) | https://www.ipf.edu.ar/contacto | Dirección (Ruta Nacional 81, km 1190), correo, WhatsApp y redes. La página no publica horarios. El aula virtual figura en el inicio del sitio. |
+| Carreras del IPF y preinscripción (solo IPF) | https://www.ipf.edu.ar/carreras | Las cuatro tecnicaturas superiores y lo que pide el formulario de preinscripción. El último aviso de fechas es de 2023: la ficha pide confirmar antes de anotarse. |
+| Qué es el IPF (solo IPF) | https://www.ipf.edu.ar/institucional | Organismo descentralizado creado por el Decreto N.º 18/2018, relación con el Ministerio de Cultura y Educación y objetivos declarados. |
+| Registrá tu SUBE | https://www.argentina.gob.ar/sube/preguntas-frecuentes y https://www.argentina.gob.ar/noticias/como-y-por-que-registrar-la-sube | Para qué sirve registrarla, una sola tarjeta por persona, el saldo no vence, cómo darla de baja (Mi SUBE, app, Centro de Atención, 0800-777-7823 opción 1) y el correo en 72 h hábiles. |
+
+No se cargaron rutas de colectivos: no se encontró una fuente oficial con los recorridos urbanos de Formosa. Las rutas se cargan desde Moderación → Rutas después de que alguien del equipo compruebe el recorrido, con su fecha de revisión.

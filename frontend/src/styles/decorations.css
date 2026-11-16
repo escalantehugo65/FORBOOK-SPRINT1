@@ -1,0 +1,404 @@
+/* Decoraciones de la tienda: marcos, fondos, efectos y colores del nombre.
+   Cada clase se llama igual que el slug de la decoración en la base (seeders/shop.js).
+   Todo es CSS: no hay imágenes que descargar y todo se adapta al tamaño del avatar. */
+
+/* ---------- Avatar con foto ---------- */
+.avatar { position: relative; }
+.avatar img { width: 100%; height: 100%; display: block; border-radius: 50%; object-fit: cover; }
+.avatar.has-photo { background: var(--surface-soft); }
+.avatar-mini { width: 64px; height: 64px; font-size: 25px; border: 4px solid var(--surface); }
+.avatar-shop { width: 76px; height: 76px; font-size: 30px; }
+
+/* ---------- Marcos ---------- */
+/* ::before es el aro (una máscara deja ver solo el borde), ::after el brillo y .frame-ornament los adornos. */
+.has-frame { isolation: isolate; }
+.has-frame::before,
+.has-frame::after,
+.frame-ornament::before,
+.frame-ornament::after { content: ''; position: absolute; pointer-events: none; }
+.has-frame::before {
+  --ring: 76%;
+  inset: -12%; z-index: 1; border-radius: 50%;
+  -webkit-mask: radial-gradient(farthest-side, transparent var(--ring), #000 calc(var(--ring) + 1%));
+  mask: radial-gradient(farthest-side, transparent var(--ring), #000 calc(var(--ring) + 1%));
+}
+.has-frame::after { inset: -12%; z-index: 0; border-radius: 50%; }
+.frame-ornament { position: absolute; inset: -12%; z-index: 2; pointer-events: none; }
+.avatar-small .frame-ornament { display: none; }
+
+@keyframes frame-spin { to { transform: rotate(1turn); } }
+@keyframes frame-twinkle {
+  0%, 100% { transform: scale(0.75) rotate(0deg); opacity: 0.7; }
+  50% { transform: scale(1.1) rotate(25deg); opacity: 1; }
+}
+@keyframes frame-pulse {
+  from { opacity: 0.55; }
+  to { opacity: 1; }
+}
+@keyframes neon-flicker {
+  0%, 18%, 22%, 62%, 64%, 100% { opacity: 1; }
+  20%, 63% { opacity: 0.45; }
+}
+
+/* Tereré (común): aro trenzado verde, como el forro de una guampa, y una hoja de yerba. */
+.frame-marco-terere::before {
+  --ring: 78%;
+  background: repeating-conic-gradient(from 8deg, #1d6b34 0deg 10deg, #57a845 10deg 20deg, #b7dc7a 20deg 22.5deg);
+}
+.frame-marco-terere .frame-ornament::before {
+  right: 2%; bottom: 3%; width: 30%; height: 30%;
+  border-radius: 0 80% 0 80%;
+  background: linear-gradient(135deg, #9ccc65, #2e7d32);
+  box-shadow: 0 0 0 2px var(--surface);
+  transform: rotate(8deg);
+}
+
+/* Sol del norte (común): rayos dorados que giran despacio y un aro de oro. */
+.frame-marco-sol::before {
+  inset: -24%;
+  background: repeating-conic-gradient(#ffb300 0deg 7deg, transparent 7deg 22.5deg);
+  -webkit-mask: radial-gradient(farthest-side, transparent 70%, #000 71%, #000 95%, transparent 96%);
+  mask: radial-gradient(farthest-side, transparent 70%, #000 71%, #000 95%, transparent 96%);
+  animation: frame-spin 40s linear infinite;
+}
+.frame-marco-sol .frame-ornament { inset: -9%; border-radius: 50%; }
+.frame-marco-sol .frame-ornament::before {
+  inset: 0; border-radius: 50%;
+  background: conic-gradient(#ffd54f, #ff8f00, #ffca28, #ffe082, #ff8f00, #ffd54f);
+  -webkit-mask: radial-gradient(farthest-side, transparent 82%, #000 83%);
+  mask: radial-gradient(farthest-side, transparent 82%, #000 83%);
+}
+
+/* Lapacho en flor (rara): aro rosado y una flor de lapacho de cinco pétalos. */
+.frame-marco-lapacho::before { background: conic-gradient(from 200deg, #f48fb1, #c2185b, #f06292, #fce4ec, #ec407a, #f48fb1); }
+.frame-marco-lapacho::after { box-shadow: 0 0 10px rgba(236, 64, 122, 0.35); }
+.frame-marco-lapacho .frame-ornament::before,
+.frame-marco-lapacho .frame-ornament::after {
+  background:
+    radial-gradient(circle at 50% 50%, #ffd54f 0 13%, #f9a825 14% 17%, transparent 18%),
+    radial-gradient(circle at 50% 22%, #f06292 0 21%, transparent 22%),
+    radial-gradient(circle at 76.6% 41.3%, #ec407a 0 21%, transparent 22%),
+    radial-gradient(circle at 66.5% 72.7%, #f06292 0 21%, transparent 22%),
+    radial-gradient(circle at 33.5% 72.7%, #ec407a 0 21%, transparent 22%),
+    radial-gradient(circle at 23.4% 41.3%, #f48fb1 0 21%, transparent 22%);
+  filter: drop-shadow(0 1px 1px rgba(80, 0, 40, 0.35));
+}
+.frame-marco-lapacho .frame-ornament::before { left: -4%; top: -4%; width: 40%; height: 40%; transform: rotate(-12deg); }
+.frame-marco-lapacho .frame-ornament::after { right: 0; bottom: 2%; width: 26%; height: 26%; transform: rotate(20deg); }
+
+/* Noche estrellada (rara): aro de cielo nocturno con estrellitas y una estrella que titila. */
+.frame-marco-estrellas::before {
+  --ring: 74%;
+  background:
+    radial-gradient(1.8% 1.8% at 9.6% 35.3%, #fff 98%, transparent),
+    radial-gradient(1.4% 1.4% at 71.5% 12.8%, #fff 98%, transparent),
+    radial-gradient(1.8% 1.8% at 90.4% 64.7%, #fff59d 98%, transparent),
+    radial-gradient(1.4% 1.4% at 17.1% 77.6%, #fff 98%, transparent),
+    radial-gradient(1.6% 1.6% at 46.3% 92.8%, #fff 98%, transparent),
+    radial-gradient(1.4% 1.4% at 35.3% 9.6%, #fff59d 98%, transparent),
+    radial-gradient(1.4% 1.4% at 71.5% 87.2%, #fff 98%, transparent),
+    radial-gradient(1.6% 1.6% at 90.4% 35.3%, #fff 98%, transparent),
+    conic-gradient(from 45deg, #0b1533, #24336e, #4f43a8, #24336e, #0b1533);
+}
+.frame-marco-estrellas::after { box-shadow: 0 0 10px rgba(79, 67, 168, 0.45); }
+.frame-marco-estrellas .frame-ornament::before {
+  right: 0; top: 0; width: 30%; height: 30%;
+  background: #fff6bf;
+  clip-path: polygon(50% 0, 60% 40%, 100% 50%, 60% 60%, 50% 100%, 40% 60%, 0 50%, 40% 40%);
+  animation: frame-twinkle 2.6s ease-in-out infinite;
+}
+.frame-marco-estrellas .frame-ornament::after {
+  left: 6%; bottom: 8%; width: 16%; height: 16%;
+  background: #ffffff;
+  clip-path: polygon(50% 0, 60% 40%, 100% 50%, 60% 60%, 50% 100%, 40% 60%, 0 50%, 40% 40%);
+  animation: frame-twinkle 3.4s ease-in-out 1.2s infinite;
+}
+
+/* Río Paraguay (épica): agua que corre alrededor de la foto, con brillo celeste. */
+.frame-marco-rio::before {
+  --ring: 74%;
+  background: conic-gradient(from 0deg, #023e8a, #0077b6, #00b4d8, #90e0ef, #e0fbff, #48cae4, #0096c7, #023e8a);
+  animation: frame-spin 6s linear infinite;
+}
+.frame-marco-rio::after { box-shadow: 0 0 12px rgba(0, 180, 216, 0.6); }
+.frame-marco-rio .frame-ornament::before {
+  inset: 0; border-radius: 50%;
+  background: repeating-conic-gradient(from 0deg, rgba(255, 255, 255, 0.55) 0deg 3deg, transparent 3deg 30deg);
+  -webkit-mask: radial-gradient(farthest-side, transparent 84%, #000 85%, #000 92%, transparent 93%);
+  mask: radial-gradient(farthest-side, transparent 84%, #000 85%, #000 92%, transparent 93%);
+  animation: frame-spin 9s linear infinite reverse;
+}
+
+/* Neón costanero (épica): dos tubos de neón, fucsia y celeste, que parpadean como un cartel. */
+.frame-marco-neon::before {
+  --ring: 82%;
+  background: conic-gradient(from 30deg, #ff2fd2 0 45%, #7c4dff 50%, #00e5ff 55% 95%, #ff2fd2);
+  -webkit-mask: radial-gradient(farthest-side, transparent 82%, #000 83%, #000 93%, transparent 94%);
+  mask: radial-gradient(farthest-side, transparent 82%, #000 83%, #000 93%, transparent 94%);
+  animation: neon-flicker 4s linear infinite;
+}
+.frame-marco-neon::after {
+  inset: -9%;
+  box-shadow: 0 0 6px 1px rgba(255, 47, 210, 0.85), 0 0 16px 4px rgba(0, 229, 255, 0.45), inset 0 0 8px rgba(255, 47, 210, 0.55);
+  animation: frame-pulse 1.8s ease-in-out infinite alternate;
+}
+
+/* Prisma (legendaria): arcoíris que gira, con brillo y destellos. */
+.frame-marco-prisma::before {
+  --ring: 72%;
+  background: conic-gradient(from 0deg, #ff004c, #ff8a00, #ffe600, #00d26a, #00b3ff, #7a5cff, #ff2bd6, #ff004c);
+  animation: frame-spin 4s linear infinite;
+}
+.frame-marco-prisma::after {
+  box-shadow: 0 0 12px rgba(255, 43, 214, 0.5), 0 0 22px rgba(0, 179, 255, 0.35);
+  animation: frame-pulse 2.2s ease-in-out infinite alternate;
+}
+.frame-marco-prisma .frame-ornament::before,
+.frame-marco-prisma .frame-ornament::after {
+  background: linear-gradient(135deg, #ffffff, #fff3a8 45%, #b8f3ff);
+  clip-path: polygon(50% 0, 60% 40%, 100% 50%, 60% 60%, 50% 100%, 40% 60%, 0 50%, 40% 40%);
+  filter: drop-shadow(0 0 2px #fff);
+}
+.frame-marco-prisma .frame-ornament::before { right: -2%; top: -2%; width: 32%; height: 32%; animation: frame-twinkle 2.2s ease-in-out infinite; }
+.frame-marco-prisma .frame-ornament::after { left: 0; bottom: 4%; width: 18%; height: 18%; animation: frame-twinkle 2.8s ease-in-out 0.9s infinite; }
+
+/* ---------- Fondos del perfil ---------- */
+/* Reemplazan al fondo básico (banner-rio, banner-monte...) en la cabecera del perfil y en las vistas previas. */
+[class*='banner-fondo-'] { position: relative; overflow: hidden; isolation: isolate; }
+[class*='banner-fondo-']::before,
+[class*='banner-fondo-']::after { content: ''; position: absolute; pointer-events: none; }
+
+/* Hoja de carpeta (común): renglones, margen rojo y agujeros de carpeta. */
+.banner-fondo-cuaderno {
+  background:
+    radial-gradient(circle at 50% 50%, rgba(60, 50, 20, 0.22) 0 6px, transparent 7px) 6px 14px / 26px 44px repeat-y,
+    linear-gradient(90deg, transparent 0 46px, rgba(229, 57, 53, 0.75) 46px 48px, transparent 48px),
+    repeating-linear-gradient(180deg, transparent 0 21px, rgba(66, 133, 244, 0.42) 21px 22px),
+    linear-gradient(180deg, #fffef6, #f8f2db);
+}
+:root[data-theme='dark'] .banner-fondo-cuaderno { filter: brightness(0.82); }
+
+/* Tormenta de verano (rara): nubes pesadas, lluvia y un relámpago de vez en cuando. */
+.banner-fondo-tormenta {
+  background:
+    repeating-linear-gradient(105deg, transparent 0 11px, rgba(220, 230, 255, 0.16) 11px 12px, transparent 12px 23px),
+    radial-gradient(38% 60% at 18% 6%, #59627f 0 58%, transparent 60%),
+    radial-gradient(34% 55% at 50% -4%, #4b5372 0 58%, transparent 60%),
+    radial-gradient(40% 62% at 86% 8%, #626c8c 0 58%, transparent 60%),
+    linear-gradient(180deg, #1c2033, #2b3150 60%, #39436a);
+}
+.banner-fondo-tormenta::before { inset: 0; z-index: 1; background: #dfe7ff; opacity: 0; animation: storm-flash 7s linear infinite; }
+.banner-fondo-tormenta::after {
+  left: 64%; top: 10%; z-index: 2; width: clamp(16px, 6%, 44px); height: 72%;
+  background: linear-gradient(180deg, #fffbe0, #ffe36b);
+  clip-path: polygon(40% 0, 100% 0, 64% 40%, 92% 40%, 18% 100%, 38% 54%, 6% 54%);
+  opacity: 0; animation: storm-bolt 7s linear infinite;
+}
+@keyframes storm-flash { 0%, 86%, 92%, 100% { opacity: 0; } 87%, 90% { opacity: 0.22; } 88.5% { opacity: 0.05; } }
+@keyframes storm-bolt { 0%, 86%, 92%, 100% { opacity: 0; } 87%, 91% { opacity: 1; } 89% { opacity: 0.35; } }
+
+/* Bañado La Estrella (rara): agua quieta al amanecer, embalsados y los árboles secos que salen del agua. */
+.banner-fondo-banado {
+  background:
+    linear-gradient(60deg, transparent 47%, #3e3a2c 47% 53%, transparent 53%) 74% 26% / 26px 26px no-repeat,
+    linear-gradient(-55deg, transparent 47%, #3e3a2c 47% 53%, transparent 53%) 69% 34% / 22px 22px no-repeat,
+    linear-gradient(#3e3a2c, #3e3a2c) 72% 30% / 3px 40% no-repeat,
+    linear-gradient(#3e3a2c, #3e3a2c) 79% 40% / 2px 28% no-repeat,
+    linear-gradient(-60deg, transparent 47%, #3e3a2c 47% 53%, transparent 53%) 23% 32% / 18px 18px no-repeat,
+    linear-gradient(#3e3a2c, #3e3a2c) 22% 34% / 2px 34% no-repeat,
+    radial-gradient(18% 7% at 28% 76%, #4f7f3a 0 68%, transparent 72%),
+    radial-gradient(22% 8% at 72% 84%, #5d8f45 0 68%, transparent 72%),
+    radial-gradient(12% 5% at 52% 69%, #6c9d4f 0 68%, transparent 72%),
+    repeating-linear-gradient(180deg, transparent 0 8px, rgba(255, 255, 255, 0.16) 8px 9px) 0 100% / 100% 44% no-repeat,
+    radial-gradient(14% 22% at 84% 44%, #fff2c2 0 40%, rgba(255, 214, 140, 0) 100%),
+    linear-gradient(180deg, #ffd59a 0%, #f6b98b 32%, #a9d0d6 55%, #4f9bb0 56%, #2f7f93 100%);
+}
+
+/* Lluvia de lapachos (épica): lapachos rosados y pétalos que caen sin parar. */
+.banner-fondo-lapachos {
+  background:
+    radial-gradient(20% 42% at 10% 16%, #f06292 0 58%, transparent 61%),
+    radial-gradient(16% 34% at 26% 4%, #ec407a 0 58%, transparent 61%),
+    radial-gradient(14% 30% at 4% 2%, #f8bbd0 0 58%, transparent 61%),
+    radial-gradient(22% 46% at 90% 12%, #f48fb1 0 58%, transparent 61%),
+    radial-gradient(15% 30% at 74% 2%, #d81b60 0 58%, transparent 61%),
+    linear-gradient(#6d4c41, #6d4c41) 15% 100% / 2.4% 60% no-repeat,
+    linear-gradient(#5d4037, #5d4037) 87% 100% / 2.4% 62% no-repeat,
+    linear-gradient(180deg, #ffe7ef 0%, #ffd3df 58%, #cfe8c4 59%, #a8d49a 100%);
+}
+.banner-fondo-lapachos::after {
+  inset: 0;
+  background-image:
+    radial-gradient(4px 3px at 12px 18px, #ec407a 98%, transparent),
+    radial-gradient(3px 2px at 70px 40px, #f06292 98%, transparent),
+    radial-gradient(4px 3px at 130px 12px, #d81b60 98%, transparent),
+    radial-gradient(3px 2px at 40px 86px, #f48fb1 98%, transparent),
+    radial-gradient(4px 3px at 104px 100px, #ec407a 98%, transparent),
+    radial-gradient(3px 2px at 150px 70px, #f06292 98%, transparent);
+  background-size: 160px 120px;
+  animation: petals-rain 10s linear infinite;
+}
+@keyframes petals-rain { to { background-position: 60px 120px; } }
+
+/* Aurora (épica): cielo de noche con bandas de luz que se mueven despacio. */
+.banner-fondo-aurora {
+  background:
+    radial-gradient(1.5px 1.5px at 12% 18%, #fff 98%, transparent),
+    radial-gradient(1px 1px at 32% 8%, #fff 98%, transparent),
+    radial-gradient(1.5px 1.5px at 58% 22%, #fff 98%, transparent),
+    radial-gradient(1px 1px at 76% 10%, #fff 98%, transparent),
+    radial-gradient(1.5px 1.5px at 90% 30%, #fff 98%, transparent),
+    radial-gradient(1px 1px at 44% 40%, #fff 98%, transparent),
+    linear-gradient(180deg, #040a20, #0a1838 62%, #0f2a4a);
+}
+.banner-fondo-aurora::before {
+  inset: -30% -15%; z-index: -1;
+  background:
+    radial-gradient(34% 46% at 22% 62%, rgba(0, 255, 170, 0.6), transparent 70%),
+    radial-gradient(30% 40% at 52% 42%, rgba(120, 90, 255, 0.55), transparent 70%),
+    radial-gradient(34% 44% at 84% 58%, rgba(0, 200, 255, 0.5), transparent 70%);
+  filter: blur(14px);
+  animation: aurora-flow 12s ease-in-out infinite alternate;
+}
+@keyframes aurora-flow {
+  from { transform: translateX(-7%) skewX(-10deg); }
+  to { transform: translateX(7%) skewX(10deg); }
+}
+
+/* Galaxia (legendaria): nebulosa de colores y estrellas que titilan. */
+.banner-fondo-galaxia {
+  background:
+    radial-gradient(42% 80% at 72% 38%, rgba(255, 64, 180, 0.5), transparent 70%),
+    radial-gradient(40% 76% at 28% 62%, rgba(80, 120, 255, 0.55), transparent 70%),
+    radial-gradient(22% 44% at 50% 50%, rgba(255, 214, 140, 0.3), transparent 70%),
+    linear-gradient(135deg, #070417, #1b0b3d 50%, #0a1340);
+}
+.banner-fondo-galaxia::before,
+.banner-fondo-galaxia::after { inset: 0; }
+.banner-fondo-galaxia::before {
+  background-image:
+    radial-gradient(1px 1px at 18px 24px, #fff 98%, transparent),
+    radial-gradient(1.5px 1.5px at 66px 70px, #fff 98%, transparent),
+    radial-gradient(1px 1px at 118px 14px, #fff 98%, transparent),
+    radial-gradient(1px 1px at 92px 104px, #fff 98%, transparent),
+    radial-gradient(1.5px 1.5px at 132px 60px, #ffe9a8 98%, transparent);
+  background-size: 150px 120px;
+  animation: stars-twinkle 3.2s ease-in-out infinite alternate;
+}
+.banner-fondo-galaxia::after {
+  background-image:
+    radial-gradient(2px 2px at 40px 30px, #fff 98%, transparent),
+    radial-gradient(1.5px 1.5px at 200px 90px, #c9e7ff 98%, transparent),
+    radial-gradient(2px 2px at 300px 40px, #fff 98%, transparent);
+  background-size: 360px 140px;
+  animation: stars-drift 70s linear infinite;
+}
+@keyframes stars-twinkle { from { opacity: 0.45; } to { opacity: 1; } }
+@keyframes stars-drift { to { background-position: -360px 0; } }
+
+/* ---------- Efectos sobre el perfil ---------- */
+.profile-effect { position: absolute; inset: 0; z-index: 3; overflow: hidden; pointer-events: none; container-type: size; }
+.profile-effect span { position: absolute; left: var(--x); display: block; will-change: transform; }
+
+/* Burbujas de río (rara) */
+.effect-efecto-burbujas span {
+  bottom: -28px; width: var(--size); height: var(--size); border-radius: 50%;
+  background: radial-gradient(circle at 32% 30%, rgba(255, 255, 255, 0.95) 0 12%, rgba(255, 255, 255, 0.15) 14% 56%, rgba(120, 205, 240, 0.35) 58% 100%);
+  border: 1px solid rgba(120, 200, 240, 0.85);
+  animation: bubble-rise var(--duration) ease-in var(--delay) infinite;
+}
+@keyframes bubble-rise {
+  0% { transform: translate3d(0, 0, 0) scale(0.6); opacity: 0; }
+  10% { opacity: 0.95; }
+  50% { transform: translate3d(var(--drift), calc(-50cqh - 14px), 0) scale(0.9); }
+  92% { opacity: 0.9; }
+  100% { transform: translate3d(calc(var(--drift) * -0.5), calc(-100cqh - 40px), 0) scale(1.05); opacity: 0; }
+}
+
+/* Luciérnagas (rara) */
+.effect-efecto-luciernagas span {
+  top: var(--y); width: calc(var(--size) * 0.7); height: calc(var(--size) * 0.7); border-radius: 50%;
+  background: radial-gradient(circle, #fffde4 0 30%, #e6ff6b 45%, rgba(200, 240, 60, 0) 72%);
+  box-shadow: 0 0 10px 3px rgba(215, 255, 90, 0.55);
+  animation: firefly-move var(--duration) ease-in-out var(--delay) infinite alternate, firefly-glow 2.4s ease-in-out var(--delay) infinite alternate;
+}
+@keyframes firefly-move {
+  0% { transform: translate3d(0, 0, 0); }
+  35% { transform: translate3d(var(--drift), -18px, 0); }
+  70% { transform: translate3d(calc(var(--drift) * -0.6), 14px, 0); }
+  100% { transform: translate3d(calc(var(--drift) * 0.4), -6px, 0); }
+}
+@keyframes firefly-glow { from { opacity: 0.2; } to { opacity: 1; } }
+
+/* Pétalos de lapacho (épica) */
+.effect-efecto-petalos span {
+  top: -24px; width: var(--size); height: calc(var(--size) * 0.72);
+  border-radius: 80% 0 80% 0;
+  background: linear-gradient(135deg, #fbd3e3, #ec407a);
+  box-shadow: 0 1px 2px rgba(120, 0, 50, 0.2);
+  animation: petal-fall var(--duration) linear var(--delay) infinite;
+}
+@keyframes petal-fall {
+  0% { transform: translate3d(0, 0, 0) rotate(0deg); opacity: 0; }
+  8% { opacity: 1; }
+  50% { transform: translate3d(var(--drift), calc(50cqh + 12px), 0) rotate(calc(var(--spin) / 2)); }
+  100% { transform: translate3d(calc(var(--drift) * -0.4), calc(100cqh + 48px), 0) rotate(var(--spin)); opacity: 0.9; }
+}
+
+/* Confeti de egreso (legendaria) */
+.effect-efecto-confeti span {
+  top: -20px; width: calc(var(--size) * 0.55); height: var(--size); border-radius: 2px;
+  background: #ff4d6d;
+  animation: confetti-fall var(--duration) linear var(--delay) infinite;
+}
+.effect-efecto-confeti span:nth-child(5n + 2) { background: #ffd23f; }
+.effect-efecto-confeti span:nth-child(5n + 3) { background: #3ec1f3; }
+.effect-efecto-confeti span:nth-child(5n + 4) { background: #4cd38a; }
+.effect-efecto-confeti span:nth-child(5n + 5) { background: #9b6dff; }
+@keyframes confetti-fall {
+  0% { transform: translate3d(0, 0, 0) rotateZ(0deg) rotateX(0deg); }
+  100% { transform: translate3d(var(--drift), calc(100cqh + 40px), 0) rotateZ(var(--spin)) rotateX(900deg); }
+}
+
+/* ---------- Colores del nombre ---------- */
+/* El degradé se pinta dentro de las letras. Los tonos están elegidos para leerse bien en modo claro y oscuro. */
+.name-color {
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent;
+  -webkit-box-decoration-break: clone; box-decoration-break: clone;
+}
+.name-nombre-rio { background-image: linear-gradient(90deg, #0b57a0, #0a6f7d); }
+.name-nombre-oro { background-image: linear-gradient(90deg, #6f4700, #8f5f00 50%, #6f4700); }
+.name-nombre-atardecer { background-image: linear-gradient(90deg, #b03a06, #a8124a 50%, #6b21a8); }
+.name-nombre-prisma {
+  background-image: linear-gradient(90deg, #c2185b, #a84300, #0f7a3d, #1d4ed8, #7e22ce, #c2185b);
+  background-size: 200% auto;
+  animation: prisma-text 6s linear infinite;
+}
+:root[data-theme='dark'] .name-nombre-rio { background-image: linear-gradient(90deg, #8fd0ff, #6ee7d8); }
+:root[data-theme='dark'] .name-nombre-oro { background-image: linear-gradient(90deg, #ffd54f, #fff1a6 50%, #ffc928); }
+:root[data-theme='dark'] .name-nombre-atardecer { background-image: linear-gradient(90deg, #ffb37a, #ff9cc2 50%, #cdb0ff); }
+:root[data-theme='dark'] .name-nombre-prisma { background-image: linear-gradient(90deg, #ff8fb8, #ffc46b, #7ee8a2, #8fc2ff, #d0a8ff, #ff8fb8); }
+@keyframes prisma-text { to { background-position: 200% center; } }
+/* Con contraste alto de Windows, el sistema elige los colores: el nombre se ve como texto común. */
+@media (forced-colors: active) {
+  .name-color { -webkit-text-fill-color: currentColor; background: none; }
+}
+
+/* ---------- Nivel ---------- */
+.level-badge { background: var(--surface-soft); color: var(--ink); border: 2px solid var(--line-strong); padding: 3px 11px; }
+.level-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--ink-3); }
+.level-aportante .level-dot { background: #16a34a; }
+.level-confiable { border-color: #a87a00; }
+.level-confiable .level-dot { background: #f2b600; box-shadow: 0 0 0 3px rgba(242, 182, 0, 0.25); }
+.level-reputation { font-weight: 700; color: var(--ink-3); }
+
+/* Movimiento reducido: los marcos y fondos quedan quietos y las partículas, repartidas sin moverse. */
+@media (prefers-reduced-motion: reduce) {
+  .has-frame::before, .has-frame::after,
+  .frame-ornament::before, .frame-ornament::after,
+  [class*='banner-fondo-']::before, [class*='banner-fondo-']::after,
+  .name-nombre-prisma { animation: none !important; }
+  .banner-fondo-tormenta::after { opacity: 1; }
+  .profile-effect span { animation: none !important; top: var(--y) !important; bottom: auto !important; opacity: 0.85; }
+}

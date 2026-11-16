@@ -13,6 +13,7 @@ import { up as places } from './009-places.js';
 import { up as groups } from './010-groups.js';
 import { up as placeAdmin } from './011-place-admin.js';
 import { up as profiles } from './012-profiles.js';
+import { up as pointsShop } from './013-points-shop.js';
 
 // Orden en que se aplican. Para cambiar la base, agregá una migración nueva al final:
 // nunca edites una que ya se aplicó en la base de otra persona.
@@ -30,6 +31,7 @@ export const migrations = [
   ['010-groups', groups],
   ['011-place-admin', placeAdmin],
   ['012-profiles', profiles],
+  ['013-points-shop', pointsShop],
 ];
 
 // Aplica las que falten y las anota en schema_migrations, para no repetirlas.

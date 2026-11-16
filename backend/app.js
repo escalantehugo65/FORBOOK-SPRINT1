@@ -20,6 +20,9 @@ import { profileRouter } from './src/routes/profile.route.js';
 import { userWarningRouter } from './src/routes/user_warning.route.js';
 import { reportRouter } from './src/routes/report.route.js';
 import { moderationLogRouter } from './src/routes/moderation_log.route.js';
+import { shopRouter } from './src/routes/shop.route.js';
+import { pointRouter } from './src/routes/point.route.js';
+import { userAvatarRouter } from './src/routes/user_avatar.route.js';
 
 const store = new MysqlSessionStore(config.sessionTtl);
 export const app = express();
@@ -29,7 +32,10 @@ if (config.trustProxy) app.set('trust proxy', 1);
 app.use(securityHeaders);
 app.use(cors({ origin: config.frontendUrl, credentials: true }));
 app.use(checkOrigin(config.frontendUrl));
-app.use(express.json({ limit: '16kb' }));
+// Los pedidos chicos van como JSON de hasta 16 kB. La foto de perfil pesa más y usa su propio límite
+// (src/routes/user_avatar.route.js), por eso esa dirección se saltea acá.
+const jsonBody = express.json({ limit: '16kb' });
+app.use((req, res, next) => (req.path === '/api/profile/avatar' ? next() : jsonBody(req, res, next)));
 
 // Antes de las sesiones: comprobar que la API anda no crea una sesión nueva.
 app.get('/api/health', async (req, res) => {
@@ -61,6 +67,9 @@ app.use('/api', profileRouter);
 app.use('/api', userWarningRouter);
 app.use('/api', reportRouter);
 app.use('/api', moderationLogRouter);
+app.use('/api', shopRouter);
+app.use('/api', pointRouter);
+app.use('/api', userAvatarRouter);
 
 app.use(notFound);
 app.use(errorHandler);

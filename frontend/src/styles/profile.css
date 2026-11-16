@@ -19,16 +19,34 @@
 .banner-liso { background: var(--tint); }
 
 .profile { display: grid; gap: 22px; }
-.user-profile-head { border: 2px solid var(--line); border-radius: var(--radius-l); background: var(--surface); overflow: hidden; }
+.user-profile-head { position: relative; border: 2px solid var(--line); border-radius: var(--radius-l); background: var(--surface); overflow: hidden; }
 .profile-banner { height: 170px; }
 .profile-identity { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 14px 22px; padding: 0 28px 24px; }
-.profile-identity .avatar-xl { margin-top: -56px; }
+.profile-avatar { position: relative; flex-shrink: 0; margin-top: -56px; }
+/* Botón de la cámara sobre la foto (solo en el perfil propio) */
+.photo-button {
+  position: absolute; right: -4px; bottom: 0; z-index: 4;
+  width: 42px; height: 42px; padding: 0;
+  display: grid; place-items: center;
+  border: 3px solid var(--surface); border-radius: 50%;
+  background: var(--primary); color: var(--on-primary);
+}
+.photo-button:hover { background: var(--primary-hover); }
+.photo-button svg { width: 20px; height: 20px; }
+.points-link {
+  display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 16px;
+  border: 2px solid var(--line-strong); border-radius: 999px;
+  color: var(--ink); font-weight: 800; text-decoration: none; white-space: nowrap;
+}
+.points-link svg { width: 20px; height: 20px; color: #a87a00; }
+:root[data-theme='dark'] .points-link svg { color: var(--yellow); }
+.points-link:hover { border-color: var(--primary); background: var(--bg-soft); }
 .profile-title { flex: 1 1 260px; min-width: 0; display: grid; gap: 8px; }
 .profile-title h1 { font-size: clamp(28px, 4vw, 40px); line-height: 1.1; overflow-wrap: anywhere; }
 .profile-badges { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; padding: 0; list-style: none; }
 .profile-badge-moderation { background: var(--tint); color: var(--link); }
 .profile-badge-helpful { background: var(--ok-bg); }
-.profile-actions { display: flex; gap: 10px; }
+.profile-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
 
 .profile-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(260px, 340px); gap: 22px; align-items: start; }
 .profile-main { display: grid; gap: 22px; min-width: 0; }
@@ -81,18 +99,20 @@
 .profile-notice { margin-top: 16px; }
 .profile-report { justify-self: start; }
 
-/* Encabezado: el chip del usuario lleva a su perfil */
-a.user-chip { color: inherit; text-decoration: none; border-radius: 999px; padding: 2px 10px 2px 2px; }
-a.user-chip:hover { background: var(--bg-soft); }
+/* Menú del celular: la persona con su foto lleva a su perfil */
 a.menu-user { color: inherit; text-decoration: none; }
 a.menu-user small { display: block; font-size: 13px; font-weight: 700; color: var(--link); }
-.author-link { font-weight: 800; }
+.author-link, .author { display: inline-flex; align-items: center; gap: 8px; font-weight: 800; vertical-align: middle; }
+/* En las tarjetas, todo el recuadro abre la pregunta: el nombre queda por encima para abrir el perfil. */
+.author-link { position: relative; z-index: 1; }
+.author-link .avatar-small, .author .avatar-small { margin: 3px 2px 3px 0; }
 
 @media (max-width: 860px) {
   .profile-grid { grid-template-columns: 1fr; }
   .profile-banner { height: 120px; }
   .profile-identity { padding: 0 18px 20px; }
-  .profile-identity .avatar-xl { width: 88px; height: 88px; font-size: 32px; margin-top: -44px; }
+  .profile-avatar { margin-top: -44px; }
+  .profile-identity .avatar-xl { width: 88px; height: 88px; font-size: 32px; }
   .profile-card { padding: 18px; }
   .profile-stats dd { font-size: 24px; }
 }

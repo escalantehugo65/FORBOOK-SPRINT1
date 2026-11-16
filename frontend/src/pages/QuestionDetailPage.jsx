@@ -1,9 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import { questionService } from '../services/questions';
 import { useFetch } from '../hooks/useFetch';
 import { usePageTitle } from '../hooks/usePageTitle';
-import { formatDate } from '../utils/content';
+import { formatDate, sourceBadge, sourceNames } from '../utils/content';
+import { pointsLabel } from '../utils/shop';
 import { Loading, ErrorMessage } from '../components/Feedback';
 import { ArrowIcon } from '../components/Icons';
 import { statusBadge, statusNames } from '../components/QuestionCard';
@@ -21,6 +23,7 @@ function helpfulText(count = 0, own) {
 // Detalle de una pregunta con sus respuestas (FF-26), formulario para responder (FF-27) y botón "Me fue útil" (FF-28).
 export default function QuestionDetailPage() {
   const { id } = useParams();
+  const { reloadUser } = useAuth();
   const loader = useCallback(signal => questionService.detail(id, signal), [id]);
   const { result, loading, error, retry } = useFetch(loader);
   const question = result?.data;
@@ -34,12 +37,13 @@ export default function QuestionDetailPage() {
   const [sendError, setSendError] = useState('');
   const [busy, setBusy] = useState(false);
   const [lastId, setLastId] = useState(null);
+  const [earned, setEarned] = useState(0);
   // helpful guarda el resultado de cada marca: { 12: { helpfulCount: 3, markedByMe: true } }.
   const [helpful, setHelpful] = useState({});
   const [voting, setVoting] = useState(null);
   const [voteError, setVoteError] = useState('');
   const newAnswer = useRef(null);
-  useEffect(() => { setAdded([]); setStatus(null); setText(''); setLastId(null); setHelpful({}); setVoteError(''); }, [id]);
+  useEffect(() => { setAdded([]); setStatus(null); setText(''); setLastId(null); setEarned(0); setHelpful({}); setVoteError(''); }, [id]);
   useEffect(() => { newAnswer.current?.focus(); }, [lastId]);
 
   async function submit(event) {
@@ -53,7 +57,9 @@ export default function QuestionDetailPage() {
       setAdded(previous => [...previous, data.answer]);
       setStatus(data.status);
       setLastId(data.answer.id);
+      setEarned(data.pointsEarned || 0);
       setText('');
+      if (data.pointsEarned) reloadUser(); // el saldo del encabezado se actualiza
     } catch (failure) {
       setSendError(failure.message);
       if (failure.fields?.body) setFieldError(failure.fields.body);
@@ -89,17 +95,19 @@ export default function QuestionDetailPage() {
       </div>
       <h1>{question.title}</h1>
       {question.body && <p className="question-body">{question.body}</p>}
-      <p className="card-meta">Preguntó <AuthorLink author={question.author}/> · {formatDate(question.createdAt)}</p>
+      <p className="card-meta">Preguntó <AuthorLink author={question.author} withAvatar/> · {formatDate(question.createdAt)}</p>
       {!question.ownQuestion && <ReportAction targetType="question" targetId={question.id} label="Reportar esta pregunta" reasons={reportReasons}/>}
     </header>
 
     <section className="answers" aria-labelledby="answers-title">
       <h2 id="answers-title">{answers.length ? `${answers.length} ${answers.length === 1 ? 'respuesta' : 'respuestas'}` : 'Respuestas'}</h2>
+      {/* FF-20: las respuestas son experiencias de estudiantes, no datos oficiales. */}
+      {answers.length > 0 && <p className="answers-note">Las respuestas cuentan la experiencia de otros estudiantes: sirven para orientarte, pero no son datos oficiales. Si algo es importante (fechas, requisitos o costos), confirmalo con la fuente oficial.</p>}
       {answers.length
         ? <ol className="answer-list">{answers.map(answer => <li key={answer.id} className={answer.id === lastId ? 'answer-card is-new' : 'answer-card'}
             ref={answer.id === lastId ? newAnswer : undefined} tabIndex={answer.id === lastId ? -1 : undefined}>
+            <p className="card-meta answer-head"><span className={sourceBadge.experience}>{sourceNames.experience}</span><span>Respondió <AuthorLink author={answer.author} withAvatar/> · {formatDate(answer.createdAt)}</span></p>
             <p>{answer.body}</p>
-            <p className="card-meta">Respondió <AuthorLink author={answer.author}/> · {formatDate(answer.createdAt)}</p>
             <div className="answer-foot">
               {!answer.ownAnswer && <button type="button" className="chip" aria-pressed={answer.markedByMe} disabled={voting === answer.id} onClick={() => toggleHelpful(answer)}>
                 {answer.markedByMe ? 'Te fue útil' : 'Me fue útil'}<span className="sr-only">: respuesta de {answer.author.name}</span>
@@ -110,7 +118,7 @@ export default function QuestionDetailPage() {
           </li>)}</ol>
         : <div className="empty"><h3>Todavía nadie respondió</h3><p>Si sabés algo sobre esto, tu respuesta puede ayudar a quien recién llega.</p></div>}
       {voteError && <div className="alert" role="alert"><p>{voteError}</p></div>}
-      {lastId && <p className="access-notice" role="status">Tu respuesta se publicó.</p>}
+      {lastId && <p className="access-notice" role="status">Tu respuesta se publicó.{earned > 0 && ` Sumaste ${pointsLabel(earned)}.`}</p>}
 
       {closed
         ? <p className="access-notice" role="status">Esta pregunta está cerrada y ya no recibe respuestas.</p>

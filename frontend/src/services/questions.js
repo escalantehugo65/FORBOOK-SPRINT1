@@ -5,6 +5,8 @@ const query = filters => new URLSearchParams(Object.entries(filters).filter(([, 
 
 export const questionService = {
   list: (filters = {}, signal) => request(`/questions?${query(filters)}`, { signal }),
+  // FF-15: una pregunta para el inicio (primero de tu institución). Si no hay ninguna, data es null.
+  relevant: signal => request('/questions/relevant', { signal }),
   create: body => request('/questions', { method: 'POST', body }),
   detail: (id, signal) => request(`/questions/${encodeURIComponent(id)}`, { signal }),
   answer: (id, body) => request(`/questions/${encodeURIComponent(id)}/answers`, { method: 'POST', body: { body } }),

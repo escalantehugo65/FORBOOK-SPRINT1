@@ -1,4 +1,5 @@
 import { matchedData } from 'express-validator';
+import { sequelize } from '../config/database.js';
 import { User } from '../models/user.model.js';
 import { Institution } from '../models/institution.model.js';
 import { Career } from '../models/career.model.js';
@@ -10,8 +11,13 @@ import { sessionCall, startSession } from '../helpers/session.helper.js';
 import { publicUser } from '../helpers/user.helper.js';
 import { countriesByCode } from '../helpers/country.helper.js';
 import { registrationInstitutionNames } from '../helpers/institution.helper.js';
+import { addPoints, pointRules } from '../helpers/point.helper.js';
+import { decorationsOf } from '../helpers/decoration.helper.js';
 
 const findUser = (id) => User.findByPk(id, { include: { model: Institution, as: 'institution' } });
+
+// Datos de la sesión con las decoraciones que tiene puestas (para el encabezado).
+const sessionData = async (user) => publicUser(user, await decorationsOf(user.id));
 
 // POST /auth/register
 export const register = async (req, res) => {
@@ -34,18 +40,24 @@ export const register = async (req, res) => {
     throw new HttpError(400, 'La localidad seleccionada no está disponible.', { originLocalityId: 'Elegí una localidad del catálogo de Argentina.' });
   }
 
-  const user = await User.create({
-    name: input.name,
-    email: input.email,
-    passwordHash: await hashPassword(input.password),
-    origin: locality ? `${locality.name}, ${locality.provinceName || 'Formosa'}` : countriesByCode.get(input.originCountryCode).name,
-    originLocalityId: locality?.id ?? null,
-    originCountryCode: input.originCountryCode,
-    institutionId: input.institutionId,
-    // Se guarda el nombre canónico de la carrera; el estudiante nunca escribe este texto.
-    career: career?.name || 'Carrera pendiente de catálogo',
-    arrivalStatus: input.arrivalStatus,
-    role: 'student',
+  // La cuenta y el bono de bienvenida de la tienda se guardan juntos.
+  const passwordHash = await hashPassword(input.password);
+  const user = await sequelize.transaction(async transaction => {
+    const created = await User.create({
+      name: input.name,
+      email: input.email,
+      passwordHash,
+      origin: locality ? `${locality.name}, ${locality.provinceName || 'Formosa'}` : countriesByCode.get(input.originCountryCode).name,
+      originLocalityId: locality?.id ?? null,
+      originCountryCode: input.originCountryCode,
+      institutionId: input.institutionId,
+      // Se guarda el nombre canónico de la carrera; el estudiante nunca escribe este texto.
+      career: career?.name || 'Carrera pendiente de catálogo',
+      arrivalStatus: input.arrivalStatus,
+      role: 'student',
+    }, { transaction });
+    await addPoints({ userId: created.id, amount: pointRules.welcome, reason: 'welcome' }, transaction);
+    return created;
   });
 
   try {
@@ -53,9 +65,9 @@ export const register = async (req, res) => {
   } catch (error) {
     // La cuenta ya quedó guardada: no se responde con un error de registro.
     console.error('No se pudo iniciar la sesión después del registro:', error.name);
-    return res.status(201).json({ data: { user: publicUser(await findUser(user.id)), sessionStarted: false }, message: 'La cuenta fue creada. Iniciá sesión para continuar.' });
+    return res.status(201).json({ data: { user: await sessionData(await findUser(user.id)), sessionStarted: false }, message: 'La cuenta fue creada. Iniciá sesión para continuar.' });
   }
-  res.status(201).json({ data: { user: publicUser(await findUser(user.id)), sessionStarted: true } });
+  res.status(201).json({ data: { user: await sessionData(await findUser(user.id)), sessionStarted: true } });
 };
 
 // POST /auth/login
@@ -66,7 +78,7 @@ export const login = async (req, res) => {
   const valid = await comparePassword(password, user?.passwordHash || fakeHash);
   if (!user || !valid) throw new HttpError(401, 'El correo o la contraseña no son correctos.');
   await startSession(req, user.id);
-  res.json({ data: { user: publicUser(user) } });
+  res.json({ data: { user: await sessionData(user) } });
 };
 
 // GET /auth/me
@@ -76,7 +88,7 @@ export const getMe = async (req, res) => {
     await sessionCall(req, 'destroy');
     throw new HttpError(401, 'Tu sesión ya no es válida.');
   }
-  res.json({ data: { user: publicUser(user) } });
+  res.json({ data: { user: await sessionData(user) } });
 };
 
 // POST /auth/logout

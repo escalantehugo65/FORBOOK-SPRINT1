@@ -4,13 +4,69 @@ import { useAuth } from "../context/AuthContext";
 import { useFetch } from "../hooks/useFetch";
 import { usePageTitle } from "../hooks/usePageTitle";
 import { catalogService } from "../services/catalog";
+import { questionService } from "../services/questions";
 import { firstName } from "../utils/content";
+import { pointsLabel } from "../utils/shop";
 import InstitutionResources from "../components/InstitutionResources";
 import ContentCard from "../components/ContentCard";
+import QuestionCard from "../components/QuestionCard";
+import Avatar from "../components/Avatar";
+import LevelBadge from "../components/LevelBadge";
 import { EmptyState, ErrorMessage, Loading } from "../components/Feedback";
-import { ArrowIcon } from "../components/Icons";
+import { ArrowIcon, PointsIcon } from "../components/Icons";
 import NextStep from "../components/NextStep";
 import InstitutionRoute from "../components/InstitutionRoute";
+
+// FF-15: una pregunta de la comunidad para el inicio. Primero una de tu institución (mejor si ya tiene
+// respuestas); si no hay, una general. Si no hay ninguna, se invita a preguntar.
+function RelevantQuestion() {
+  const loader = useCallback((signal) => questionService.relevant(signal), []);
+  const { result, loading, error, retry } = useFetch(loader);
+  const question = result?.data;
+  const reason = result?.meta.reason;
+  return (
+    <section className="home-section" aria-labelledby="relevant-title">
+      <div className="section-row">
+        <div>
+          <p className="eyebrow">De la comunidad</p>
+          <h2 id="relevant-title">Una pregunta para vos</h2>
+        </div>
+        <Link className="text-link" to="/preguntas">
+          Ver todas <ArrowIcon />
+        </Link>
+      </div>
+      {loading ? (
+        <Loading text="Buscando una pregunta para vos…" />
+      ) : error ? (
+        <ErrorMessage message={error.message} retry={retry} />
+      ) : question ? (
+        <div className="relevant-question">
+          <p className="relevant-reason">
+            {reason === "institution"
+              ? "Es de estudiantes de tu institución."
+              : "Todavía no hay preguntas de otros estudiantes de tu institución: esta es una pregunta general."}{" "}
+            {question.answersCount > 0
+              ? `Ya tiene ${question.answersCount} ${question.answersCount === 1 ? "respuesta" : "respuestas"}.`
+              : "Todavía nadie respondió: ¿sabés algo?"}
+          </p>
+          <QuestionCard question={question} />
+        </div>
+      ) : (
+        <EmptyState
+          title="Todavía no hay preguntas para mostrarte"
+          headingLevel={3}
+          action={
+            <Link className="btn btn-primary" to="/preguntas/nueva">
+              Hacer una pregunta
+            </Link>
+          }
+        >
+          Si tenés una duda sobre Formosa, publicala: otros estudiantes te pueden ayudar.
+        </EmptyState>
+      )}
+    </section>
+  );
+}
 
 // Inicio personalizado (FF-12): usa el perfil de la sesión y muestra pocos accesos, no el catálogo completo.
 export default function HomePage() {
@@ -50,13 +106,19 @@ export default function HomePage() {
         <div className="home-grid">
           <section className="profile-card" aria-labelledby="profile-title">
             <div className="profile-head">
-              <span className="avatar avatar-large" aria-hidden="true">
-                {name.charAt(0).toUpperCase()}
-              </span>
+              <Avatar person={user} size="large" />
               <div>
                 <h2 id="profile-title">Tu perfil de llegada</h2>
                 <p>{user.email}</p>
               </div>
+            </div>
+            <div className="home-points">
+              <LevelBadge level={user.level} />
+              <Link className="points-link" to="/tienda">
+                <PointsIcon />
+                {pointsLabel(user.points ?? 0)}
+                <span className="sr-only">. Ir a la tienda</span>
+              </Link>
             </div>
             <dl className="profile-list">
               <div>
@@ -79,6 +141,7 @@ export default function HomePage() {
           </section>
           <NextStep arrivalStatus={user.arrivalStatus} />
         </div>
+        <RelevantQuestion />
         <InstitutionRoute />
         <InstitutionResources />
         <section className="home-section" aria-labelledby="start-title">

@@ -2,13 +2,15 @@ import { useCallback, useEffect, useState } from 'react';
 import { Link, NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { PublicAccessContext } from '../context/PublicAccessContext';
-import { firstName } from '../utils/content';
 import Avatar from './Avatar';
+import DecoratedName from './DecoratedName';
+import UserMenu from './UserMenu';
 import { canModerate } from '../utils/moderation';
+import { formatPoints, pointsLabel } from '../utils/shop';
 import AuthModal from './AuthModal';
 import ThemeToggle from './ThemeToggle';
 import { ErrorMessage } from './Feedback';
-import { CloseIcon, MenuIcon } from './Icons';
+import { CloseIcon, MenuIcon, PointsIcon, SearchIcon } from './Icons';
 
 // Secciones de la bienvenida a las que lleva la navegación pública.
 const sections = [['funciones', 'Funciones'], ['conozcamos', 'Conozcamos Formosa'], ['mapa', 'Mapa'], ['puntos', 'Puntos']];
@@ -43,15 +45,17 @@ export default function Layout() {
   // Con la sesión iniciada no tiene sentido dejar abierta la ventana de acceso.
   useEffect(() => { if (user) setAccess(null); }, [user]);
   useEffect(() => { setMenuOpen(false); }, [location.pathname, location.hash]);
+  // Con sesión el encabezado tiene más botones, así que el menú del celular se usa hasta los 1100 px.
+  const wideFrom = user ? 1101 : 901;
   useEffect(() => {
     if (!menuOpen) return;
-    const wide = window.matchMedia('(min-width: 901px)');
+    const wide = window.matchMedia(`(min-width: ${wideFrom}px)`);
     const closeOnWide = () => { if (wide.matches) setMenuOpen(false); };
     const closeOnEscape = event => { if (event.key === 'Escape') setMenuOpen(false); };
     wide.addEventListener('change', closeOnWide);
     document.addEventListener('keydown', closeOnEscape);
     return () => { wide.removeEventListener('change', closeOnWide); document.removeEventListener('keydown', closeOnEscape); };
-  }, [menuOpen]);
+  }, [menuOpen, wideFrom]);
 
   async function closeSession() {
     setBusy(true); setError('');
@@ -60,14 +64,13 @@ export default function Layout() {
     try { await logout(); } catch (failure) { setError(failure.message); } finally { setBusy(false); }
   }
 
-  const name = user ? firstName(user.name) : '';
   const links = user
     ? <><NavLink to="/inicio">Mi inicio</NavLink><NavLink to="/conozcamos">Conozcamos Formosa</NavLink><NavLink to="/preguntas">Preguntas</NavLink><NavLink to="/mapa" className={({ isActive }) => isActive || location.pathname.startsWith('/rutas') ? 'active' : undefined}>Mapa</NavLink><NavLink to="/espacios">Espacios</NavLink>{canModerate(user) && <NavLink to="/moderacion">Moderación</NavLink>}</>
     : sections.map(([id, label]) => <Link key={id} to={{ pathname: '/', hash: `#${id}` }}>{label}</Link>);
 
   return <PublicAccessContext.Provider value={{ openAccess }}>
     <a className="skip-link" href="#main">Saltar al contenido</a>
-    <header className="site-header">
+    <header className={user ? 'site-header has-session' : 'site-header'}>
       <div className="container header-inner">
         <Brand/>
         {!checking && <nav className="main-nav" aria-label="Navegación principal">{links}</nav>}
@@ -75,8 +78,9 @@ export default function Layout() {
           {checking ? <span className="header-placeholder" aria-hidden="true"/> : <>
             <ThemeToggle className="desktop-only"/>
             {user ? <>
-              <Link className="user-chip desktop-only" to="/perfil" aria-label={`Mi perfil: ${user.name}`}><Avatar name={user.name} color={user.avatarColor}/><span>{name}</span></Link>
-              <button className="btn btn-outline btn-small desktop-only" type="button" onClick={closeSession} disabled={busy}>{busy ? 'Cerrando…' : 'Cerrar sesión'}</button>
+              <Link className="icon-button desktop-only" to="/buscar" aria-label="Buscar" title="Buscar"><SearchIcon/></Link>
+              <Link className="points-pill desktop-only" to="/tienda" title="Tus puntos: abrir la tienda"><PointsIcon/>{formatPoints(user.points ?? 0)}<span className="sr-only"> puntos. Ir a la tienda</span></Link>
+              <UserMenu user={user} busy={busy} onLogout={closeSession}/>
             </> : <>
               <button className="btn btn-outline btn-small" type="button" onClick={() => openAccess('login')}>Ingresar</button>
               <button className="btn btn-primary btn-small desktop-only" type="button" onClick={() => openAccess('register')}>Crear cuenta</button>
@@ -86,9 +90,9 @@ export default function Layout() {
         </div>
       </div>
       {menuOpen && <div id="mobile-menu" className="mobile-menu"><div className="container">
-        <nav aria-label="Navegación principal">{links}</nav>
+        <nav aria-label="Navegación principal">{links}{user && <><NavLink to="/buscar">Buscar</NavLink><NavLink to="/tienda">Tienda y puntos</NavLink></>}</nav>
         <div className="menu-actions">
-          {user && <Link className="menu-user" to="/perfil"><Avatar name={user.name} color={user.avatarColor}/><span>{user.name}<small>Ver mi perfil</small></span></Link>}
+          {user && <Link className="menu-user" to="/perfil"><Avatar person={user}/><span><DecoratedName name={user.name} color={user.decorations?.nameColor}/><small>Ver mi perfil · {pointsLabel(user.points ?? 0)}</small></span></Link>}
           <ThemeToggle withLabel/>
           {user
             ? <button className="btn btn-outline" type="button" onClick={closeSession} disabled={busy}>{busy ? 'Cerrando…' : 'Cerrar sesión'}</button>

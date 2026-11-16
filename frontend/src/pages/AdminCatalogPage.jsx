@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { moderationService } from '../services/moderation';
 import { useFetch } from '../hooks/useFetch';
 import { usePageTitle } from '../hooks/usePageTitle';
@@ -196,7 +197,7 @@ export default function AdminCatalogPage() {
 
     <section className="admin-section" aria-labelledby="sources-title">
       <h2 id="sources-title">Fuentes de las fichas</h2>
-      <p className="admin-intro">El tipo de fuente le dice al estudiante cuánto confiar: oficial, comunitaria verificable u opinión o experiencia.</p>
+      <p className="admin-intro">El tipo de fuente le dice al estudiante cuánto confiar: oficial, comunitaria verificable u opinión o experiencia. Para cambiar el texto de una ficha o crear una nueva, andá a <Link to="/moderacion/fichas">Fichas</Link>.</p>
       {contents.loading ? <Loading text="Cargando fichas…"/>
         : contents.error ? <ErrorMessage message={contents.error.message} retry={contents.retry}/>
         : contents.result.data.length ? <ul className="admin-list">{contents.result.data.map(content => <SourceRow key={content.id} content={content} onChanged={sourceChanged}/>)}</ul>

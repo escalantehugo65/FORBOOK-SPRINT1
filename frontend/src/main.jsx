@@ -15,5 +15,7 @@ import './styles/pages.css';
 import './styles/moderation.css';
 import './styles/places.css';
 import './styles/profile.css';
+import './styles/decorations.css';
+import './styles/shop.css';
 
 createRoot(document.getElementById('root')).render(<React.StrictMode><BrowserRouter><ThemeProvider><AuthProvider><App/></AuthProvider></ThemeProvider></BrowserRouter></React.StrictMode>);

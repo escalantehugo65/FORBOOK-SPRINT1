@@ -9,6 +9,7 @@ import { Content } from '../models/content.model.js';
 import { HttpError } from '../helpers/error.helper.js';
 import { findSessionUser } from '../helpers/user.helper.js';
 import { describeTargets, saveModerationLog } from '../helpers/moderation.helper.js';
+import { addPoints, pointRules } from '../helpers/point.helper.js';
 
 // Solo se puede reportar lo que la persona realmente puede ver, y nunca algo propio.
 const findTarget = async (targetType, targetId, student) => {
@@ -106,6 +107,9 @@ export const resolveReport = async (req, res) => {
       await target.update({ hiddenAt: new Date() }, { transaction });
     }
     if (decision === 'close') await target.update({ status: 'closed' }, { transaction });
+    // Ocultar algo por un reporte resta puntos a quien lo publicó (las fichas no tienen autor).
+    const ownerId = report.targetType === 'profile' ? target?.id : target?.userId;
+    if (decision === 'hide' && ownerId) await addPoints({ userId: ownerId, amount: -pointRules.hidden, reason: 'hidden', targetType: report.targetType, targetId: report.targetId, actorId: req.session.userId }, transaction);
     // Si se aplicó una acción, los demás reportes pendientes sobre lo mismo quedan resueltos igual.
     if (decision !== 'dismiss') await Report.update(resolution, { where: { targetType: report.targetType, targetId: report.targetId, status: 'pending' }, transaction });
     await saveModerationLog(req, { action: decision, targetType: report.targetType, targetId: report.targetId, reportId: report.id, note }, transaction);

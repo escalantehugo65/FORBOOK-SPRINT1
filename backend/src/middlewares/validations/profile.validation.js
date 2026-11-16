@@ -1,6 +1,9 @@
 import { body } from 'express-validator';
 import { profileOptions } from '../../helpers/profile.helper.js';
-import { idParam, isBoolean, moderationNote, onlyTheseFields } from './common.validation.js';
+import { idParam, isBoolean, moderationNote, onlyTheseFields, onlyTheseFilters, pageQuery, searchQuery } from './common.validation.js';
+
+// GET /users?search=ana&page=1: buscar perfiles por nombre.
+export const searchUsersValidation = [onlyTheseFilters([searchQuery({ required: true }), pageQuery()])];
 
 const maxYear = () => new Date().getFullYear() + 1;
 

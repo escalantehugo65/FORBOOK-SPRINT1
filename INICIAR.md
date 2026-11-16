@@ -56,6 +56,15 @@ npm run dev --prefix frontend
 
 Abrí http://localhost:5173. Detené cada servidor con Ctrl+C. Si el puerto está ocupado por tu otra copia de Forbook, detené primero aquella copia.
 
+Cada vez que bajes cambios nuevos, antes de iniciar el backend ejecutá desde la raíz:
+
+```powershell
+npm run db:migrate --prefix backend
+npm run db:seed --prefix backend
+```
+
+Las dos se pueden repetir sin romper nada: solo agregan lo que falta.
+
 ## Si querés usar tu base anterior
 
 Primero hacé una copia de respaldo de esa base. Configurá su nombre en DB_NAME de backend/.env y ejecutá db:migrate y db:seed. No ejecutes una base anterior con el backend anterior y el nuevo a la vez. La migración 005 agrega columnas sin borrar cuentas; las procedencias históricas conservan su texto. No se cambia el nombre de IPF ni UNaF, para conservar sus vínculos y accesos.
@@ -87,8 +96,10 @@ El backend omite la integración SQL si TEST_DB_NAME no está configurada. Para 
 - Administración de categorías, fuentes y lugares del mapa según el rol.
 - Mapa con filtros, colores por categoría y encuadre estable al filtrar.
 - Rutas orientativas y espacios sugeridos por institución, procedencia y llegada.
+- Puntos, niveles y tienda de decoraciones; foto de perfil; búsqueda de personas, fichas y preguntas.
+- Administración de fichas completas y de rutas orientativas.
 
-El seed incorpora seis lugares con coordenadas aportadas por el usuario: IPF, UNaF, Hospital Interdistrital Evita, Comisaría Seccional Tercera, Registro Civil 2da Sección y Casita del Estudiante. Son referencias comunitarias con enlaces de Google Maps. Las rutas de colectivos siguen pendientes.
+El seed incorpora seis lugares con coordenadas aportadas por el usuario: IPF, UNaF, Hospital Interdistrital Evita, Comisaría Seccional Tercera, Registro Civil 2da Sección y Casita del Estudiante. Son referencias comunitarias con enlaces de Google Maps. No trae rutas de colectivos: se cargan desde Moderación → Rutas cuando alguien del equipo comprueba un recorrido.
 
 Para probar la moderación, primero creá una cuenta normal en esta copia. Luego, desde backend, asignale un rol a esa cuenta con:
 
@@ -98,4 +109,4 @@ npm run user:role -- correo-de-tu-cuenta@example.com admin
 
 Reemplazá ese correo por el de la cuenta de prueba que creaste. Cerrá sesión y volvé a ingresar. No se incluye ningún administrador ni contraseña predefinidos. El registro público siempre crea estudiantes.
 
-La guía temática ampliada, puntos/tienda, sanciones públicas y chat privado no se implementan por esta unión; se conservan los avisos de “Próximamente” que corresponden.
+La guía temática ampliada, las sanciones públicas y el chat privado todavía no se implementan; se conservan los avisos de “Próximamente” que corresponden.

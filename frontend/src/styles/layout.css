@@ -19,6 +19,7 @@
 
 .main-nav { display: flex; align-items: center; gap: 28px; }
 .main-nav a {
+  white-space: nowrap;
   padding: 10px 2px;
   border-bottom: 3px solid transparent;
   color: var(--ink); text-decoration: none; font-weight: 700; font-size: 15px;
@@ -61,9 +62,62 @@
 .page-header h1 { font-size: clamp(2.4rem, 5vw, 3.6rem); font-weight: 800; }
 .header-error { padding-top: 16px; }
 
+/* Puntos del encabezado: llevan a la tienda */
+.points-pill {
+  display: inline-flex; align-items: center; gap: 6px;
+  min-height: 44px; padding: 0 14px 0 10px;
+  border: 2px solid var(--line-strong); border-radius: 999px;
+  color: var(--ink); text-decoration: none; font-weight: 800; font-size: 15px; white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.points-pill svg { width: 20px; height: 20px; color: #a87a00; }
+:root[data-theme='dark'] .points-pill svg { color: var(--yellow); }
+.points-pill:hover { background: var(--bg-soft); border-color: var(--primary); }
+
+/* Menú de la cuenta (computadora) */
+.user-menu { position: relative; }
+button.user-chip {
+  min-height: 48px; padding: 3px 10px 3px 3px;
+  border: 2px solid transparent; border-radius: 999px;
+  background: transparent; color: var(--ink);
+}
+button.user-chip:hover, button.user-chip[aria-expanded='true'] { background: var(--bg-soft); border-color: var(--line-strong); }
+button.user-chip svg { width: 18px; height: 18px; transition: transform 0.15s; }
+button.user-chip[aria-expanded='true'] svg { transform: rotate(180deg); }
+.user-chip-name { max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.user-menu-panel {
+  position: absolute; right: 0; top: calc(100% + 10px); z-index: 30;
+  width: 300px; display: grid; gap: 6px; padding: 10px;
+  border: 2px solid var(--line); border-radius: var(--radius-m);
+  background: var(--surface); box-shadow: var(--shadow);
+}
+.user-menu-panel[hidden] { display: none; }
+.user-menu-head { display: flex; align-items: center; gap: 12px; padding: 8px 8px 12px; border-bottom: 2px solid var(--line); min-width: 0; }
+.user-menu-head > div { display: grid; gap: 6px; justify-items: start; min-width: 0; }
+.user-menu-head strong { font-size: 17px; line-height: 1.2; overflow-wrap: anywhere; }
+.user-menu-panel nav { display: grid; gap: 2px; }
+.user-menu-panel nav a, .user-menu-logout {
+  display: flex; align-items: center; gap: 12px;
+  min-height: 46px; padding: 0 12px; border-radius: 12px;
+  color: var(--ink); font-weight: 800; font-size: 15px; text-decoration: none;
+}
+.user-menu-panel nav a:hover, .user-menu-logout:hover:not(:disabled) { background: var(--bg-soft); color: var(--link); }
+.user-menu-panel svg { width: 20px; height: 20px; }
+.menu-points { margin-left: auto; font-size: 13px; color: var(--ink-3); white-space: nowrap; }
+.user-menu-logout { width: 100%; border: 0; border-top: 2px solid var(--line); border-radius: 0 0 12px 12px; background: transparent; padding-top: 4px; }
+
 @media (max-width: 900px) {
   .main-nav, .desktop-only { display: none !important; }
   .menu-toggle { display: inline-grid; }
+}
+/* Con sesión hay más botones: hasta 1100 px se usa el menú del celular y hasta 1240 px el saldo va solo en el menú. */
+@media (max-width: 1240px) {
+  .has-session .points-pill { display: none !important; }
+  .has-session .main-nav { gap: 20px; }
+}
+@media (max-width: 1100px) {
+  .has-session .main-nav, .has-session .desktop-only { display: none !important; }
+  .has-session .menu-toggle { display: inline-grid; }
 }
 @media (max-width: 600px) {
   .header-inner { min-height: 72px; gap: 12px; }

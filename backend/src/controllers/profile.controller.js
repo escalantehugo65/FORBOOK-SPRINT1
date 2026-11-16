@@ -9,7 +9,10 @@ import { UserWarning } from '../models/user_warning.model.js';
 import { HttpError } from '../helpers/error.helper.js';
 import { comparePassword, hashPassword } from '../helpers/bcrypt.helper.js';
 import { startSession } from '../helpers/session.helper.js';
-import { findSessionUser } from '../helpers/user.helper.js';
+import { avatarVersion, findSessionUser } from '../helpers/user.helper.js';
+import { decorationsFor, decorationsOf } from '../helpers/decoration.helper.js';
+import { levelOf } from '../helpers/point.helper.js';
+import { textSearch } from '../helpers/search.helper.js';
 import { staffRoles } from '../helpers/profile.helper.js';
 import { saveModerationLog } from '../helpers/moderation.helper.js';
 import { shorten } from '../helpers/text.helper.js';
@@ -52,7 +55,14 @@ const present = async (person, viewer) => {
     own,
     memberSince: person.createdAt,
     avatarColor: person.avatarColor,
+    avatarVersion: avatarVersion(person),
     bannerStyle: person.bannerStyle,
+    // Decoraciones de la tienda que tiene puestas (marco, fondo, efecto y color del nombre).
+    decorations: await decorationsOf(person.id),
+    // El nivel y la reputación se ven en todos los perfiles; el saldo para la tienda, solo en el propio.
+    level: levelOf(person.reputation),
+    reputation: person.reputation,
+    ...(own ? { points: person.points } : {}),
     // Una descripción oculta solo la ven su dueño y moderación, con el aviso correspondiente.
     bio: bioHidden && !own && !staff ? null : person.bio,
     bioHidden,
@@ -105,6 +115,36 @@ export const changePassword = async (req, res) => {
   await person.update({ passwordHash: await hashPassword(newPassword) });
   await startSession(req, person.id);
   res.json({ data: { message: 'Listo, cambiamos tu contraseña.' } });
+};
+
+// GET /users?search=ana&page=1: buscar perfiles por nombre (20 por página).
+// Solo se muestra lo que ya es público en un perfil: nunca el correo ni la procedencia.
+export const searchUsers = async (req, res) => {
+  await findViewer(req);
+  const { search, page = 1 } = matchedData(req, { locations: ['query'] });
+  const limit = 20;
+  const { rows, count } = await User.findAndCountAll({
+    where: textSearch(['name'], search),
+    attributes: ['id', 'name', 'avatarColor', 'avatarUpdatedAt', 'career', 'reputation'],
+    include: { model: Institution, as: 'institution', attributes: ['id', 'name'] },
+    order: [['name', 'ASC'], ['id', 'ASC']],
+    limit,
+    offset: (page - 1) * limit,
+  });
+  const decorations = await decorationsFor(rows.map(row => row.id));
+  res.json({
+    data: rows.map(row => ({
+      id: row.id,
+      name: row.name,
+      avatarColor: row.avatarColor,
+      avatarVersion: avatarVersion(row),
+      decorations: decorations.get(row.id),
+      institution: row.institution ? { id: row.institution.id, name: row.institution.name } : null,
+      career: row.career,
+      level: levelOf(row.reputation),
+    })),
+    meta: { page, total: count, pages: Math.ceil(count / limit) },
+  });
 };
 
 // GET /users/:id

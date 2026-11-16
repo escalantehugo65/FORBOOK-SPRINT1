@@ -99,7 +99,9 @@
 .level-bar { height: 12px; border-radius: 999px; background: var(--line); }
 .level-bar span { display: block; width: 72%; height: 100%; border-radius: inherit; background: var(--primary); }
 .reward-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(130px, 100%), 1fr)); gap: 12px; }
-.reward-slot { padding: 16px; border: 2px dashed var(--line-strong); border-radius: 18px; text-align: center; font-weight: 700; font-size: 14px; color: var(--ink-3); }
+.reward-stage { height: 112px; border-radius: 18px; }
+.reward-stage .avatar-shop { width: 60px; height: 60px; font-size: 24px; }
+.reward-stage.stage-name span { font-size: 26px; }
 
 /* Cierre */
 .cta-box { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 28px; padding: clamp(32px, 6vw, 72px); border-radius: var(--radius-xl); background: var(--yellow); color: var(--on-accent); }

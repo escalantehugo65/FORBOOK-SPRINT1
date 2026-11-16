@@ -14,6 +14,6 @@ export default function QuestionCard({ question, highlighted = false }) {
     </div>
     <h3><Link to={`/preguntas/${question.id}`}>{question.title}</Link></h3>
     {question.body && <p className="question-body">{question.body}</p>}
-    <p className="card-meta">Preguntó <AuthorLink author={question.author}/> · {formatDate(question.createdAt)}</p>
+    <p className="card-meta">Preguntó <AuthorLink author={question.author} withAvatar/> · {formatDate(question.createdAt)}</p>
   </article>;
 }

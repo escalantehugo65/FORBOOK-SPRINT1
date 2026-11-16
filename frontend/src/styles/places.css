@@ -72,7 +72,7 @@ p.place-source { color: var(--ink-3); }
 
 /* Administración de lugares: formulario y selector de ubicación */
 .place-form { max-width: 900px; }
-.form-pair { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr)); gap: 14px 20px; }
+.form-pair { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr)); align-items: start; gap: 14px 20px; }
 .location-picker { display: grid; gap: 14px; min-width: 0; margin: 0; padding: 18px; border: 2px solid var(--line-strong); border-radius: var(--radius-m); background: var(--surface); }
 .location-picker legend { padding: 0 6px; font-weight: 800; }
 .admin-hint.wide { max-width: none; }

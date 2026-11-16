@@ -9,7 +9,7 @@ import ProfileView from '../components/ProfileView';
 import ReportAction from '../components/ReportAction';
 import { warningReasons } from '../utils/profile';
 
-// Herramientas de moderación sobre un perfil: advertir, revocar advertencias y ocultar la descripción.
+// Herramientas de moderación sobre un perfil: advertir, revocar advertencias, ocultar la descripción y quitar la foto.
 function ModerationTools({ profile, onChanged }) {
   const [reason, setReason] = useState('');
   const [note, setNote] = useState('');
@@ -52,7 +52,7 @@ function ModerationTools({ profile, onChanged }) {
       </div>
       <div className="admin-buttons"><button className="btn btn-danger btn-small" type="submit" disabled={busy}>Dar advertencia</button></div>
     </form>
-    {(profile.bio || profile.warnings.length > 0) && <div className="tool-group">
+    {(profile.bio || profile.avatarVersion || profile.warnings.length > 0) && <div className="tool-group">
       <h3 className="profile-subtitle">Otras acciones</h3>
       <div className="field">
         <label htmlFor="internal-note">Motivo interno</label>
@@ -61,6 +61,7 @@ function ModerationTools({ profile, onChanged }) {
       </div>
       <div className="admin-buttons">
         {profile.bio && <button className="btn btn-outline btn-small" type="button" disabled={busy} onClick={() => withInternal(body => profileService.setBio(profile.id, !profile.bioHidden, body))}>{profile.bioHidden ? 'Mostrar la descripción' : 'Ocultar la descripción'}</button>}
+        {profile.avatarVersion && <button className="btn btn-outline btn-small" type="button" disabled={busy} onClick={() => withInternal(body => profileService.removeAvatarByModeration(profile.id, body))}>Quitar la foto de perfil</button>}
         {profile.warnings.map(warning => <button key={warning.id} className="btn btn-outline btn-small" type="button" disabled={busy} onClick={() => withInternal(body => profileService.revokeWarning(warning.id, body))}>Revocar: {warningReasons[warning.reason].toLowerCase()}</button>)}
       </div>
     </div>}
