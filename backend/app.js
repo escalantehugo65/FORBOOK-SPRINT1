@@ -26,6 +26,9 @@ import { userAvatarRouter } from './src/routes/user_avatar.route.js';
 import { communityRouter } from './src/routes/community.route.js';
 import { userBlockRouter } from './src/routes/user_block.route.js';
 import { missionRouter } from './src/routes/mission.route.js';
+import { sanctionRouter } from './src/routes/sanction.route.js';
+import { friendshipRouter } from './src/routes/friendship.route.js';
+import { adminRouter } from './src/routes/admin.route.js';
 
 const store = new MysqlSessionStore(config.sessionTtl);
 export const app = express();
@@ -78,6 +81,9 @@ app.use('/api', userAvatarRouter);
 app.use('/api', communityRouter);
 app.use('/api', userBlockRouter);
 app.use('/api', missionRouter);
+app.use('/api', sanctionRouter);
+app.use('/api', friendshipRouter);
+app.use('/api', adminRouter);
 
 app.use(notFound);
 app.use(errorHandler);

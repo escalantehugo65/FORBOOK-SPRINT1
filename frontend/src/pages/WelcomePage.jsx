@@ -1,18 +1,18 @@
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { usePublicAccess } from '../context/PublicAccessContext';
 import { usePageTitle } from '../hooks/usePageTitle';
 import { ArrowIcon, BookIcon, ChatIcon, CheckIcon, HomeIcon, PinIcon, ShieldIcon, UsersIcon } from '../components/Icons';
 import ShopItemPreview from '../components/ShopItemPreview';
 
-// Funciones de la plataforma: path indica a dónde lleva cada una que ya funciona; sin path, llega más adelante.
+// Funciones de la plataforma: path indica a dónde lleva cada una.
 const features = [
   { id: 'conozcamos', title: 'Conozcamos Formosa', text: 'Fichas organizadas por categoría, con la fuente y la fecha de revisión a la vista.', icon: BookIcon, tile: 'tile-mint', path: '/conozcamos', cta: 'Explorar' },
   { id: 'inicio', title: 'Tu inicio personalizado', text: 'Armado con tu procedencia, tu institución, tu carrera y si ya llegaste a la ciudad.', icon: HomeIcon, tile: 'tile-yellow', path: '/inicio', cta: 'Ir a mi inicio' },
   { id: 'mapa', title: 'Mapa de lugares', text: 'Los puntos importantes de la ciudad y rutas orientativas hacia tu institución.', icon: PinIcon, tile: 'tile-tint', path: '/mapa', cta: 'Abrir el mapa' },
   { id: 'comunidades', title: 'Comunidades', text: 'Grupos con chat por barrio, institución o intereses. Unite, creá el tuyo y cumplí misiones para sumar puntos.', icon: UsersIcon, tile: 'tile-tint', path: '/comunidades', cta: 'Ver comunidades' },
   { id: 'preguntas', title: 'Preguntas y respuestas', text: 'Preguntá lo que no sabés: la comunidad responde y marca lo más útil.', icon: ChatIcon, tile: 'tile-tint', path: '/preguntas', cta: 'Ver preguntas' },
-  { id: 'guia', title: 'Cómo vivir en Formosa', text: 'Una guía por temas, con consejos de seguridad y de cuidado con los alimentos.', icon: ShieldIcon, tile: 'tile-tint' },
+  { id: 'guia', title: 'Cómo vivir en Formosa', text: 'Una guía por temas, con consejos de seguridad y de cuidado con los alimentos.', icon: ShieldIcon, tile: 'tile-tint', path: '/guia', cta: 'Leer la guía' },
 ];
 const categories = ['Lugares útiles', 'Movilidad', 'Vida estudiantil', 'Cultura y costumbres', 'Recomendaciones'];
 // Ejemplos reales de la tienda (seeders/shop.js), dibujados sobre un perfil de ejemplo.
@@ -23,7 +23,6 @@ const rewards = [
   { category: 'name_color', slug: 'nombre-prisma', rarity: 'legendary' },
 ];
 
-function Soon({ onBand = false }) { return <span className={onBand ? 'badge badge-on-band' : 'badge badge-soon'}>Próximamente</span>; }
 
 function HeroArt() {
   return <div className="hero-art" aria-hidden="true">
@@ -54,8 +53,11 @@ export default function WelcomePage() {
   const { openAccess } = usePublicAccess();
   usePageTitle();
   const start = () => openAccess('register');
+  // Aviso que llega de otra página (por ejemplo, después de dar de baja la cuenta).
+  const notice = useLocation().state?.notice;
 
   return <>
+    {notice && <div className="container"><p className="report-done page-notice" role="status">{notice}</p></div>}
     <section className="container hero" aria-labelledby="welcome-title">
       <div className="hero-copy">
         <p className="pill"><PinIcon/>Para estudiantes que llegan a Formosa</p>
@@ -73,10 +75,10 @@ export default function WelcomePage() {
     <section id="funciones" className="section band-soft" aria-labelledby="features-title">
       <div className="container">
         <div className="section-head"><div><p className="eyebrow">Funciones</p><h2 id="features-title" className="section-title">Todo lo que necesitás para arrancar en Formosa</h2></div>
-          <p>Lo que ya podés usar hoy y lo que estamos preparando.</p></div>
+          <p>Todo esto ya funciona: creá tu cuenta y empezá a usarlo.</p></div>
         <div className="feature-grid">
           {features.map(({ id, title, text, icon: FeatureIcon, tile, path, cta }) => <article className="feature-card" key={id}>
-            <div className="feature-top"><span className={`icon-tile ${tile}`}><FeatureIcon/></span>{path ? <span className="badge"><CheckIcon/>Disponible</span> : <Soon/>}</div>
+            <div className="feature-top"><span className={`icon-tile ${tile}`}><FeatureIcon/></span><span className="badge"><CheckIcon/>Disponible</span></div>
             <h3>{title}</h3>
             <p>{text}</p>
             {path && (user
@@ -95,7 +97,7 @@ export default function WelcomePage() {
           <article className="know-card">
             <h3>Cinco categorías para empezar</h3>
             <ul className="chip-row">{categories.map(name => <li className="chip" key={name}>{name}</li>)}</ul>
-            <p>Si una categoría todavía no tiene fichas, te lo decimos: preferimos esperar a tener información verificada antes que publicar algo dudoso.</p>
+            <p>Y si sabés algo que le sirva a quien recién llega, creá tu propia ficha: se publica con tu nombre y la comunidad la puede reportar si algo no está bien.</p>
             {user ? <Link className="btn btn-primary" to="/conozcamos">Explorar las fichas <ArrowIcon/></Link> : <button className="btn btn-primary" type="button" onClick={start}>Crear cuenta para explorar</button>}
           </article>
           <article className="know-card">

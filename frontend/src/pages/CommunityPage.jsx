@@ -81,10 +81,8 @@ export default function CommunityPage() {
       <nav className="mod-nav" aria-label="Secciones de la comunidad">
         {tabs.map(([key, label]) => <Link key={key} to={key ? `?ver=${key}` : '.'} replace aria-current={view === key ? 'page' : undefined} onClick={() => setNotice('')}>{label}</Link>)}
       </nav>
-      {!abilities.isMember && <p className="panel-note">Estás viendo esta comunidad como parte de la moderación de Forbook. Para escribir en el chat, unite.</p>}
-      {view === '' && (abilities.isMember
-        ? <CommunityChat key={community.id} communityId={community.id} limits={limits}/>
-        : <div className="empty"><h2>El chat es para miembros</h2><p>Podés revisar los miembros y borrar mensajes que no correspondan desde cada mensaje una vez adentro.</p><button className="btn btn-primary btn-small" type="button" disabled={busy} onClick={() => run(() => communityService.join(community.id))}>Unirme</button></div>)}
+      {!abilities.isMember && <p className="panel-note">Estás viendo esta comunidad como parte de la moderación de Forbook: podés leer el chat y borrar mensajes. Para escribir, unite.</p>}
+      {view === '' && <CommunityChat key={community.id} communityId={community.id} limits={limits} readOnly={!abilities.isMember}/>}
       {view === 'miembros' && <CommunityMembers community={community} onChanged={reload}/>}
       {view === 'reglas' && <section className="community-panel" aria-labelledby="rules-title">
         <h2 id="rules-title">Reglas</h2>

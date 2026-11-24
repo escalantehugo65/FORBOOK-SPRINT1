@@ -60,7 +60,7 @@
 .interest-list { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; padding: 0; list-style: none; }
 .interest-chip { padding: 6px 14px; border-radius: 999px; background: var(--tint); color: var(--ink); font-weight: 700; font-size: 14px; }
 
-.profile-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin: 0; }
+.profile-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 12px; margin: 0; }
 .profile-stats div { display: grid; gap: 4px; padding: 14px; border-radius: var(--radius-m); background: var(--surface-soft); text-align: center; }
 .profile-stats dt { order: 2; font-size: 13px; font-weight: 700; color: var(--ink-3); }
 .profile-stats dd { order: 1; margin: 0; font-family: var(--font-display); font-size: 30px; font-weight: 800; line-height: 1; }

@@ -14,7 +14,7 @@ export const PointTransaction = sequelize.define(
     balance: { type: DataTypes.INTEGER.UNSIGNED, allowNull: false },
     // Cuánto cambió la reputación con este movimiento (el bono y las compras no la cambian).
     reputationChange: { type: DataTypes.INTEGER, allowNull: false, defaultValue: 0 },
-    reason: { type: DataTypes.ENUM('welcome', 'question', 'answer', 'helpful', 'helpful_removed', 'purchase', 'hidden', 'warning', 'warning_revoked', 'mission'), allowNull: false },
+    reason: { type: DataTypes.ENUM('welcome', 'question', 'answer', 'helpful', 'helpful_removed', 'purchase', 'hidden', 'warning', 'warning_revoked', 'mission', 'admin_adjust'), allowNull: false },
     targetType: { type: DataTypes.STRING(30), allowNull: true },
     targetId: { type: DataTypes.INTEGER.UNSIGNED, allowNull: true },
     actorId: { type: DataTypes.INTEGER.UNSIGNED, allowNull: true },

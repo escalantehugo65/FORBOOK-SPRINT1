@@ -6,7 +6,7 @@ export const interestNames = {
   cine: 'Cine y series', voluntariado: 'Voluntariado', idiomas: 'Idiomas', naturaleza: 'Naturaleza', cocina: 'Cocina', fotografia: 'Fotografía',
 };
 export const maxInterests = 6;
-export const badgeNames = { moderation: 'Equipo de moderación', helpful: 'Dio respuestas útiles' };
+export const badgeNames = { admin: 'Administración de Forbook', moderation: 'Equipo de moderación', helpful: 'Dio respuestas útiles' };
 export const warningReasons = { false: 'Información falsa', offensive: 'Ofensivo o agresivo', spam: 'Spam o publicidad', personal_data: 'Datos personales expuestos', other: 'Otro motivo' };
 export const arrivalNames = { arrived: 'Ya está en Formosa', not_arrived: 'Todavía no llegó' };
 export const ownArrivalNames = { arrived: 'Ya estás en Formosa', not_arrived: 'Todavía no llegaste' };

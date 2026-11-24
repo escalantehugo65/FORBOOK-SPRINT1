@@ -1,5 +1,6 @@
 import { body } from 'express-validator';
 import { profileOptions } from '../../helpers/profile.helper.js';
+import { emailRule } from './auth.validation.js';
 import { idParam, isBoolean, moderationNote, onlyTheseFields, onlyTheseFilters, pageQuery, searchQuery } from './common.validation.js';
 
 // GET /users?search=ana&page=1: buscar perfiles por nombre.
@@ -46,3 +47,16 @@ export const userIdValidation = [idParam('Usuario inválido.')];
 
 // Moderación: ocultar o volver a mostrar la descripción de un perfil.
 export const bioVisibilityValidation = [idParam('Usuario inválido.'), ...moderationNote()];
+
+// PUT /profile/email { email, currentPassword }: cambiar el correo con el que se ingresa.
+export const changeEmailValidation = [
+  ...onlyTheseFields([
+    emailRule(),
+    body('currentPassword', 'Escribí tu contraseña actual.').isString().notEmpty(),
+  ]),
+];
+
+// DELETE /profile { currentPassword }: dar de baja la propia cuenta. Pide la contraseña para confirmar.
+export const deleteAccountValidation = [
+  ...onlyTheseFields([body('currentPassword', 'Escribí tu contraseña para confirmar.').isString().notEmpty()]),
+];

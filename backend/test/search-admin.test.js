@@ -110,7 +110,7 @@ test('búsqueda, inicio y administración de fichas y rutas sobre MySQL', { skip
       assert.deepEqual(await names('QUIROGA'), [`Zara Quiroga ${tag}`]);
       assert.deepEqual(await names(`Quir`), [`Zara Quiroga ${tag}`, `Zoe Quirós ${tag}`], 'ordenados por nombre');
       const [person] = (await send('zoe', 'get', `/api/users?search=${encodeURIComponent(`Zara Quiroga ${tag}`)}`).expect(200)).body.data;
-      assert.deepEqual(Object.keys(person).sort(), ['avatarColor', 'avatarVersion', 'career', 'decorations', 'id', 'institution', 'level', 'name']);
+      assert.deepEqual(Object.keys(person).sort(), ['avatarColor', 'avatarVersion', 'career', 'decorations', 'id', 'institution', 'level', 'name', 'relation']);
       assert.equal(person.institution.name, other.name);
       assert.equal(person.level, 'nuevo');
       assert.deepEqual(person.decorations, { frame: null, banner: null, effect: null, nameColor: null });

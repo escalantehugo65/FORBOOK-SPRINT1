@@ -4,9 +4,10 @@ import { reasonNames } from '../utils/moderation';
 
 // Botón que despliega un formulario corto para reportar (FF-34) o avisar que un dato cambió (FF-35).
 // Enviar el aviso no borra ni modifica nada: queda pendiente para el equipo de moderación.
-export default function ReportAction({ targetType, targetId, label, reasons, detailsLabel = 'Contanos qué pasa (opcional)', className = '' }) {
+// startOpen: abre el formulario directo, sin el botón (el chat usa su propio botón); onCancel avisa al cerrarlo.
+export default function ReportAction({ targetType, targetId, label, reasons, detailsLabel = 'Contanos qué pasa (opcional)', className = '', startOpen = false, onCancel }) {
   const id = useId();
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(startOpen);
   const [reason, setReason] = useState(reasons.length === 1 ? reasons[0] : '');
   const [details, setDetails] = useState('');
   const [busy, setBusy] = useState(false);
@@ -28,7 +29,8 @@ export default function ReportAction({ targetType, targetId, label, reasons, det
 
   if (done) return <p className={`report-done ${className}`} role="status">{done}</p>;
   return <div className={`report-action ${className}`}>
-    <button type="button" className="link-button report-toggle" aria-expanded={open} aria-controls={`${id}-form`} onClick={() => { setOpen(value => !value); setError(''); }}>{label}</button>
+    {!startOpen && <button type="button" className="link-button report-toggle" aria-expanded={open} aria-controls={`${id}-form`} onClick={() => { setOpen(value => !value); setError(''); }}>{label}</button>}
+    {startOpen && <p className="report-title-inline">{label}</p>}
     {open && <form id={`${id}-form`} className="report-form" onSubmit={submit} noValidate>
       {reasons.length > 1 && <fieldset className="choice-group">
         <legend>Motivo <span aria-hidden="true">*</span></legend>
@@ -46,7 +48,7 @@ export default function ReportAction({ targetType, targetId, label, reasons, det
       {error && <p className="report-error" role="alert">{error}</p>}
       <div className="report-buttons">
         <button className="btn btn-primary btn-small" type="submit" disabled={busy}>{busy ? 'Enviando…' : 'Enviar aviso'}</button>
-        <button className="btn btn-outline btn-small" type="button" disabled={busy} onClick={() => setOpen(false)}>Cancelar</button>
+        <button className="btn btn-outline btn-small" type="button" disabled={busy} onClick={() => { setOpen(false); onCancel?.(); }}>Cancelar</button>
       </div>
     </form>}
   </div>;

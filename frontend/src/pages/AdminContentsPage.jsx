@@ -8,6 +8,8 @@ import { usePageTitle } from '../hooks/usePageTitle';
 import { Loading, ErrorMessage } from '../components/Feedback';
 import Field from '../components/Field';
 import ModerationNav from '../components/ModerationNav';
+import NoteAction from '../components/NoteAction';
+import { adminService } from '../services/admin';
 import { formatDate, sourceBadge, sourceNames } from '../utils/content';
 import { findMatches } from '../utils/search';
 
@@ -199,12 +201,16 @@ export default function AdminContentsPage() {
               <span className={sourceBadge[content.sourceType]}>{sourceNames[content.sourceType]}</span>
               {content.status !== 'published' && <span className="badge badge-soon">Borrador</span>}
               {content.hiddenAt && <span className="badge badge-hidden">Oculta por moderación</span>}
+              {content.author && <span className="badge own-badge">Creada por <Link to={`/admin/usuarios/${content.author.id}`}>{content.author.name}</Link></span>}
               <span className="card-meta">{content.sourceLabel || content.authorLabel || 'Sin referencia'} · {content.reviewedAt ? `Revisada el ${formatDate(content.reviewedAt)}` : 'Sin fecha de revisión'}</span>
             </div>
           </div>
           <div className="admin-buttons">
             {canOpen(content) && <Link className="btn btn-outline btn-small" to={`/conozcamos/${content.id}`}>Ver<span className="sr-only"> {content.title}</span></Link>}
             <button className="btn btn-outline btn-small" type="button" disabled={loadingId === content.id} onClick={() => edit(content)}>{loadingId === content.id ? 'Abriendo…' : 'Editar'}<span className="sr-only"> {content.title}</span></button>
+            {content.hiddenAt
+              ? <NoteAction label="Mostrar" confirmLabel="Mostrar la ficha" action={note => adminService.showContent(content.id, note)} onDone={message => { setNotice({ message }); contents.retry(); }}/>
+              : <NoteAction label="Ocultar" confirmLabel="Ocultar la ficha" danger action={note => adminService.hideContent(content.id, note)} onDone={message => { setNotice({ message }); contents.retry(); }}/>}
           </div>
         </li>)}</ul>
         : <div className="empty"><h3>No hay fichas con ese filtro</h3><p>Probá con otro título o estado.</p></div>}

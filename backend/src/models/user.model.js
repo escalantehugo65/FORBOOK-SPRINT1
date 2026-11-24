@@ -33,7 +33,10 @@ export const User = sequelize.define(
     points: { type: DataTypes.INTEGER.UNSIGNED, allowNull: false, defaultValue: 0 },
     reputation: { type: DataTypes.INTEGER.UNSIGNED, allowNull: false, defaultValue: 0 },
     // Cuándo subió su foto de perfil. null = sin foto (se muestran las iniciales).
-    avatarUpdatedAt: { type: DataTypes.DATE, allowNull: true },
+    // Con milisegundos: es la versión de la foto en su dirección (?v=…), ver migración 017.
+    avatarUpdatedAt: { type: DataTypes.DATE(3), allowNull: true },
+    // Cuenta dada de baja (por la persona o por la administración). null = activa. Ver helpers/account.helper.js.
+    deletedAt: { type: DataTypes.DATE, allowNull: true },
   },
   {
     tableName: 'users',

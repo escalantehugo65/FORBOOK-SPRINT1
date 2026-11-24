@@ -6,6 +6,8 @@ import { Community } from '../models/community.model.js';
 import { CommunityMember } from '../models/community_member.model.js';
 import { CommunityMessage } from '../models/community_message.model.js';
 import { MissionClaim } from '../models/mission_claim.model.js';
+import { Content } from '../models/content.model.js';
+import { Friendship } from '../models/friendship.model.js';
 import { startOfToday } from './point.helper.js';
 
 // Misiones: metas chicas que dan puntos para la tienda cuando se cumplen y se cobran.
@@ -14,6 +16,8 @@ import { startOfToday } from './point.helper.js';
 export const missions = [
   { key: 'join', period: 'once', metric: 'memberships', goal: 1, reward: 10, title: 'Unite a una comunidad', detail: 'Entrá a una comunidad que te interese.' },
   { key: 'create', period: 'once', metric: 'owned', goal: 1, reward: 15, title: 'Creá tu propia comunidad', detail: 'Armá un espacio para tu barrio, tu carrera o lo que te guste.' },
+  { key: 'friend', period: 'once', metric: 'friends', goal: 1, reward: 10, title: 'Sumá tu primer amigo', detail: 'Mandá una solicitud de amistad y que te la acepten (o aceptá una).' },
+  { key: 'content', period: 'once', metric: 'contents', goal: 1, reward: 15, title: 'Compartí tu primera ficha', detail: 'Contá en Conozcamos Formosa algo que le sirva a quien recién llega.' },
   { key: 'chat_daily', period: 'day', metric: 'messages', goal: 5, reward: 5, title: 'Mandá 5 mensajes', detail: 'Charlá en el chat de cualquier comunidad.' },
   { key: 'image_daily', period: 'day', metric: 'images', goal: 1, reward: 3, title: 'Compartí una imagen', detail: 'Mandá una foto en el chat de una comunidad.' },
   { key: 'audio_daily', period: 'day', metric: 'audios', goal: 1, reward: 3, title: 'Mandá un audio', detail: 'Grabá un audio en el chat de una comunidad.' },
@@ -51,6 +55,8 @@ const metrics = {
   // Responder la pregunta propia no cuenta.
   answers: (userId, since) => Answer.count({ where: { userId, hiddenAt: null, createdAt: { [Op.gte]: since } }, include: [{ model: Question, as: 'question', attributes: [], where: { hiddenAt: null, userId: { [Op.ne]: userId } } }] }),
   votes: (userId, since) => AnswerVote.count({ where: { userId, createdAt: { [Op.gte]: since } } }),
+  friends: (userId) => Friendship.count({ where: { status: 'accepted', [Op.or]: [{ userLowId: userId }, { userHighId: userId }] } }),
+  contents: (userId) => Content.count({ where: { authorId: userId, status: 'published', hiddenAt: null } }),
 };
 
 // Estado de todas las misiones de una persona: avance, si ya la cobró y cuándo se renueva.

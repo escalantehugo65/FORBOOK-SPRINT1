@@ -32,6 +32,7 @@ export const reasonNames = {
   warning: 'Advertencia de moderación',
   warning_revoked: 'Se revocó una advertencia',
   mission: 'Cumpliste una misión',
+  admin_adjust: 'Ajuste de la administración',
 };
 
 export const formatPoints = value => new Intl.NumberFormat('es-AR').format(value);

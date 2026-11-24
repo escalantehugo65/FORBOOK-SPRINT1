@@ -38,6 +38,7 @@
   --danger-bg: #fdecea;
   --danger-line: #f4c7c1;
   --ok-bg: #e6f6ee;
+  --ok: #0f6b4f;
   --focus: #2447d6;
   --backdrop: rgba(14, 26, 63, 0.6);
   --shadow: 0 14px 30px rgba(14, 26, 63, 0.14);
@@ -80,6 +81,7 @@
   --danger-bg: #3a1620;
   --danger-line: #6b2a36;
   --ok-bg: #12382b;
+  --ok: #8be0bd;
   --focus: #ffd84d;
   --backdrop: rgba(3, 6, 20, 0.72);
   --shadow: 0 14px 30px rgba(0, 0, 0, 0.35);

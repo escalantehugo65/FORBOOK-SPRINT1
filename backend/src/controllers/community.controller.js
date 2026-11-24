@@ -17,7 +17,7 @@ const listAttributes = ['id', 'name', 'description', 'kind', 'topic', 'color', '
 
 // Mensajes sin leer de cada comunidad donde estoy: Map { communityId → cantidad }.
 // No cuentan los míos, los borrados ni los de personas que oculté o bloqueé.
-const unreadByCommunity = async (userId, { onlyNotified = false } = {}) => {
+export const unreadByCommunity = async (userId, { onlyNotified = false } = {}) => {
   const invisible = await invisibleUserIds(userId);
   const rows = await sequelize.query(
     `SELECT member.community_id AS communityId, COUNT(*) AS total

@@ -13,11 +13,19 @@ import { countriesByCode } from '../helpers/country.helper.js';
 import { registrationInstitutionNames } from '../helpers/institution.helper.js';
 import { addPoints, pointRules } from '../helpers/point.helper.js';
 import { decorationsOf } from '../helpers/decoration.helper.js';
+import { accountStatus } from '../helpers/sanction.helper.js';
 
 const findUser = (id) => User.findByPk(id, { include: { model: Institution, as: 'institution' } });
 
-// Datos de la sesión con las decoraciones que tiene puestas (para el encabezado).
-const sessionData = async (user) => publicUser(user, await decorationsOf(user.id));
+// Datos de la sesión con las decoraciones que tiene puestas (para el encabezado) y el estado de la cuenta:
+// si tiene una restricción, una suspensión o un baneo vigente, el frontend muestra el aviso que corresponde.
+const sessionData = async (user) => {
+  const { state, sanction } = await accountStatus(user.id);
+  return {
+    ...publicUser(user, await decorationsOf(user.id)),
+    account: { state, sanction: sanction ? { id: sanction.id, type: sanction.type, reason: sanction.reason, note: sanction.note, endsAt: sanction.endsAt, createdAt: sanction.createdAt } : null },
+  };
+};
 
 // POST /auth/register
 export const register = async (req, res) => {

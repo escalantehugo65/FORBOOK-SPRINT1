@@ -12,6 +12,7 @@ import { TravelRoute } from '../src/models/travel_route.model.js';
 import { RouteStop } from '../src/models/route_stop.model.js';
 import { Group } from '../src/models/group.model.js';
 import { Community } from '../src/models/community.model.js';
+import { User } from '../src/models/user.model.js';
 import { institutions, categories, contents, contentRevisions, places, placeRevisions, travelRoutes, routeRevisions, groups, communities } from '../seeders/catalog.js';
 import { careerCatalog } from '../seeders/careers.js';
 import { institutionResources } from '../seeders/institutionResources.js';
@@ -57,8 +58,8 @@ try {
     };
     await revise(Content, contentRevisions, contents, ({ categorySlug, institutionName, ...current }) => current);
     await seedMapPlaces(transaction);
-    for (const item of places) await Place.findOrCreate({ where: { slug: item.slug }, defaults: { ...item, status: 'published' }, transaction });
-    await revise(Place, placeRevisions, places, ({ slug, ...current }) => current);
+    for (const { institutionName, ...item } of places) await Place.findOrCreate({ where: { slug: item.slug }, defaults: { ...item, institutionId: await institutionId(institutionName), status: 'published' }, transaction });
+    await revise(Place, placeRevisions, places, ({ slug, institutionName, ...current }) => current);
     for (const { institutionName, destinationSlug, stops = [], ...item } of travelRoutes) {
       const destination = destinationSlug ? await Place.findOne({ where: { slug: destinationSlug }, transaction }) : null;
       const [route, created] = await TravelRoute.findOrCreate({ where: { slug: item.slug }, defaults: { ...item, institutionId: await institutionId(institutionName), destinationPlaceId: destination?.id ?? null, status: 'published' }, transaction });
@@ -72,7 +73,17 @@ try {
     for (const item of communities) await Community.findOrCreate({ where: { slug: item.slug }, defaults: { ...item, kind: 'default', ownerId: null }, transaction });
     await seedShopItems(transaction);
   });
-  console.log('Catálogo inicial cargado. No se modificaron cuentas ni contenidos editados.');
+  console.log('Catálogo inicial cargado. No se modificaron contenidos editados.');
+  // Cuentas de administración: los correos de ADMIN_EMAILS (backend/.env), separados por coma.
+  // Solo se promueven cuentas que ya existen: primero cada persona se registra y después se corre db:seed.
+  const adminEmails = (process.env.ADMIN_EMAILS || '').split(',').map(email => email.trim().toLowerCase()).filter(Boolean);
+  if (adminEmails.length) {
+    const found = await User.findAll({ where: { email: adminEmails }, attributes: ['id', 'name', 'email', 'role'] });
+    for (const user of found) if (user.role !== 'admin') await user.update({ role: 'admin' });
+    const missing = adminEmails.filter(email => !found.some(user => user.email === email));
+    console.log(`Administración: ${found.map(user => user.name).join(', ') || 'ninguna cuenta encontrada'}.`);
+    if (missing.length) console.log(`Todavía no hay cuenta con: ${missing.join(', ')}. Que se registren y volvé a correr db:seed.`);
+  }
   if (revised) console.log(revised === 1 ? 'Se actualizó 1 dato del catálogo que nadie había editado.' : `Se actualizaron ${revised} datos del catálogo que nadie había editado.`);
 } catch (error) {
   console.error('Falló la carga inicial:', error.message);

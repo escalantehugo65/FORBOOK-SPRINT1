@@ -14,7 +14,7 @@ const isFutureDate = (value) => new Date(`${value}T00:00:00Z`).getTime() > Date.
 // Fuente de un dato (FF-39): la usan las fichas y los lugares del mapa. Cada tipo exige lo que lo hace confiable:
 // oficial = organismo + enlace https; comunitaria = referencia para verificarla; experiencia = quién la cuenta.
 // Los textos vacíos se guardan como null.
-export const sourceRules = ({ types, typeMessage, withAuthor, reviewedAtRequired }) => [
+export const sourceRules = ({ types, typeMessage, withAuthor, reviewedAtRequired, withReviewedAt = true }) => [
   body('sourceType', typeMessage).isString().isIn(types),
   body('sourceLabel')
     .custom((value, { req }) => hasText(value) || !['official', 'community'].includes(req.body.sourceType))
@@ -44,7 +44,7 @@ export const sourceRules = ({ types, typeMessage, withAuthor, reviewedAtRequired
       .trim()
       .isLength({ max: 180 }).withMessage('La autoría puede tener hasta 180 caracteres.'),
   ] : []),
-  body('reviewedAt')
+  ...(withReviewedAt ? [body('reviewedAt')
     .custom((value, { req }) => !reviewedAtRequired || hasText(value) || !types.includes(req.body.sourceType)).withMessage('Indicá cuándo revisaste el dato.')
     .bail()
     .if(isPresent)
@@ -54,5 +54,5 @@ export const sourceRules = ({ types, typeMessage, withAuthor, reviewedAtRequired
     .bail()
     .custom(value => value === '' || isRealDate(value)).withMessage('Usá una fecha válida (AAAA-MM-DD).')
     .bail()
-    .custom(value => value === '' || !isFutureDate(value)).withMessage('La fecha de revisión no puede ser futura.'),
+    .custom(value => value === '' || !isFutureDate(value)).withMessage('La fecha de revisión no puede ser futura.')] : []),
 ];

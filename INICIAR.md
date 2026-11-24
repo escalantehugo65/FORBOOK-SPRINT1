@@ -99,6 +99,10 @@ El backend omite la integración SQL si TEST_DB_NAME no está configurada. Para 
 - Puntos, niveles y tienda de decoraciones; foto de perfil; búsqueda de personas, fichas y preguntas.
 - Administración de fichas completas y de rutas orientativas, con paradas en el mapa.
 - Comunidades con chat (texto, imágenes y audios), roles, avisos, bloqueo de personas y misiones que dan puntos.
+- Amigos: buscador de personas (/personas), solicitudes que se aceptan o rechazan, cantidad de amigos en el perfil.
+- Fichas creadas por cualquier estudiante, con su nombre a la vista; la guía «Cómo vivir en Formosa» (/guia).
+- Sanciones: advertencias que escalan a restricción, suspensión o baja; se ven en el perfil y se pueden apelar.
+- Panel de administración (/admin), solo para cuentas admin: cuentas, roles, sanciones, apelaciones, puntos, comunidades, fichas y tienda.
 
 El seed incorpora seis lugares con coordenadas aportadas por el usuario: IPF, UNaF, Hospital Interdistrital Evita, Comisaría Seccional Tercera, Registro Civil 2da Sección y Casita del Estudiante. Son referencias comunitarias con enlaces de Google Maps. Además suma la casa central del Banco Formosa (ubicación publicada por el BCRA) y la librería Capítulo (solo con dirección). Trae una sola ruta: el colectivo gratuito del IPF, con sus horarios y ocho paradas comprobadas por un estudiante del instituto. Las demás rutas se cargan desde Moderación → Rutas cuando alguien del equipo comprueba un recorrido.
 
@@ -110,4 +114,19 @@ npm run user:role -- correo-de-tu-cuenta@example.com admin
 
 Reemplazá ese correo por el de la cuenta de prueba que creaste. Cerrá sesión y volvé a ingresar. No se incluye ningún administrador ni contraseña predefinidos. El registro público siempre crea estudiantes.
 
-La guía temática ampliada, las sanciones públicas y el chat privado todavía no se implementan; se conservan los avisos de “Próximamente” que corresponden.
+### Cuentas de administración del equipo
+
+Las cuentas admin del equipo (Hugo Escalante, Lautaro Nicolás Villalba y Gonzalo William Romero) se dan por correo, no por nombre, porque el nombre lo puede escribir cualquiera al registrarse:
+
+1. Cada uno crea su cuenta normal en Forbook.
+2. En `backend/.env`, agregá sus correos separados por comas:
+
+```
+ADMIN_EMAILS=correo-de-hugo@example.com,correo-de-lautaro@example.com,correo-de-gonzalo@example.com
+```
+
+3. Ejecutá `npm run db:seed --prefix backend`. El seed pasa esas cuentas a admin y avisa qué correos no encontró (por ejemplo, si alguien todavía no se registró). Después, cada uno cierra sesión y vuelve a ingresar.
+
+Desde el panel (/admin → Usuarios) también se puede cambiar el rol de cualquier cuenta. Siempre tiene que quedar al menos una cuenta admin.
+
+Las reglas de las sanciones y del panel están en docs/SANCIONES_Y_ADMIN.md.

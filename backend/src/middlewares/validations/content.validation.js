@@ -1,5 +1,5 @@
 import { body, query } from 'express-validator';
-import { idParam, isId, onlyTheseFields, onlyTheseFilters, pageQuery, searchQuery } from './common.validation.js';
+import { idParam, isBoolean, isId, onlyTheseFields, onlyTheseFilters, pageQuery, searchQuery } from './common.validation.js';
 import { sourceRules } from './source.validation.js';
 
 // GET /contents?categoryId=2&scope=institution&search=colectivo&page=2
@@ -42,3 +42,16 @@ export const createContentValidation = [...contentFields()];
 export const updateContentValidation = [idParam('Ficha inválida.'), ...contentFields()];
 
 export const adminContentIdValidation = [idParam('Ficha inválida.')];
+
+// Fichas que crea cualquier estudiante desde la página. Quién la hizo y la fecha las pone el servidor:
+// no se aceptan authorLabel, authorId, reviewedAt, status ni institutionId en el pedido.
+const userContentFields = () => onlyTheseFields([
+  body('title', 'El título debe tener entre 5 y 180 caracteres.').isString().trim().isLength({ min: 5, max: 180 }),
+  body('summary', 'El resumen debe tener entre 10 y 450 caracteres.').isString().trim().isLength({ min: 10, max: 450 }),
+  body('body', 'El texto debe tener entre 30 y 10000 caracteres.').isString().trim().isLength({ min: 30, max: 10000 }),
+  body('categoryId', 'Elegí una categoría.').custom(isId).toInt(),
+  body('forMyInstitution', 'Indicá si es solo para tu institución.').custom(isBoolean),
+  ...sourceRules({ types: ['experience', 'community', 'official'], typeMessage: 'Elegí de dónde sale la información.', withAuthor: false, reviewedAtRequired: false, withReviewedAt: false }),
+]);
+export const createUserContentValidation = [...userContentFields()];
+export const updateUserContentValidation = [idParam('Ficha inválida.'), ...userContentFields()];

@@ -4,16 +4,30 @@ import { sequelize } from '../config/database.js';
 import { Content } from '../models/content.model.js';
 import { Category } from '../models/category.model.js';
 import { Institution } from '../models/institution.model.js';
+import { User } from '../models/user.model.js';
 import { HttpError } from '../helpers/error.helper.js';
-import { findSessionUser } from '../helpers/user.helper.js';
+import { authorAttributes, findSessionUser, publicAuthor } from '../helpers/user.helper.js';
+import { decorationsFor } from '../helpers/decoration.helper.js';
+import { startOfToday } from '../helpers/point.helper.js';
 import { saveModerationLog } from '../helpers/moderation.helper.js';
 import { slugify } from '../helpers/slug.helper.js';
 import { textSearch } from '../helpers/search.helper.js';
+import { guideSections } from '../helpers/guide.helper.js';
 
 const include = [
   { model: Category, as: 'category', attributes: ['id', 'name', 'slug'] },
   { model: Institution, as: 'institution', attributes: ['id', 'name'] },
+  { model: User, as: 'author', attributes: authorAttributes },
 ];
+
+// Una ficha para el frontend. Si la creó un estudiante, author trae su nombre y su foto (nunca el correo).
+const presentContents = async (rows, viewerId = null) => {
+  const decorations = await decorationsFor([...new Set(rows.map(row => row.authorId).filter(Boolean))]);
+  return rows.map(row => {
+    const { author, ...rest } = row.toJSON();
+    return { ...rest, author: row.authorId && row.author ? { ...publicAuthor(row.author, decorations.get(row.authorId)), fullName: row.author.name } : null, own: Boolean(viewerId && row.authorId === viewerId) };
+  });
+};
 
 // Fichas publicadas para todos o para la institución del estudiante.
 // Las ocultas por moderación (FF-37) dejan de verse, pero no se borran.
@@ -42,7 +56,7 @@ export const getContents = async (req, res) => {
     limit,
     offset: (page - 1) * limit,
   });
-  res.json({ data: rows, meta: { page, total: count, pages: Math.ceil(count / limit) } });
+  res.json({ data: await presentContents(rows, req.session.userId), meta: { page, total: count, pages: Math.ceil(count / limit) } });
 };
 
 // GET /contents/:id
@@ -50,15 +64,98 @@ export const getContentById = async (req, res) => {
   const { id } = matchedData(req, { locations: ['params'] });
   const content = await Content.findOne({ where: { ...(await visibleContents(req)), id }, include });
   if (!content) throw new HttpError(404, 'No encontramos ese contenido.');
-  res.json({ data: content });
+  const [data] = await presentContents([content], req.session.userId);
+  res.json({ data });
+};
+
+// GET /guide: la guía «Cómo vivir en Formosa». Cada tema con sus fichas visibles para quien mira, en el orden de la guía.
+export const getGuide = async (req, res) => {
+  const slugs = guideSections.flatMap(section => section.slugs);
+  const rows = await Content.findAll({ where: { ...(await visibleContents(req)), slug: slugs }, include, attributes: { exclude: ['body'] } });
+  const bySlug = new Map((await presentContents(rows, req.session.userId)).map(item => [item.slug, item]));
+  res.json({ data: guideSections.map(({ slugs: list, ...section }) => ({ ...section, contents: list.map(slug => bySlug.get(slug)).filter(Boolean) })).filter(section => section.contents.length) });
+};
+
+// Fichas creadas por estudiantes. Se publican al momento con quien la hizo a la vista (authorId)
+// y la comunidad las puede reportar. Hasta 3 por día por persona.
+export const userContentLimit = 3;
+const today = () => new Date(Date.now() - 3 * 3600000).toISOString().slice(0, 10);
+const userInput = (data, user) => ({
+  title: data.title,
+  summary: data.summary,
+  body: data.body,
+  categoryId: data.categoryId,
+  institutionId: data.forMyInstitution ? user.institutionId : null,
+  sourceType: data.sourceType,
+  sourceLabel: data.sourceLabel || null,
+  sourceUrl: data.sourceUrl || null,
+  // La autoría la pone el servidor: es la persona que la publica.
+  authorLabel: user.name,
+  authorId: user.id,
+  reviewedAt: today(),
+  status: 'published',
+});
+
+// POST /contents
+export const createUserContent = async (req, res) => {
+  const data = matchedData(req, { locations: ['body'] });
+  const content = await sequelize.transaction(async transaction => {
+    const user = await User.findByPk(req.session.userId, { attributes: ['id', 'name', 'institutionId'], transaction, lock: transaction.LOCK.UPDATE });
+    const created = await Content.count({ where: { authorId: user.id, createdAt: { [Op.gte]: startOfToday() } }, transaction });
+    if (created >= userContentLimit) throw new HttpError(429, `Podés publicar hasta ${userContentLimit} fichas por día. Volvé a intentar mañana.`);
+    const input = userInput(data, user);
+    if (!await Category.findByPk(input.categoryId, { transaction })) throw new HttpError(400, 'Revisá los campos indicados.', { categoryId: 'Elegí una categoría de la lista.' });
+    const base = slugify(input.title) || 'ficha';
+    let slug = base;
+    for (let n = 2; await Content.findOne({ where: { slug }, attributes: ['id'], transaction }); n += 1) slug = `${base}-${n}`;
+    return Content.create({ ...input, slug }, { transaction });
+  });
+  res.status(201).json({ data: { id: content.id }, message: 'Publicaste la ficha. Ya la puede ver la comunidad.' });
+};
+
+// La ficha de un estudiante, solo para su autor (y visible).
+const findOwnContent = async (req, id) => {
+  const content = await Content.findOne({ where: { id, authorId: req.session.userId } });
+  if (!content) throw new HttpError(404, 'No encontramos esa ficha entre las tuyas.');
+  if (content.hiddenAt) throw new HttpError(409, 'Moderación ocultó esta ficha: ya no se puede editar.');
+  return content;
+};
+
+// GET /contents/:id/edit: la ficha propia con sus datos, para editarla.
+export const getOwnContent = async (req, res) => {
+  const { id } = matchedData(req, { locations: ['params'] });
+  const content = await findOwnContent(req, id);
+  res.json({ data: { id: content.id, title: content.title, summary: content.summary, body: content.body, categoryId: content.categoryId, forMyInstitution: content.institutionId !== null, sourceType: content.sourceType, sourceLabel: content.sourceLabel ?? '', sourceUrl: content.sourceUrl ?? '' } });
+};
+
+// PUT /contents/:id: el autor edita su ficha. La fecha de revisión pasa a ser la de hoy.
+export const updateUserContent = async (req, res) => {
+  const { id } = matchedData(req, { locations: ['params'] });
+  const content = await findOwnContent(req, id);
+  const user = await User.findByPk(req.session.userId, { attributes: ['id', 'name', 'institutionId'] });
+  const input = userInput(matchedData(req, { locations: ['body'] }), user);
+  if (!await Category.findByPk(input.categoryId)) throw new HttpError(400, 'Revisá los campos indicados.', { categoryId: 'Elegí una categoría de la lista.' });
+  await content.update(input);
+  res.json({ data: { id: content.id }, message: 'Guardamos los cambios de tu ficha.' });
+};
+
+// DELETE /contents/:id: el autor borra su ficha. Administración también puede borrar la de un estudiante.
+export const deleteUserContent = async (req, res) => {
+  const { id } = matchedData(req, { locations: ['params'] });
+  const viewer = await findSessionUser(req, ['id', 'role']);
+  const content = await Content.findOne({ where: { id, authorId: { [Op.ne]: null } } });
+  if (!content || (content.authorId !== viewer.id && viewer.role !== 'admin')) throw new HttpError(404, 'No encontramos esa ficha entre las tuyas.');
+  await content.destroy();
+  res.json({ data: { id }, message: 'Borramos la ficha.' });
 };
 
 // Administración de las fuentes de las fichas (FF-39).
 const sourceFields = { sourceType: 'tipo de fuente', sourceLabel: 'fuente', sourceUrl: 'enlace', authorLabel: 'autoría', reviewedAt: 'fecha de revisión' };
-const adminAttributes = ['id', 'title', 'status', 'hiddenAt', 'categoryId', 'institutionId', ...Object.keys(sourceFields)];
+const adminAttributes = ['id', 'title', 'status', 'hiddenAt', 'categoryId', 'institutionId', 'authorId', ...Object.keys(sourceFields)];
 const adminInclude = [
   { model: Category, as: 'category', attributes: ['id', 'name'] },
   { model: Institution, as: 'institution', attributes: ['id', 'name'] },
+  { model: User, as: 'author', attributes: ['id', 'name'] },
 ];
 
 const contentFields = { title: 'título', summary: 'resumen', body: 'texto', categoryId: 'categoría', institutionId: 'institución', status: 'estado', ...sourceFields };

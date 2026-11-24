@@ -6,11 +6,12 @@ import Avatar from './Avatar';
 import DecoratedName from './DecoratedName';
 import UserMenu from './UserMenu';
 import { canModerate } from '../utils/moderation';
-import { communityService } from '../services/communities';
+import { friendService } from '../services/friends';
 import { formatPoints, pointsLabel } from '../utils/shop';
 import AuthModal from './AuthModal';
 import ThemeToggle from './ThemeToggle';
 import { ErrorMessage } from './Feedback';
+import { BlockedAccount, RestrictedBanner } from './AccountNotice';
 import { CloseIcon, MenuIcon, PointsIcon, SearchIcon } from './Icons';
 
 // Secciones de la bienvenida a las que lleva la navegación pública.
@@ -29,19 +30,27 @@ export default function Layout() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [unread, setUnread] = useState(0);
+  const [requests, setRequests] = useState(0);
+  const account = user?.account || { state: 'active', sanction: null };
+  const blocked = ['suspended', 'banned'].includes(account.state);
 
-  // Mensajes sin leer de las comunidades: se consulta al entrar, cada medio minuto y cuando el chat avisa que leyó.
+  // Mensajes sin leer de las comunidades y solicitudes de amistad: se consulta al entrar, cada medio minuto
+  // y cuando el chat o la lista de amigos avisan que algo cambió. Con la cuenta suspendida no se consulta.
   const userId = user?.id;
   useEffect(() => {
-    if (!userId) { setUnread(0); return undefined; }
+    if (!userId || blocked) { setUnread(0); setRequests(0); return undefined; }
     let active = true;
-    const check = () => { if (!document.hidden) communityService.unread().then(result => { if (active) setUnread(result.data.total); }).catch(() => {}); };
+    const check = () => {
+      if (document.hidden) return;
+      friendService.summary().then(result => { if (active) { setUnread(result.data.messages); setRequests(result.data.friendRequests); } }).catch(() => {});
+    };
     check();
     const timer = setInterval(check, 30000);
     window.addEventListener('forbook:unread', check);
+    window.addEventListener('forbook:friends', check);
     document.addEventListener('visibilitychange', check);
-    return () => { active = false; clearInterval(timer); window.removeEventListener('forbook:unread', check); document.removeEventListener('visibilitychange', check); };
-  }, [userId]);
+    return () => { active = false; clearInterval(timer); window.removeEventListener('forbook:unread', check); window.removeEventListener('forbook:friends', check); document.removeEventListener('visibilitychange', check); };
+  }, [userId, blocked]);
 
   const openAccess = useCallback((mode, returnTo) => { setMenuOpen(false); setAccess({ mode, returnTo }); }, []);
   const closeAccess = useCallback(() => setAccess(null), []);
@@ -80,7 +89,7 @@ export default function Layout() {
   }
 
   const links = user
-    ? <><NavLink to="/inicio">Mi inicio</NavLink><NavLink to="/conozcamos">Conozcamos Formosa</NavLink><NavLink to="/preguntas">Preguntas</NavLink><NavLink to="/mapa" className={({ isActive }) => isActive || location.pathname.startsWith('/rutas') ? 'active' : undefined}>Mapa</NavLink><NavLink to="/comunidades" className={({ isActive }) => isActive || ['/espacios', '/misiones'].some(path => location.pathname.startsWith(path)) ? 'active' : undefined}>Comunidades{unread > 0 && <span className="nav-count" aria-label={`: ${unread} mensajes sin leer`}>{unread > 99 ? '99+' : unread}</span>}</NavLink>{canModerate(user) && <NavLink to="/moderacion">Moderación</NavLink>}</>
+    ? blocked ? null : <><NavLink to="/inicio">Mi inicio</NavLink><NavLink to="/conozcamos">Conozcamos Formosa</NavLink><NavLink to="/preguntas">Preguntas</NavLink><NavLink to="/mapa" className={({ isActive }) => isActive || location.pathname.startsWith('/rutas') ? 'active' : undefined}>Mapa</NavLink><NavLink to="/comunidades" className={({ isActive }) => isActive || ['/espacios', '/misiones', '/personas', '/amigos'].some(path => location.pathname.startsWith(path)) ? 'active' : undefined}>Comunidades{unread > 0 && <span className="nav-count" aria-label={`: ${unread} mensajes sin leer`}>{unread > 99 ? '99+' : unread}</span>}</NavLink>{user.role === 'admin' ? <NavLink to="/admin" className={({ isActive }) => isActive || location.pathname.startsWith('/moderacion') ? 'active' : undefined}>Administración</NavLink> : canModerate(user) && <NavLink to="/moderacion">Moderación</NavLink>}</>
     : sections.map(([id, label]) => <Link key={id} to={{ pathname: '/', hash: `#${id}` }}>{label}</Link>);
 
   return <PublicAccessContext.Provider value={{ openAccess }}>
@@ -93,9 +102,9 @@ export default function Layout() {
           {checking ? <span className="header-placeholder" aria-hidden="true"/> : <>
             <ThemeToggle className="desktop-only"/>
             {user ? <>
-              <Link className="icon-button desktop-only" to="/buscar" aria-label="Buscar" title="Buscar"><SearchIcon/></Link>
-              <Link className="points-pill desktop-only" to="/tienda" title="Tus puntos: abrir la tienda"><PointsIcon/>{formatPoints(user.points ?? 0)}<span className="sr-only"> puntos. Ir a la tienda</span></Link>
-              <UserMenu user={user} busy={busy} onLogout={closeSession}/>
+              {!blocked && <><Link className="icon-button desktop-only" to="/buscar" aria-label="Buscar" title="Buscar"><SearchIcon/></Link>
+              <Link className="points-pill desktop-only" to="/tienda" title="Tus puntos: abrir la tienda"><PointsIcon/>{formatPoints(user.points ?? 0)}<span className="sr-only"> puntos. Ir a la tienda</span></Link></>}
+              <UserMenu user={user} busy={busy} onLogout={closeSession} friendRequests={requests}/>
             </> : <>
               <button className="btn btn-outline btn-small" type="button" onClick={() => openAccess('login')}>Ingresar</button>
               <button className="btn btn-primary btn-small desktop-only" type="button" onClick={() => openAccess('register')}>Crear cuenta</button>
@@ -105,7 +114,7 @@ export default function Layout() {
         </div>
       </div>
       {menuOpen && <div id="mobile-menu" className="mobile-menu"><div className="container">
-        <nav aria-label="Navegación principal">{links}{user && <><NavLink to="/buscar">Buscar</NavLink><NavLink to="/tienda">Tienda y puntos</NavLink></>}</nav>
+        <nav aria-label="Navegación principal">{links}{user && !blocked && <><NavLink to="/personas">Personas</NavLink><NavLink to="/amigos">Amigos{requests > 0 && <span className="nav-count" aria-label={`: ${requests} solicitudes`}>{requests}</span>}</NavLink><NavLink to="/buscar">Buscar</NavLink><NavLink to="/tienda">Tienda y puntos</NavLink><NavLink to="/sanciones">Mis sanciones</NavLink></>}</nav>
         <div className="menu-actions">
           {user && <Link className="menu-user" to="/perfil"><Avatar person={user}/><span><DecoratedName name={user.name} color={user.decorations?.nameColor}/><small>Ver mi perfil · {pointsLabel(user.points ?? 0)}</small></span></Link>}
           <ThemeToggle withLabel/>
@@ -116,7 +125,8 @@ export default function Layout() {
       </div></div>}
     </header>
     {error && <div className="container header-error"><ErrorMessage message={error}/></div>}
-    <main id="main" tabIndex="-1"><Outlet/></main>
+    {user && account.state === 'restricted' && <RestrictedBanner sanction={account.sanction}/>}
+    <main id="main" tabIndex="-1">{user && blocked ? <BlockedAccount account={account} onLogout={closeSession} busy={busy}/> : <Outlet/>}</main>
     <footer className="site-footer"><div className="container footer-inner"><Brand/><p>Hecho para tu llegada a Formosa.</p></div></footer>
     {access && <AuthModal mode={access.mode} returnTo={access.returnTo} onClose={closeAccess} onModeChange={changeMode}/>}
   </PublicAccessContext.Provider>;

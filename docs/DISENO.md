@@ -40,13 +40,13 @@ Se instalan con npm (`@fontsource-variable/...`) y se sirven desde el mismo proy
 
 - Botones: `btn` más una variante: `btn-primary`, `btn-outline`, `btn-light` (sobre azul) o `btn-navy` (sobre amarillo). Tamaños: `btn-small` y `btn-large`.
 - Etiquetas de fuente: `badge-official`, `badge-community` y `badge-experience`. Los nombres que ve el usuario están en `src/utils/content.js`.
-- "Próximamente": `badge-soon` (o `badge-on-band` sobre fondo azul).
+- Estados apagados ("Borrador", "Cerrada", "Terminó"): `badge-soon` (o `badge-on-band` sobre fondo azul).
 - Filtros: `chip` con `aria-pressed` para marcar el elegido.
 - Íconos: `src/components/Icons.jsx`. Son decorativos; el texto del botón da el significado.
 
 ## Pantallas
 
-- **Bienvenida (`/`)**: muestra lo que ya funciona (Conozcamos Formosa e inicio personalizado) y, con la etiqueta "Próximamente", el mapa, las comunidades, las preguntas, la guía y los puntos.
+- **Bienvenida (`/`)**: muestra las funciones de Forbook (Conozcamos Formosa, inicio personalizado, mapa, comunidades, preguntas y la guía), todas disponibles.
 - **Ingreso y registro**: se abren en una ventana superpuesta desde "Ingresar" y "Crear cuenta", arriba a la derecha. `/ingresar` y `/registro` siguen funcionando y abren la misma ventana.
 - **Mi inicio, Conozcamos Formosa y detalle**: mismas funciones del sprint, con el diseño nuevo.
 

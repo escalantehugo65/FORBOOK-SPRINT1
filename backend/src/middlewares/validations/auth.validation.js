@@ -2,7 +2,7 @@ import { body } from 'express-validator';
 import { countriesByCode } from '../../helpers/country.helper.js';
 import { isId, onlyTheseFields } from './common.validation.js';
 
-const emailRule = () => body('email')
+export const emailRule = () => body('email')
   .isString().withMessage('Ingresá un correo válido.')
   .bail()
   .trim()

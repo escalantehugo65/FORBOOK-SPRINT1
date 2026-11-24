@@ -9,7 +9,7 @@ import { actionNames, formatDateTime, reasonNames, reportStatusBadge, reportStat
 
 const filters = [['pending', 'Pendientes'], ['actioned', 'Con acción'], ['dismissed', 'Desestimados'], ['all', 'Todos']];
 const emptyTexts = {
-  pending: ['No hay reportes pendientes', 'Cuando alguien reporte una pregunta, una respuesta o una ficha, va a aparecer acá.'],
+  pending: ['No hay reportes pendientes', 'Cuando alguien reporte una pregunta, una respuesta, una ficha, un perfil o un mensaje del chat, va a aparecer acá.'],
   actioned: ['Todavía no hay reportes con acción', 'Acá se ven los reportes en los que se ocultó contenido o se cerró una pregunta.'],
   dismissed: ['Todavía no hay reportes desestimados', 'Acá se ven los reportes que se revisaron y no requirieron cambios.'],
   all: ['Todavía no hay reportes', 'Cuando la comunidad reporte algo, va a aparecer acá.'],
@@ -27,7 +27,9 @@ function ReportCard({ report, onResolved }) {
     ['dismiss', 'Desestimar', 'El contenido queda como está.'],
     target.type === 'profile'
       ? ['hide', 'Ocultar la descripción', 'La cuenta sigue activa; la descripción deja de verse.']
-      : ['hide', 'Ocultar', 'Deja de verse, pero no se borra.'],
+      : target.type === 'message'
+        ? ['hide', 'Borrar el mensaje', 'Se borra del chat y se le restan puntos a quien lo mandó.']
+        : ['hide', 'Ocultar', 'Deja de verse, pero no se borra.'],
     ...(target.type === 'question' ? [['close', 'Cerrar la pregunta', 'Sigue visible, pero no recibe respuestas.']] : []),
   ].filter(([value]) => !target.missing || value === 'dismiss');
 
@@ -42,7 +44,7 @@ function ReportCard({ report, onResolved }) {
     setBusy(true);
     try {
       await moderationService.resolve(report.id, { decision, note: note.trim() });
-      onResolved(`Decisión guardada: ${actionNames[decision].toLowerCase()}.`);
+      onResolved(`Decisión guardada: ${(target.type === 'message' && decision === 'hide' ? actionNames.message_delete : actionNames[decision]).toLowerCase()}.`);
     } catch (failure) {
       setError(failure.message); setErrors(failure.fields || {}); setBusy(false);
     }

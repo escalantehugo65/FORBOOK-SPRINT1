@@ -36,3 +36,4 @@ export const SendIcon = () => <Icon><path d="M4 12l16-7-6 16-2.5-6.5z"/><path d=
 export const TrashIcon = () => <Icon><path d="M5 7h14"/><path d="M9.5 7V4.5h5V7"/><path d="M7 7l.8 12.5h8.4L17 7"/></Icon>;
 export const PlusIcon = () => <Icon strokeWidth={2.4}><path d="M12 5v14M5 12h14"/></Icon>;
 export const TargetIcon = () => <Icon><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="0.8"/></Icon>;
+export const FlagIcon = () => <Icon><path d="M5 21V4"/><path d="M5 4h11l-2 4 2 4H5"/></Icon>;

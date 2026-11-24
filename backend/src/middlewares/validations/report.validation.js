@@ -1,10 +1,10 @@
 import { body, query } from 'express-validator';
 import { idParam, isId, onlyTheseFields, onlyTheseFilters, pageQuery } from './common.validation.js';
 
-// FF-34 y FF-35: reportar una pregunta, una respuesta, una ficha o un perfil.
+// FF-34 y FF-35: reportar una pregunta, una respuesta, una ficha, un perfil o un mensaje del chat de una comunidad.
 export const createReportValidation = [
   ...onlyTheseFields([
-    body('targetType', 'Tipo de contenido inválido.').isString().isIn(['question', 'answer', 'content', 'profile']),
+    body('targetType', 'Tipo de contenido inválido.').isString().isIn(['question', 'answer', 'content', 'profile', 'message']),
     body('targetId', 'Contenido inválido.').custom(isId).toInt(),
     // "Desactualizada" solo tiene sentido para las fichas de Conozcamos Formosa.
     body('reason', 'Elegí un motivo.')

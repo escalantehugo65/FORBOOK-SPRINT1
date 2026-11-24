@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react';
-import { Navigate, useParams } from 'react-router-dom';
+import { Link, Navigate, useParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { profileService } from '../services/profile';
 import { useFetch } from '../hooks/useFetch';
@@ -8,6 +8,7 @@ import { Loading, ErrorMessage } from '../components/Feedback';
 import ProfileView from '../components/ProfileView';
 import ReportAction from '../components/ReportAction';
 import BlockActions from '../components/BlockActions';
+import FriendButton from '../components/FriendButton';
 import { warningReasons } from '../utils/profile';
 
 // Herramientas de moderación sobre un perfil: advertir, revocar advertencias, ocultar la descripción y quitar la foto.
@@ -79,15 +80,31 @@ export default function UserProfilePage() {
   const { result, loading, error, retry } = useFetch(loader);
   // Ocultar o bloquear cambia solo "relation": se actualiza sin volver a cargar todo el perfil.
   const [relation, setRelation] = useState(undefined);
-  const profile = result?.data && { ...result.data, ...(relation !== undefined ? { relation } : {}) };
+  // La amistad también se actualiza en el lugar; bloquear corta la amistad, así que se recarga el perfil.
+  const [friendship, setFriendship] = useState(undefined);
+  const profile = result?.data && { ...result.data, ...(relation !== undefined ? { relation } : {}), ...(friendship !== undefined ? { friendship } : {}) };
+  function friendshipChanged(next) {
+    window.dispatchEvent(new Event('forbook:friends'));
+    if (next === undefined) { setFriendship(undefined); retry(); return; }
+    setFriendship(next);
+  }
+  function blockChanged(next) {
+    setRelation(next);
+    if (next === 'blocked') { setFriendship('none'); window.dispatchEvent(new Event('forbook:friends')); }
+  }
+  // Cantidad de amigos que se muestra: si la amistad conmigo cambió acá, se ajusta sin recargar.
+  const friendsDelta = result?.data && friendship !== undefined ? (friendship === 'friends' ? 1 : 0) - (result.data.friendship === 'friends' ? 1 : 0) : 0;
   usePageTitle(profile?.name || 'Perfil');
   if (String(user.id) === id) return <Navigate to="/perfil" replace/>;
   if (loading) return <div className="container page"><Loading text="Cargando el perfil…"/></div>;
   if (error) return <div className="container page"><ErrorMessage message={error.message} retry={error.status === 404 ? null : retry}/></div>;
   return <div className="container page">
-    <ProfileView profile={profile}/>
+    <ProfileView profile={{ ...profile, friendsCount: profile.friendsCount + friendsDelta }} actions={<>
+      {profile.relation !== 'blocked' && <FriendButton key={profile.friendship} person={profile} relation={profile.friendship || 'none'} onChange={friendshipChanged}/>}
+      {user.role === 'admin' && <Link className="btn btn-outline btn-small" to={`/admin/usuarios/${profile.id}`}>Ver en el panel</Link>}
+    </>}/>
     <div className="profile-settings">
-      <BlockActions profile={profile} onChanged={setRelation}/>
+      <BlockActions profile={profile} onChanged={blockChanged}/>
       {profile.canModerate && <ModerationTools profile={profile} onChanged={retry}/>}
       <ReportAction targetType="profile" targetId={profile.id} label="Reportar este perfil" reasons={['offensive', 'personal_data', 'spam', 'false', 'other']} className="profile-report"/>
     </div>

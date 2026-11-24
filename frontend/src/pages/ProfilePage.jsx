@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { profileService } from '../services/profile';
 import { useFetch } from '../hooks/useFetch';
@@ -132,6 +133,84 @@ function ChangePassword() {
   </form>;
 }
 
+// Cambiar el correo con el que se ingresa. Pide la contraseña actual.
+function ChangeEmail() {
+  const { user, reloadUser } = useAuth();
+  const [values, setValues] = useState({ email: '', currentPassword: '' });
+  const [errors, setErrors] = useState({});
+  const [message, setMessage] = useState('');
+  const [busy, setBusy] = useState(false);
+  const set = (key, value) => { setValues(previous => ({ ...previous, [key]: value })); setErrors(previous => ({ ...previous, [key]: undefined })); setMessage(''); };
+  async function submit(event) {
+    event.preventDefault();
+    if (busy) return;
+    const invalid = {};
+    const email = values.email.trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) invalid.email = 'Ingresá un correo válido.';
+    else if (email.toLowerCase() === user?.email) invalid.email = 'Ese ya es tu correo.';
+    if (!values.currentPassword) invalid.currentPassword = 'Escribí tu contraseña actual.';
+    setErrors(invalid);
+    if (Object.keys(invalid).length) return;
+    setBusy(true);
+    try {
+      const result = await profileService.changeEmail({ email, currentPassword: values.currentPassword });
+      setMessage(result.message); setValues({ email: '', currentPassword: '' });
+      reloadUser();
+    } catch (failure) { setErrors(failure.fields || { email: failure.message }); }
+    finally { setBusy(false); }
+  }
+  return <form className="profile-card profile-form" onSubmit={submit} noValidate aria-labelledby="email-title">
+    <h2 id="email-title">Cambiar el correo</h2>
+    {user?.email && <p className="profile-empty">Ahora ingresás con <strong>{user.email}</strong>. Tu correo nunca se muestra en tu perfil.</p>}
+    <Field label="Correo nuevo" name="newEmail" type="email" autoComplete="email" value={values.email} disabled={busy} maxLength={254} onChange={event => set('email', event.target.value)} error={errors.email}/>
+    <Field label="Contraseña actual" name="emailPassword" type="password" autoComplete="current-password" value={values.currentPassword} disabled={busy} onChange={event => set('currentPassword', event.target.value)} error={errors.currentPassword}/>
+    {message && <p className="report-done" role="status">{message}</p>}
+    <div className="admin-buttons"><button className="btn btn-outline" type="submit" disabled={busy}>{busy ? 'Guardando…' : 'Cambiar correo'}</button></div>
+  </form>;
+}
+
+// Dar de baja la cuenta. Pide la contraseña y que la persona confirme que entiende que no se puede deshacer.
+function DeleteAccount() {
+  const { user, reloadUser } = useAuth();
+  const navigate = useNavigate();
+  const [open, setOpen] = useState(false);
+  const [understood, setUnderstood] = useState(false);
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [busy, setBusy] = useState(false);
+  async function submit(event) {
+    event.preventDefault();
+    if (busy) return;
+    if (!understood) { setError('Marcá que entendés que no se puede deshacer.'); return; }
+    if (!password) { setError('Escribí tu contraseña para confirmar.'); return; }
+    setBusy(true); setError('');
+    try {
+      const result = await profileService.deleteAccount({ currentPassword: password });
+      navigate('/', { replace: true, state: { notice: result.message } }); // primero salimos de /perfil para que no redirija a «Ingresar»
+      await reloadUser();
+    } catch (failure) { setError(failure.fields?.currentPassword || failure.message); setBusy(false); }
+  }
+  return <section className="profile-card profile-form danger-card" aria-labelledby="delete-title">
+    <h2 id="delete-title">Dar de baja tu cuenta</h2>
+    {user?.role === 'admin'
+      ? <p className="profile-empty">Una cuenta de administración no se puede dar de baja. Pedile a otra cuenta admin que te cambie el rol primero.</p>
+      : !open
+        ? <>
+          <p className="profile-empty">Se borran tu nombre, tu correo, tu foto, tu descripción y tus amistades, y salís de las comunidades. Lo que publicaste queda como «Cuenta eliminada». No se puede deshacer.</p>
+          <div className="admin-buttons"><button className="btn btn-outline btn-danger" type="button" onClick={() => setOpen(true)}>Quiero dar de baja mi cuenta</button></div>
+        </>
+        : <form onSubmit={submit} noValidate>
+          <label className="choice"><input type="checkbox" checked={understood} disabled={busy} onChange={event => { setUnderstood(event.target.checked); setError(''); }}/>Entiendo que mi cuenta se borra y no se puede recuperar.</label>
+          <Field label="Tu contraseña" name="deletePassword" type="password" autoComplete="current-password" value={password} disabled={busy} onChange={event => { setPassword(event.target.value); setError(''); }}/>
+          {error && <p className="report-error" role="alert">{error}</p>}
+          <div className="admin-buttons">
+            <button className="btn btn-danger" type="submit" disabled={busy}>{busy ? 'Dando de baja…' : 'Dar de baja mi cuenta'}</button>
+            <button className="btn btn-outline" type="button" disabled={busy} onClick={() => { setOpen(false); setPassword(''); setUnderstood(false); setError(''); }}>Cancelar</button>
+          </div>
+        </form>}
+  </section>;
+}
+
 // Perfil propio (/perfil).
 export default function ProfilePage() {
   usePageTitle('Mi perfil');
@@ -154,8 +233,10 @@ export default function ProfilePage() {
     <div className="profile-settings" ref={formRef}>
       {editing && <EditProfile profile={profile} onCancel={() => setEditing(false)} onSaved={saved => { setProfile(saved); setEditing(false); setNotice('Listo, guardamos tu perfil.'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}/>}
       <AvatarUploader profile={profile} inputRef={photoInput} onChanged={avatarVersion => setProfile(previous => ({ ...previous, avatarVersion }))}/>
+      <ChangeEmail/>
       <ChangePassword/>
       <BlockedPeople/>
+      <DeleteAccount/>
     </div>
   </div>;
 }

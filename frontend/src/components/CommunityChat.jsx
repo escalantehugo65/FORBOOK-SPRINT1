@@ -4,14 +4,17 @@ import { communityService, notifyUnreadChanged } from '../services/communities';
 import { Loading, ErrorMessage } from './Feedback';
 import Avatar from './Avatar';
 import DecoratedName from './DecoratedName';
-import { CloseIcon, ImageIcon, MicIcon, SendIcon, StopIcon, TrashIcon } from './Icons';
+import { CloseIcon, FlagIcon, ImageIcon, MicIcon, SendIcon, StopIcon, TrashIcon } from './Icons';
+import ReportAction from './ReportAction';
 import { audioType, blobToDataUrl, chatTime, formatSeconds, groupMessages, mergeMessages, prepareImage, rankBadges } from '../utils/communities';
 
 const pollEvery = 4000;
 
 // Un mensaje del chat. El texto se muestra como texto (React lo escapa): nunca se interpreta como HTML.
+// Los mensajes de otras personas se pueden reportar: moderación decide si los borra.
 function Message({ communityId, message, compact, onDelete, onImageLoad }) {
   const [confirming, setConfirming] = useState(false);
+  const [reporting, setReporting] = useState(false);
   const [busy, setBusy] = useState(false);
   const author = message.author;
   const src = message.attachment ? communityService.attachmentUrl(communityId, message.id) : null;
@@ -39,18 +42,22 @@ function Message({ communityId, message, compact, onDelete, onImageLoad }) {
         </div>}
         {message.body && <p className="chat-body">{message.body}</p>}
       </>}
+      {reporting && <ReportAction targetType="message" targetId={message.id} startOpen onCancel={() => setReporting(false)} className="chat-report"
+        label={`Reportar el mensaje de ${author.name}`} reasons={['offensive', 'spam', 'personal_data', 'false', 'other']}/>}
     </div>
-    {message.canDelete && <div className="chat-actions">
+    {(message.canDelete || (!message.own && !message.deleted)) && <div className="chat-actions">
+      {!message.own && !message.deleted && !reporting && <button className="icon-button chat-delete" type="button" onClick={() => setReporting(true)} aria-label={`Reportar el mensaje de ${author.name} de las ${chatTime(message.createdAt)}`} title="Reportar mensaje"><FlagIcon/></button>}
       {confirming
         ? <><button className="btn btn-outline btn-small" type="button" disabled={busy} onClick={remove}>{busy ? 'Borrando…' : 'Sí, borrar'}</button><button className="btn btn-outline btn-small" type="button" disabled={busy} onClick={() => setConfirming(false)}>No</button></>
-        : <button className="icon-button chat-delete" type="button" onClick={() => setConfirming(true)} aria-label={`Borrar el mensaje de ${message.own ? 'vos' : author.name} de las ${chatTime(message.createdAt)}`} title="Borrar mensaje"><TrashIcon/></button>}
+        : message.canDelete && <button className="icon-button chat-delete" type="button" onClick={() => setConfirming(true)} aria-label={`Borrar el mensaje de ${message.own ? 'vos' : author.name} de las ${chatTime(message.createdAt)}`} title="Borrar mensaje"><TrashIcon/></button>}
     </div>}
   </li>;
 }
 
 // Chat general de la comunidad. Trae los últimos mensajes y pregunta por nuevos cada pocos segundos
 // (sin WebSockets: alcanza para un chat de grupo y no suma dependencias).
-export default function CommunityChat({ communityId, limits }) {
+// readOnly: moderación de Forbook mira el chat sin ser miembro (puede borrar y reportar, pero no escribir).
+export default function CommunityChat({ communityId, limits, readOnly = false }) {
   const [messages, setMessages] = useState([]);
   const [status, setStatus] = useState({ loading: true, error: null, hasMore: false, loadingOlder: false });
   const [revision, setRevision] = useState(0);
@@ -223,7 +230,7 @@ export default function CommunityChat({ communityId, limits }) {
     </div>
     {newBelow > 0 && <button className="chat-new" type="button" onClick={() => { stick.current = true; toBottom(); }}>{newBelow === 1 ? '1 mensaje nuevo' : `${newBelow} mensajes nuevos`} ↓</button>}
 
-    <form className="chat-composer" onSubmit={submit}>
+    {readOnly ? <p className="chat-readonly">Estás leyendo el chat como parte de la moderación de Forbook. Para escribir, unite a la comunidad.</p> : <form className="chat-composer" onSubmit={submit}>
       {image && <div className="chat-attachment"><img src={image.preview} alt="Imagen lista para mandar"/><span>Imagen lista. Podés sumarle un texto.</span><button className="icon-button" type="button" onClick={clearImage} aria-label="Quitar la imagen"><CloseIcon/></button></div>}
       {audio && <div className="chat-attachment"><audio controls src={audio.url} aria-label="Audio grabado"/><span>{formatSeconds(audio.seconds)}</span><button className="icon-button" type="button" onClick={clearAudio} aria-label="Descartar el audio"><CloseIcon/></button></div>}
       {recording && <div className="chat-attachment is-recording" role="status"><span className="recording-dot" aria-hidden="true"/><span>Grabando… {formatSeconds(recording.seconds)} de {formatSeconds(limits.audioSeconds)}</span><button className="btn btn-outline btn-small" type="button" onClick={() => recorder.current?.cancel()}>Cancelar</button></div>}
@@ -241,6 +248,6 @@ export default function CommunityChat({ communityId, limits }) {
         <button className="btn btn-primary btn-small chat-send" type="submit" disabled={sending || Boolean(recording) || (!text.trim() && !image && !audio)}><SendIcon/><span>{sending ? 'Enviando…' : 'Enviar'}</span></button>
       </div>
       <small className="chat-hint">Enter envía, Mayús + Enter baja de línea. Lo que escribís lo ven todos los miembros.</small>
-    </form>
+    </form>}
   </section>;
 }

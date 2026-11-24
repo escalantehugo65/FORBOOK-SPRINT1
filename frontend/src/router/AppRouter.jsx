@@ -20,7 +20,6 @@ import RoutesPage from '../pages/RoutesPage';
 import RouteDetailPage from '../pages/RouteDetailPage';
 import GroupsPage from '../pages/GroupsPage';
 import GroupDetailPage from '../pages/GroupDetailPage';
-import ProfilePage from '../pages/ProfilePage';
 import UserProfilePage from '../pages/UserProfilePage';
 import ShopPage from '../pages/ShopPage';
 import SearchPage from '../pages/SearchPage';
@@ -36,6 +35,21 @@ const AdminPlacesPage = lazy(() => import('../pages/AdminPlacesPage'));
 const CommunityPage = lazy(() => import('../pages/CommunityPage'));
 const CommunityFormPage = lazy(() => import('../pages/CommunityFormPage'));
 const MissionsPage = lazy(() => import('../pages/MissionsPage'));
+// Personas, amigos, sanciones, la guía y el formulario de fichas se descargan al entrar.
+const PeoplePage = lazy(() => import('../pages/PeoplePage'));
+const ProfilePage = lazy(() => import('../pages/ProfilePage'));
+const FriendsPage = lazy(() => import('../pages/FriendsPage'));
+const UserFriendsPage = lazy(() => import('../pages/UserFriendsPage'));
+const SanctionsPage = lazy(() => import('../pages/SanctionsPage'));
+const GuidePage = lazy(() => import('../pages/GuidePage'));
+const ContentFormPage = lazy(() => import('../pages/ContentFormPage'));
+// El panel de administración solo lo usan las cuentas admin: se descarga al entrar.
+const AdminDashboardPage = lazy(() => import('../pages/AdminDashboardPage'));
+const AdminUsersPage = lazy(() => import('../pages/AdminUsersPage'));
+const AdminUserPage = lazy(() => import('../pages/AdminUserPage'));
+const AdminAppealsPage = lazy(() => import('../pages/AdminAppealsPage'));
+const AdminCommunitiesPage = lazy(() => import('../pages/AdminCommunitiesPage'));
+const AdminShopPage = lazy(() => import('../pages/AdminShopPage'));
 const pageFallback = <div className="container page"><Loading/></div>;
 const mapFallback = <div className="container page"><Loading text="Cargando el mapa…"/></div>;
 
@@ -60,7 +74,10 @@ export const AppRouter = () => {
       <Route element={<PrivateRoutes/>}>
         <Route path="inicio" element={<HomePage/>}/>
         <Route path="conozcamos" element={<ExplorePage/>}/>
+        <Route path="conozcamos/nueva" element={<Suspense fallback={pageFallback}><ContentFormPage/></Suspense>}/>
         <Route path="conozcamos/:id" element={<ContentDetailPage/>}/>
+        <Route path="conozcamos/:id/editar" element={<Suspense fallback={pageFallback}><ContentFormPage/></Suspense>}/>
+        <Route path="guia" element={<Suspense fallback={pageFallback}><GuidePage/></Suspense>}/>
         <Route path="preguntas" element={<QuestionsPage/>}/>
         <Route path="preguntas/nueva" element={<AskQuestionPage/>}/>
         <Route path="preguntas/:id" element={<QuestionDetailPage/>}/>
@@ -74,8 +91,12 @@ export const AppRouter = () => {
         <Route path="misiones" element={<Suspense fallback={pageFallback}><MissionsPage/></Suspense>}/>
         <Route path="espacios" element={<GroupsPage/>}/>
         <Route path="espacios/:id" element={<GroupDetailPage/>}/>
-        <Route path="perfil" element={<ProfilePage/>}/>
+        <Route path="perfil" element={<Suspense fallback={pageFallback}><ProfilePage/></Suspense>}/>
         <Route path="usuarios/:id" element={<UserProfilePage/>}/>
+        <Route path="usuarios/:id/amigos" element={<Suspense fallback={pageFallback}><UserFriendsPage/></Suspense>}/>
+        <Route path="personas" element={<Suspense fallback={pageFallback}><PeoplePage/></Suspense>}/>
+        <Route path="amigos" element={<Suspense fallback={pageFallback}><FriendsPage/></Suspense>}/>
+        <Route path="sanciones" element={<Suspense fallback={pageFallback}><SanctionsPage/></Suspense>}/>
         <Route path="tienda" element={<ShopPage/>}/>
         <Route path="buscar" element={<SearchPage/>}/>
 
@@ -89,6 +110,12 @@ export const AppRouter = () => {
           <Route path="moderacion/fichas" element={<AdminContentsPage/>}/>
           <Route path="moderacion/rutas" element={<AdminRoutesPage/>}/>
           <Route path="moderacion/lugares" element={<Suspense fallback={mapFallback}><AdminPlacesPage/></Suspense>}/>
+          <Route path="admin" element={<Suspense fallback={pageFallback}><AdminDashboardPage/></Suspense>}/>
+          <Route path="admin/usuarios" element={<Suspense fallback={pageFallback}><AdminUsersPage/></Suspense>}/>
+          <Route path="admin/usuarios/:id" element={<Suspense fallback={pageFallback}><AdminUserPage/></Suspense>}/>
+          <Route path="admin/apelaciones" element={<Suspense fallback={pageFallback}><AdminAppealsPage/></Suspense>}/>
+          <Route path="admin/comunidades" element={<Suspense fallback={pageFallback}><AdminCommunitiesPage/></Suspense>}/>
+          <Route path="admin/tienda" element={<Suspense fallback={pageFallback}><AdminShopPage/></Suspense>}/>
         </Route>
       </Route>
 

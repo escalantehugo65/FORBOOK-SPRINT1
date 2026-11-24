@@ -20,6 +20,8 @@ Esta entrega local reúne el diseño nuevo y el registro nacional/internacional 
 - Puntos, reputación y niveles (Nuevo, Aportante, Confiable); tienda de decoraciones al estilo Discord: marcos, fondos, efectos y colores del nombre.
 - Foto de perfil elegida de la galería o la cámara, recortada en el navegador y guardada sin datos EXIF.
 - Búsqueda de personas, fichas y preguntas, sin importar tildes ni mayúsculas.
+- Amigos con solicitudes; fichas creadas por cualquier estudiante; guía «Cómo vivir en Formosa».
+- Sanciones que escalan (restricción, suspensión y baja), visibles en el perfil y con apelación; panel de administración solo para cuentas admin.
 
 ## Ejecutar
 
@@ -64,12 +66,12 @@ El backend necesita TEST_DB_NAME terminada en `_test` para ejecutar la integraci
 
 No se incluyen .git, .env, dependencias instaladas, compilaciones ni bases/cuentas de prueba. No se crean administradores con contraseñas conocidas. Los roles se asignan con `npm run user:role` en backend, solo a cuentas existentes.
 
-El mapa no es un GPS. Incluye seis puntos con coordenadas aportadas por el usuario y enlaces de Google Maps. Las rutas orientativas se cargan desde Moderación → Rutas; la única cargada es el colectivo gratuito del IPF, comprobado por un estudiante del instituto (horarios del turno mañana y ocho paradas). Los espacios no tienen membresía ni chat privado. Las sanciones públicas y la guía temática ampliada siguen pendientes.
+El mapa no es un GPS. Incluye seis puntos con coordenadas aportadas por el usuario y enlaces de Google Maps. Las rutas orientativas se cargan desde Moderación → Rutas; la única cargada es el colectivo gratuito del IPF, comprobado por un estudiante del instituto (horarios del turno mañana y ocho paradas). Los espacios no tienen membresía ni chat privado. No hay mensajes privados entre personas.
 
 ## Perfiles
 
 - `/perfil`: perfil propio. Cada persona edita su descripción (hasta 280 caracteres), color del avatar, fondo, intereses (hasta 6), año de ingreso y privacidad (mostrar o no de dónde viene y si ya llegó), y puede cambiar su contraseña.
-- `/usuarios/:id`: perfil de otra persona, solo con sesión iniciada. Muestra actividad (preguntas, respuestas y respuestas marcadas como útiles), insignias y advertencias de moderación. El correo no se muestra nunca y no hay mensajes privados.
+- `/usuarios/:id`: perfil de otra persona, solo con sesión iniciada. Muestra actividad (preguntas, respuestas, respuestas marcadas como útiles y fichas), insignias, amigos, y las advertencias y sanciones de moderación. El correo no se muestra nunca y no hay mensajes privados.
 - Moderación puede dar y revocar advertencias y ocultar o volver a mostrar una descripción. Los perfiles se pueden reportar. Todo queda en el historial.
 - Después de bajar estos cambios: `npm run db:migrate` (migración 012).
 
@@ -92,10 +94,26 @@ El mapa no es un GPS. Incluye seis puntos con coordenadas aportadas por el usuar
 - `/misiones`: metas diarias, semanales y de una sola vez (chatear, mandar una imagen o un audio, responder preguntas, apoyar respuestas) que dan puntos para la tienda. No dan reputación.
 - Después de bajar estos cambios: `npm run db:migrate` (migración 015) y `npm run db:seed` (carga las comunidades predeterminadas). Detalle en [docs/COMUNIDADES.md](docs/COMUNIDADES.md).
 
+## Amigos, fichas de estudiantes, sanciones y panel de administración
+
+- `/personas`: buscador de perfiles por nombre, con sugerencias (primero de tu institución y tu carrera). `/amigos`: tus amigos, las solicitudes que te mandaron y las que mandaste. Una solicitud se acepta o se rechaza; si las dos personas se mandan una, quedan como amigos. Bloquear corta la amistad. El perfil muestra cuántos amigos tiene cada persona y algunos de ellos.
+- Fichas: cualquier estudiante crea una desde Conozcamos Formosa → «Crear una ficha» (hasta 3 por día). Se publica con su nombre («Creada por»), y solo su autor la edita o la borra. Elige de dónde sale la información: experiencia, comunitaria (con referencia) u oficial (con organismo y enlace https). Se puede reportar como cualquier ficha.
+- `/guia`: «Cómo vivir en Formosa», con las fichas ordenadas por tema (seguridad, salud y clima, comida, plata y trámites, costumbres).
+- Sanciones: con 2 advertencias vigentes la cuenta queda restringida 3 días (lee, pero no publica), con 3 se suspende 7 días y con 5 se da de baja. La administración también restringe, suspende o da de baja a mano. La persona ve el motivo, la fecha y cuánto dura en `/sanciones` (y en su perfil), y puede apelar una vez cada una. Los demás ven en el perfil la sanción vigente y cuántas tuvo.
+- En el chat de una comunidad, los mensajes de otras personas se pueden reportar; moderación los revisa en la cola y puede borrarlos.
+- `/admin` (solo rol admin): resumen, usuarios (rol, sanciones, revocar, puntos), apelaciones, comunidades (cerrar y reabrir), fichas (ocultar y mostrar) y tienda (precio y venta), junto con las secciones de moderación de antes. Todo queda en el historial.
+- Después de bajar estos cambios: `npm run db:migrate` (migraciones 016 y 017) y `npm run db:seed`. La 017 guarda la fecha de la foto de perfil con milisegundos: antes, dos fotos subidas en el mismo segundo tenían la misma dirección y se seguía viendo la vieja. Para las cuentas admin del equipo, ver «Cuentas de administración del equipo» en INICIAR.md. Detalle en [docs/SANCIONES_Y_ADMIN.md](docs/SANCIONES_Y_ADMIN.md).
+
+## Cambiar el correo y dar de baja la cuenta
+
+- En `/perfil`, cada persona cambia su correo (con su contraseña) y puede dar de baja su cuenta: marca que entiende que no se recupera y escribe su contraseña. En `/admin/usuarios/:id`, la administración borra una cuenta con un motivo que queda en el historial.
+- La cuenta no se borra de la base: se anonimiza («Cuenta eliminada»), se cierran sus sesiones, se quitan foto, amistades, bloqueos y comunidades, y el correo queda libre para registrarse de nuevo. Lo que publicó queda a nombre de «Cuenta eliminada». Las cuentas admin no se pueden borrar: primero hay que cambiarles el rol.
+- Después de bajar estos cambios: `npm run db:migrate` (migración 018).
+
 ## Colectivo del IPF y fichas nuevas
 
 - `/rutas`, en la institución IPF → «Colectivo gratuito al IPF»: horarios del turno mañana (8:00 y 8:10 desde Plaza San Martín), el turno tarde (16:15) y ocho paradas en un mapa. No se dibuja el trayecto: cada parada tiene «Ver en el mapa» y «Google Maps».
 - Las rutas ahora pueden tener paradas (hasta 30). Se cargan en Moderación → Rutas pegando las coordenadas de Google Maps; el formulario muestra una vista previa.
-- Fichas nuevas: beneficios del IPF y la Beca Soberanía Tecnológica (fuente oficial), y experiencias de un estudiante del IPF: alquileres en Marketplace, DiDi o Uber, el tereré, el «pa», útiles en Capítulo y cuidados en la parada de Circuito. La ficha de preinscripción del IPF pasa a la información de 2027.
+- Fichas nuevas: beneficios del IPF y la Beca Soberanía Tecnológica (fuente oficial), y experiencias de un estudiante del IPF: alquileres en Marketplace, DiDi o Uber, el tereré, el «pa» para hablarle a alguien («¿Qué onda, pa?»), útiles en Capítulo y cuidados en la parada de Circuito. La ficha de preinscripción del IPF pasa a la información de 2027.
 - Mapa, en Servicios: la casa central del Banco Formosa (dato del BCRA), la librería Capítulo (con dirección, sin punto en el mapa) nueve bancos y cajeros que pasó un compañero y la biblioteca del ex Colegio Nacional (EPES N.º 54), con su ficha. El colectivo del IPF del turno tarde usa las mismas paradas. Ficha nueva: «Abrí una caja de ahorro», con la información del BCRA.
 - Después de bajar estos cambios: `npm run db:migrate` (migración 014) y `npm run db:seed`. El seed solo actualiza las fichas de preinscripción y de Capítulo si nadie las editó desde la página.

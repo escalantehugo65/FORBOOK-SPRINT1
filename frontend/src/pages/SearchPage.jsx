@@ -6,34 +6,13 @@ import { questionService } from '../services/questions';
 import { useFetch } from '../hooks/useFetch';
 import { usePageTitle } from '../hooks/usePageTitle';
 import { Loading, ErrorMessage } from '../components/Feedback';
-import Avatar from '../components/Avatar';
 import ContentCard from '../components/ContentCard';
 import QuestionCard from '../components/QuestionCard';
-import LevelBadge from '../components/LevelBadge';
+import PersonCard from '../components/PersonCard';
 import { SearchIcon } from '../components/Icons';
-import { splitMatches } from '../utils/search';
 
 const tabs = [['personas', 'Personas'], ['fichas', 'Fichas'], ['preguntas', 'Preguntas']];
 const nothing = () => Promise.resolve(null);
-
-// Texto con lo buscado resaltado (sin importar mayúsculas ni tildes, igual que la búsqueda).
-function Highlight({ text, query, className }) {
-  return <span className={className}>{splitMatches(text, query).map((part, index) => part.match ? <mark key={index}>{part.text}</mark> : part.text)}</span>;
-}
-
-function PersonCard({ person, query }) {
-  const nameColor = person.decorations?.nameColor;
-  return <li className="person-card">
-    <Avatar person={person} size="large"/>
-    <div className="person-info">
-      <Link className="person-name" to={`/usuarios/${person.id}`}>
-        <Highlight text={person.name} query={query} className={nameColor ? `name-color name-${nameColor}` : undefined}/>
-      </Link>
-      <p>{[person.institution?.name, person.career].filter(Boolean).join(' · ')}</p>
-    </div>
-    <LevelBadge level={person.level}/>
-  </li>;
-}
 
 function Pagination({ meta, page, onChange, label }) {
   if (!meta || meta.pages <= 1) return null;
@@ -86,7 +65,7 @@ export default function SearchPage() {
     <header className="page-header">
       <p className="eyebrow">Buscar</p>
       <h1>¿Qué estás buscando?</h1>
-      <p className="lead">Encontrá personas por su nombre, fichas de Conozcamos Formosa y preguntas de la comunidad.</p>
+      <p className="lead">Encontrá personas por su nombre (y sumalas como amigos), fichas de Conozcamos Formosa y preguntas de la comunidad.</p>
     </header>
     <form className="search-form" role="search" onSubmit={submit} noValidate>
       <label className="sr-only" htmlFor="search-input">Buscar en Forbook</label>
@@ -118,7 +97,7 @@ export default function SearchPage() {
           {active === 'preguntas' && <Link className="btn btn-primary" to="/preguntas/nueva">Hacer una pregunta</Link>}
           {active === 'fichas' && <Link className="btn btn-outline" to="/conozcamos">Ver todas las fichas</Link>}
         </div>
-        : active === 'personas' ? <ul className="person-list">{current.result.data.map(person => <PersonCard key={person.id} person={person} query={query}/>)}</ul>
+        : active === 'personas' ? <ul className="person-list">{current.result.data.map(person => <PersonCard key={person.id} person={person} query={query} onRelationChange={() => window.dispatchEvent(new Event('forbook:friends'))}/>)}</ul>
         : active === 'fichas' ? <div className="content-grid">{current.result.data.map(content => <ContentCard key={content.id} content={content}/>)}</div>
         : <div className="question-list">{current.result.data.map(question => <QuestionCard key={question.id} question={question}/>)}</div>}
       {!current.loading && !current.error && <Pagination meta={current.result?.meta} page={tabParam === active ? page : 1} onChange={next => goTo(active, next)} label={`Páginas de ${active}`}/>}

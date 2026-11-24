@@ -8,7 +8,8 @@ export const Report = sequelize.define(
   {
     id: { type: DataTypes.INTEGER.UNSIGNED, autoIncrement: true, primaryKey: true },
     reporterId: { type: DataTypes.INTEGER.UNSIGNED, allowNull: false },
-    targetType: { type: DataTypes.ENUM('question', 'answer', 'content', 'profile'), allowNull: false },
+    // message = un mensaje del chat de una comunidad.
+    targetType: { type: DataTypes.ENUM('question', 'answer', 'content', 'profile', 'message'), allowNull: false },
     targetId: { type: DataTypes.INTEGER.UNSIGNED, allowNull: false },
     reason: { type: DataTypes.ENUM('false', 'offensive', 'spam', 'outdated', 'personal_data', 'other'), allowNull: false },
     details: { type: DataTypes.STRING(500), allowNull: true },

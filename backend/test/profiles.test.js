@@ -47,7 +47,7 @@ test('perfiles de usuario sobre MySQL', { skip: !process.env.TEST_DB_NAME }, asy
       assert.equal(own.own, true);
       assert.equal(own.email, undefined);
       assert.equal(own.avatarColor, 'azul');
-      assert.deepEqual(own.stats, { questions: 0, answers: 0, helpful: 0 });
+      assert.deepEqual(own.stats, { questions: 0, answers: 0, helpful: 0, contents: 0 });
     });
 
     await t.test('editar perfil y respetar la privacidad', async () => {
@@ -82,13 +82,13 @@ test('perfiles de usuario sobre MySQL', { skip: !process.env.TEST_DB_NAME }, asy
       await send('other', 'put', `/api/answers/${answer.id}/helpful`).expect(200);
       assert.equal(answer.author.id, users.owner.id);
       const seen = (await send('other', 'get', `/api/users/${users.owner.id}`).expect(200)).body.data;
-      assert.deepEqual(seen.stats, { questions: 1, answers: 1, helpful: 1 });
+      assert.deepEqual(seen.stats, { questions: 1, answers: 1, helpful: 1, contents: 0 });
       assert.equal(seen.recentQuestions[0].id, question.id);
       assert.equal(seen.recentAnswers[0].questionId, question.id);
       assert.ok(seen.badges.includes('helpful'));
       assert.ok((await send('other', 'get', `/api/users/${users.moderator.id}`).expect(200)).body.data.badges.includes('moderation'));
       await Question.update({ hiddenAt: new Date() }, { where: { id: question.id } });
-      assert.deepEqual((await send('other', 'get', `/api/users/${users.owner.id}`).expect(200)).body.data.stats, { questions: 0, answers: 0, helpful: 0 });
+      assert.deepEqual((await send('other', 'get', `/api/users/${users.owner.id}`).expect(200)).body.data.stats, { questions: 0, answers: 0, helpful: 0, contents: 0 });
     });
 
     await t.test('reportar un perfil y ocultar la descripción', async () => {

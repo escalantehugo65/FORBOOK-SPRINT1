@@ -3,7 +3,7 @@ import { closeCommunity, createCommunity, getCommunities, getCommunityById, getU
 import { banMember, getMembers, unbanMember, updateMember } from '../controllers/community_member.controller.js';
 import { createRole, deleteRole, updateRole } from '../controllers/community_role.controller.js';
 import { createMessage, deleteMessage, getAttachment, getMessages } from '../controllers/community_message.controller.js';
-import { authMiddleware } from '../middlewares/auth.middleware.js';
+import { authMiddleware, participationMiddleware } from '../middlewares/auth.middleware.js';
 import { communityLimit } from '../middlewares/rate_limit.middleware.js';
 import { validator } from '../middlewares/validator.middleware.js';
 import {
@@ -16,7 +16,7 @@ export const communityRouter = Router();
 // Comunidades: listar, buscar, crear y administrar.
 communityRouter.get('/communities', authMiddleware, getCommunitiesValidation, validator, getCommunities);
 communityRouter.get('/communities/unread', authMiddleware, getUnread);
-communityRouter.post('/communities', authMiddleware, communityLimit, createCommunityValidation, validator, createCommunity);
+communityRouter.post('/communities', authMiddleware, participationMiddleware, communityLimit, createCommunityValidation, validator, createCommunity);
 communityRouter.get('/communities/:id', authMiddleware, communityIdValidation, validator, getCommunityById);
 communityRouter.put('/communities/:id', authMiddleware, updateCommunityValidation, validator, updateCommunity);
 communityRouter.delete('/communities/:id', authMiddleware, communityIdValidation, validator, closeCommunity);
@@ -37,6 +37,6 @@ communityRouter.delete('/communities/:id/roles/:roleId', authMiddleware, roleVal
 
 // Chat. Un mensaje puede llevar una imagen o un audio dentro del JSON, por eso acepta un cuerpo más grande (ver app.js).
 communityRouter.get('/communities/:id/messages', authMiddleware, getMessagesValidation, validator, getMessages);
-communityRouter.post('/communities/:id/messages', authMiddleware, express.json({ limit: '1100kb' }), createMessageValidation, validator, createMessage);
+communityRouter.post('/communities/:id/messages', authMiddleware, participationMiddleware, express.json({ limit: '1100kb' }), createMessageValidation, validator, createMessage);
 communityRouter.delete('/communities/:id/messages/:messageId', authMiddleware, messageValidation, validator, deleteMessage);
 communityRouter.get('/communities/:id/messages/:messageId/attachment', authMiddleware, messageValidation, validator, getAttachment);

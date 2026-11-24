@@ -22,7 +22,7 @@ export default function BlockActions({ profile, onChanged }) {
     <h2 id="block-title">Tu relación con {profile.name.split(' ')[0]}</h2>
     <p className="panel-note">{relation === 'blocked' ? 'La tenés bloqueada: no ven los mensajes de la otra persona en las comunidades y no puede ver tu perfil.'
       : relation === 'hidden' ? 'La tenés oculta: no ves sus mensajes en las comunidades. Ella no se entera y sigue viendo los tuyos.'
-      : 'Si no querés leer a esta persona en las comunidades, podés ocultarla o bloquearla. No se le avisa.'}</p>
+      : 'Si no querés leer a esta persona en las comunidades, podés ocultarla o bloquearla. No se le avisa. Bloquear también corta la amistad.'}</p>
     {notice && <p className="report-done" role="status">{notice}</p>}
     {error && <p className="field-error" role="alert">{error}</p>}
     <div className="admin-buttons">

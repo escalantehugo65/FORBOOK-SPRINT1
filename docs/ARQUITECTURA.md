@@ -43,12 +43,12 @@ Todas las entidades de dominio tienen ID entero sin signo y `created_at`/`update
 - **Institución:** nombre único y URL de fuente. Tiene muchos usuarios y contenidos.
 - **Usuario:** nombre, correo único normalizado, hash, procedencia, institución obligatoria, carrera, estado `not_arrived`/`arrived`, rol por defecto `student`. No hay registro público de administradores.
 - **Categoría:** nombre, slug único y descripción. Tiene muchos contenidos.
-- **Contenido:** slug único, título, resumen, cuerpo, categoría obligatoria, institución opcional, fuente `official`/`community`/`experience`, referencia, autoría, revisión opcional, estado `draft`/`published`.
+- **Contenido:** slug único, título, resumen, cuerpo, categoría obligatoria, institución opcional, fuente `official`/`community`/`experience`, referencia, autoría, revisión opcional, estado `draft`/`published` y, si la creó un estudiante, `author_id` (su cuenta).
 - **Sesión:** SID como clave primaria, datos de sesión y vencimiento indexado. Es una entidad técnica; no se envía como catálogo al navegador.
 
 `hasMany` declara el lado que tiene muchos registros; `belongsTo` expresa la referencia desde el registro hijo. `include` permite traer la institución de un usuario o la categoría de una ficha. El hash está excluido por defecto y, además, la respuesta de autenticación se construye con una lista explícita de campos.
 
-El rol usa un campo limitado porque todavía no hay administración de roles. Carrera y procedencia son texto: no necesitan catálogos propios para este alcance.
+El rol usa un campo limitado (`student`, `moderator`, `admin`); la administración lo cambia desde el panel. Las sanciones, apelaciones y amistades están en docs/SANCIONES_Y_ADMIN.md. Carrera y procedencia son texto: no necesitan catálogos propios para este alcance.
 
 ## Contrato HTTP
 

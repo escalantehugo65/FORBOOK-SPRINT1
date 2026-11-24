@@ -7,6 +7,8 @@ import { CameraIcon, PointsIcon } from './Icons';
 import { formatDate } from '../utils/content';
 import { pointsLabel } from '../utils/shop';
 import { arrivalNames, ownArrivalNames, badgeNames, interestNames, warningReasons } from '../utils/profile';
+import { sanctionLine, sanctionReasonNames, sanctionTypeHints } from '../utils/sanctions';
+import { friendsLabel } from '../utils/friends';
 
 const statusNames = { open: 'Abierta', answered: 'Respondida', closed: 'Cerrada' };
 
@@ -48,15 +50,25 @@ export default function ProfileView({ profile, actions, onChangePhoto }) {
       </div>
     </header>
 
-    {profile.warnings.length > 0 && <section className="profile-warnings" aria-labelledby="warnings-title">
-      <h2 id="warnings-title">{profile.warnings.length === 1 ? '1 advertencia de moderación' : `${profile.warnings.length} advertencias de moderación`}</h2>
-      <ul>{profile.warnings.map(warning => <li key={warning.id}>
-        <strong>{warningReasons[warning.reason]}</strong> · {formatDate(warning.createdAt)}
-        {warning.note && <p>{warning.note}</p>}
-      </li>)}</ul>
+    {(profile.sanctions?.length > 0 || profile.warnings.length > 0 || profile.pastSanctions > 0) && <section className="profile-warnings" aria-labelledby="warnings-title">
+      <h2 id="warnings-title">{profile.sanctions?.length ? (profile.own ? 'Tu cuenta tiene una sanción vigente' : 'Esta cuenta tiene una sanción vigente') : 'Historial de moderación'}</h2>
+      {profile.sanctions?.length > 0 && <ul className="profile-sanctions">{profile.sanctions.map(sanction => <li key={sanction.id}>
+        <strong>{sanctionLine(sanction)}</strong> · {sanctionReasonNames[sanction.reason]}{sanction.automatic ? ' (por advertencias acumuladas)' : ''}
+        {profile.own && sanctionTypeHints[sanction.type] && <p>{sanctionTypeHints[sanction.type]}</p>}
+        {sanction.note && <p>{sanction.note}</p>}
+      </li>)}</ul>}
+      {profile.warnings.length > 0 && <>
+        <h3 className="profile-subtitle">{profile.warnings.length === 1 ? '1 advertencia' : `${profile.warnings.length} advertencias`}</h3>
+        <ul>{profile.warnings.map(warning => <li key={warning.id}>
+          <strong>{warningReasons[warning.reason] || sanctionReasonNames[warning.reason]}</strong> · {formatDate(warning.createdAt)}
+          {warning.appeal && <span className="profile-appeal"> · {warning.appeal.status === 'pending' ? 'apelada, en revisión' : warning.appeal.status === 'rejected' ? 'apelación rechazada' : 'apelación aceptada'}</span>}
+          {warning.note && <p>{warning.note}</p>}
+        </li>)}</ul>
+      </>}
+      {profile.pastSanctions > 0 && <p className="profile-warning-note">{profile.pastSanctions === 1 ? 'Tuvo 1 sanción que ya terminó.' : `Tuvo ${profile.pastSanctions} sanciones que ya terminaron.`}</p>}
       <p className="profile-warning-note">{profile.own
-        ? 'Estas advertencias se ven en tu perfil. Si creés que hay un error, escribí al equipo de moderación.'
-        : 'Advertencias que dio el equipo de moderación por publicaciones de esta cuenta.'}</p>
+        ? <>Esto se ve en tu perfil. Si creés que hay un error, <Link to="/sanciones">apelá desde Mis sanciones</Link>.</>
+        : 'Sanciones y advertencias que dio el equipo de moderación por lo que publicó esta cuenta.'}</p>
     </section>}
 
     <div className="profile-grid">
@@ -80,6 +92,7 @@ export default function ProfileView({ profile, actions, onChangePhoto }) {
             <div><dt>Preguntas</dt><dd>{profile.stats.questions}</dd></div>
             <div><dt>Respuestas</dt><dd>{profile.stats.answers}</dd></div>
             <div><dt>Marcadas como útiles</dt><dd>{profile.stats.helpful}</dd></div>
+            <div><dt>Fichas</dt><dd>{profile.stats.contents ?? 0}</dd></div>
           </dl>
           {profile.recentQuestions.length > 0 && <>
             <h3 className="profile-subtitle">Últimas preguntas</h3>
@@ -95,15 +108,33 @@ export default function ProfileView({ profile, actions, onChangePhoto }) {
               <span>“{item.excerpt}”</span>
             </li>)}</ul>
           </>}
-          {!profile.recentQuestions.length && !profile.recentAnswers.length && <p className="profile-empty">{profile.own ? 'Todavía no publicaste preguntas ni respuestas.' : 'Todavía no publicó preguntas ni respuestas.'}</p>}
+          {profile.recentContents?.length > 0 && <>
+            <h3 className="profile-subtitle">Fichas que creó</h3>
+            <ul className="activity-list">{profile.recentContents.map(item => <li key={item.id}>
+              <Link to={`/conozcamos/${item.id}`}>{item.title}</Link>
+              <span>{[item.category, formatDate(item.createdAt)].filter(Boolean).join(' · ')}</span>
+            </li>)}</ul>
+          </>}
+          {!profile.recentQuestions.length && !profile.recentAnswers.length && !profile.recentContents?.length && <p className="profile-empty">{profile.own ? 'Todavía no publicaste preguntas, respuestas ni fichas.' : 'Todavía no publicó preguntas, respuestas ni fichas.'}</p>}
         </section>
       </div>
 
-      <aside className="profile-card profile-details" aria-labelledby="details-title">
-        <h2 id="details-title">Datos</h2>
-        <dl>{details.map(([label, value]) => <div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}</dl>
-        {profile.own && <p className="profile-empty">Tu correo nunca se muestra en tu perfil.</p>}
-      </aside>
+      <div className="profile-side">
+        <aside className="profile-card profile-details" aria-labelledby="details-title">
+          <h2 id="details-title">Datos</h2>
+          <dl>{details.map(([label, value]) => <div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}</dl>
+          {profile.own && <p className="profile-empty">Tu correo nunca se muestra en tu perfil.</p>}
+        </aside>
+        {profile.friendsCount !== undefined && <section className="profile-card profile-friends" aria-labelledby="friends-title">
+          <h2 id="friends-title">Amigos <span className="friends-count">{friendsLabel(profile.friendsCount)}</span></h2>
+          {profile.friendsPreview?.length > 0
+            ? <ul className="friends-preview">{profile.friendsPreview.map(friend => <li key={friend.id}>
+              <Link to={`/usuarios/${friend.id}`} title={friend.name}><Avatar person={friend}/><span>{friend.name.split(' ')[0]}</span></Link>
+            </li>)}</ul>
+            : <p className="profile-empty">{profile.own ? 'Todavía no sumaste amigos.' : 'Todavía no tiene amigos en Forbook.'}</p>}
+          <Link className="btn btn-outline btn-small" to={profile.own ? '/amigos' : `/usuarios/${profile.id}/amigos`}>{profile.own ? (profile.friendsCount ? 'Ver mis amigos' : 'Buscar personas') : 'Ver sus amigos'}</Link>
+        </section>}
+      </div>
     </div>
   </article>;
 }

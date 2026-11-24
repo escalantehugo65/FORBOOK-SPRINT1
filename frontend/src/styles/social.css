@@ -1,0 +1,129 @@
+/* Amigos, personas, sanciones, guía y panel de administración. */
+
+/* Perfil: insignia de administración, sanciones y amigos */
+.profile-badge-admin { background: var(--navy); color: #fff; }
+.profile-side { display: grid; gap: 22px; align-content: start; min-width: 0; }
+.profile-sanctions { margin-bottom: 6px; }
+.profile-sanctions strong { color: var(--danger); }
+.profile-appeal { color: var(--ink-3); font-size: 14px; }
+.profile-warning-note a { font-weight: 800; }
+.friends-count { margin-left: 6px; font-family: var(--font-body); font-size: 15px; font-weight: 700; color: var(--ink-3); letter-spacing: 0; }
+.friends-preview { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin: 0; padding: 0; list-style: none; }
+.friends-preview a { display: grid; justify-items: center; gap: 4px; color: var(--ink); text-decoration: none; font-size: 13px; font-weight: 700; min-width: 0; }
+.friends-preview a span { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.friends-preview a:hover span { color: var(--link); text-decoration: underline; }
+.profile-friends .btn { justify-self: start; }
+
+/* Botones de amistad */
+.friend-actions { display: grid; gap: 6px; justify-items: start; }
+.friend-actions.is-compact { justify-items: end; }
+.friend-buttons { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.friend-state { display: inline-flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 800; color: var(--ink-3); }
+.friend-state.is-friends { color: var(--ok); }
+.friend-state svg { width: 18px; height: 18px; }
+.friend-notice { font-size: 14px; color: var(--ink-3); }
+.person-side { position: relative; z-index: 1; display: grid; justify-items: end; gap: 8px; }
+.person-note { color: var(--ink-3); font-size: 13px; }
+/* Con botones de amistad, la tarjeta pasa a dos filas: foto y datos arriba, nivel y botones abajo. */
+.person-card:has(.friend-actions) { flex-wrap: wrap; }
+.person-card:has(.friend-actions) .person-side { flex-basis: 100%; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; padding-top: 12px; border-top: 1px solid var(--line); }
+.person-card:has(.friend-actions) .friend-actions.is-compact { justify-items: end; margin-left: auto; }
+
+/* Páginas de personas y amigos */
+.narrow-page { max-width: 880px; }
+.people-section { display: grid; gap: 14px; margin-bottom: 32px; }
+.people-section > h2 { font-size: 22px; }
+
+/* Sanciones y apelaciones */
+.sanction-list { display: grid; gap: 28px; }
+.sanction-list section { display: grid; gap: 12px; }
+.sanction-list h2 { font-size: 22px; }
+.sanction-list ul { display: grid; gap: 12px; margin: 0; padding: 0; list-style: none; }
+.sanction-item { display: grid; gap: 8px; padding: 18px 20px; border: 2px solid var(--danger-line); border-radius: var(--radius-m); background: var(--surface); }
+.sanction-item.is-past { border-color: var(--line); opacity: 0.85; }
+.sanction-top { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.sanction-note { color: var(--ink-2); overflow-wrap: anywhere; }
+.sanction-hint { font-size: 14px; font-weight: 700; color: var(--danger); }
+.appeal-status { display: grid; gap: 6px; justify-items: start; }
+.appeal-status p { font-size: 15px; color: var(--ink-2); overflow-wrap: anywhere; }
+.appeal-form { display: grid; gap: 4px; }
+.appeal-form textarea { width: 100%; }
+.sanction-rules ul { list-style: disc; padding-left: 22px; gap: 6px; }
+.sanction-item > .btn { justify-self: start; }
+
+/* Aviso de cuenta restringida y pantalla de cuenta suspendida */
+.account-banner { background: var(--yellow); color: var(--on-accent); }
+.account-banner .container { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; padding: 12px 0; font-weight: 700; }
+.account-banner a { color: inherit; font-weight: 800; }
+.account-blocked { display: grid; gap: 24px; padding-top: 40px; padding-bottom: 60px; }
+.account-blocked-head { display: grid; gap: 10px; padding: 26px; border-radius: var(--radius-l); background: var(--danger-bg); border: 2px solid var(--danger-line); }
+.account-blocked-head h1 { font-size: clamp(28px, 4vw, 40px); color: var(--danger); }
+.account-blocked-head dl { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin: 6px 0 0; }
+.account-blocked-head dt { font-size: 13px; font-weight: 800; color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.04em; }
+.account-blocked-head dd { margin: 2px 0 0; font-weight: 700; overflow-wrap: anywhere; }
+.account-blocked-head .btn { justify-self: start; }
+
+/* Guía «Cómo vivir en Formosa» */
+.guide-index { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 28px; padding: 0; list-style: none; }
+.guide-section { display: grid; gap: 14px; margin-bottom: 36px; scroll-margin-top: 96px; }
+.guide-section > p { color: var(--ink-2); max-width: 70ch; }
+
+/* Fichas creadas por estudiantes */
+.card-author { display: inline-flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.card-author .author-link { position: relative; z-index: 1; }
+.own-badge { background: var(--mint); color: var(--on-accent); }
+.content-owner-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+.content-form { display: grid; gap: 4px; max-width: 760px; }
+.content-form textarea { width: 100%; }
+.content-form fieldset { border: 0; padding: 0; margin: 0; min-width: 0; display: grid; gap: 16px; }
+.content-form fieldset .field { margin-bottom: 0; }
+
+/* Panel de administración */
+.stat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 14px; margin: 0 0 28px; }
+.stat-card { display: grid; gap: 4px; padding: 18px 20px; border: 2px solid var(--line); border-radius: var(--radius-m); background: var(--surface); text-decoration: none; color: var(--ink); }
+a.stat-card:hover { border-color: var(--primary); }
+.stat-card dt { order: 2; font-size: 14px; font-weight: 700; color: var(--ink-3); }
+.stat-card dd { order: 1; margin: 0; font-family: var(--font-display); font-size: 32px; font-weight: 800; line-height: 1.05; }
+.stat-card.is-alert { border-color: var(--danger-line); background: var(--danger-bg); }
+.admin-table-wrap { position: relative; overflow-x: auto; border: 2px solid var(--line); border-radius: var(--radius-m); }
+.admin-table { width: 100%; border-collapse: collapse; font-size: 15px; }
+.admin-table th, .admin-table td { padding: 12px 14px; text-align: left; vertical-align: middle; border-bottom: 1px solid var(--line); }
+.admin-table th { font-size: 13px; font-weight: 800; color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.04em; background: var(--surface-soft); }
+.admin-table tr:last-child td { border-bottom: 0; }
+.admin-table .num { text-align: right; font-variant-numeric: tabular-nums; }
+.admin-person { display: flex; align-items: center; gap: 10px; min-width: 200px; }
+.admin-person a { font-weight: 800; }
+.admin-person small { display: block; color: var(--ink-3); font-size: 13px; overflow-wrap: anywhere; }
+.state-badge { white-space: nowrap; }
+.state-active { background: var(--ok-bg); color: var(--ok); }
+.state-restricted { background: var(--yellow); color: var(--on-accent); }
+.state-suspended, .state-banned { background: var(--danger-bg); color: var(--danger); }
+.admin-detail-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(280px, 380px); gap: 22px; align-items: start; }
+.admin-detail-grid > div { display: grid; gap: 22px; min-width: 0; }
+.admin-form { display: grid; gap: 2px; }
+.admin-form textarea { width: 100%; }
+.admin-inline { display: flex; flex-wrap: wrap; align-items: end; gap: 10px; }
+.admin-inline .field { margin-bottom: 0; }
+.admin-movements li { display: flex; justify-content: space-between; gap: 10px; font-size: 15px; }
+.admin-movements .plus { color: #0f7f63; font-weight: 800; }
+.admin-movements .minus { color: var(--danger); font-weight: 800; }
+.shop-price { width: 110px; }
+@media (max-width: 900px) { .admin-detail-grid { grid-template-columns: 1fr; } }
+
+/* Chat: reportar un mensaje y lectura de moderación */
+.chat-report { grid-column: 1 / -1; margin-top: 8px; padding: 12px; border-radius: 12px; background: var(--surface); border: 2px solid var(--line); }
+.report-title-inline { font-weight: 800; margin-bottom: 6px; }
+.chat-readonly { margin: 0; padding: 12px 16px; border-top: 2px solid var(--line); color: var(--ink-3); font-weight: 700; }
+.note-action { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; width: 100%; }
+.note-action input { flex: 1 1 220px; min-height: 40px; padding: 0 12px; border: 2px solid var(--line-strong); border-radius: var(--radius-s); background: var(--surface); }
+.note-action .field-error { flex-basis: 100%; }
+.stat-inner { display: grid; gap: 4px; margin: 0; }
+.stat-inner > dt, .stat-inner > dd { margin: 0; }
+.admin-subtitle { font-size: 22px; margin-bottom: 12px; }
+.admin-filters .field:last-child { align-self: end; }
+.people-section > *, .admin-detail-grid > div > * { min-width: 0; }
+
+/* Cuenta: correo y baja */
+.danger-card { border-color: var(--danger-line); }
+.danger-card h2 { color: var(--danger); }
+.danger-card .choice { font-weight: 700; }

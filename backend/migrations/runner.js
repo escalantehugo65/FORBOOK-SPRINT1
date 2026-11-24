@@ -16,6 +16,9 @@ import { up as profiles } from './012-profiles.js';
 import { up as pointsShop } from './013-points-shop.js';
 import { up as routeStops } from './014-route-stops.js';
 import { up as communities } from './015-communities.js';
+import { up as sanctionsFriends } from './016-sanctions-friends-admin.js';
+import { up as avatarMilliseconds } from './017-avatar-milliseconds.js';
+import { up as accountDeletion } from './018-account-deletion.js';
 
 // Orden en que se aplican. Para cambiar la base, agregá una migración nueva al final:
 // nunca edites una que ya se aplicó en la base de otra persona.
@@ -36,6 +39,9 @@ export const migrations = [
   ['013-points-shop', pointsShop],
   ['014-route-stops', routeStops],
   ['015-communities', communities],
+  ['016-sanctions-friends-admin', sanctionsFriends],
+  ['017-avatar-milliseconds', avatarMilliseconds],
+  ['018-account-deletion', accountDeletion],
 ];
 
 // Aplica las que falten y las anota en schema_migrations, para no repetirlas.

@@ -1,12 +1,12 @@
 import { useCallback, useEffect, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { Link, useLocation, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { catalogService } from '../services/catalog';
 import { useFetch } from '../hooks/useFetch';
 import { usePageTitle } from '../hooks/usePageTitle';
 import { Loading, ErrorMessage, EmptyState } from '../components/Feedback';
 import ContentCard from '../components/ContentCard';
-import { SearchIcon } from '../components/Icons';
+import { PlusIcon, SearchIcon } from '../components/Icons';
 import { sourceBadge, sourceNames } from '../utils/content';
 
 // FF-18: "De mi institución" muestra solo las fichas propias; "Generales", las de toda la ciudad.
@@ -23,6 +23,8 @@ const legend = {
 export default function ExplorePage() {
   usePageTitle('Conozcamos Formosa');
   const { user } = useAuth();
+  const location = useLocation();
+  const notice = location.state?.notice;
   const [params, setParams] = useSearchParams();
   const categoryId = params.get('categoryId') || '';
   const scope = ['institution', 'general'].includes(params.get('scope')) ? params.get('scope') : '';
@@ -56,14 +58,22 @@ export default function ExplorePage() {
   let empty;
   if (search) empty = <EmptyState title={`No encontramos fichas con «${search}»`} action={<button className="btn btn-primary" type="button" onClick={() => update({ search: '' })}>Borrar la búsqueda</button>}>Probá con otras palabras. No importa si usás tildes o mayúsculas.</EmptyState>;
   else if (scope === 'institution') empty = <EmptyState title={`${institution} todavía no tiene fichas propias${selected ? ` en ${selected.name}` : ''}`} action={<button className="btn btn-primary" type="button" onClick={() => update({ scope: 'general' })}>Ver las fichas generales</button>}>Mientras tanto, la información general de Formosa te sirve igual.</EmptyState>;
-  else empty = <EmptyState title={selected ? `Todavía no hay fichas en ${selected.name}` : 'Todavía no hay fichas publicadas'} action={categoryId ? <button className="btn btn-primary" type="button" onClick={() => update({ categoryId: '' })}>Ver todas las fichas</button> : null}/>;
+  else empty = <EmptyState title={selected ? `Todavía no hay fichas en ${selected.name}` : 'Todavía no hay fichas publicadas'}
+    action={<div className="admin-buttons">{categoryId && <button className="btn btn-outline" type="button" onClick={() => update({ categoryId: '' })}>Ver todas las fichas</button>}<Link className="btn btn-primary" to="/conozcamos/nueva">Crear la primera</Link></div>}>
+    ¿Sabés algo que le sirva a quien recién llega? Compartilo en una ficha: se publica con tu nombre.
+  </EmptyState>;
 
   return <div className="container page">
     <header className="page-header">
       <p className="eyebrow">Conozcamos Formosa</p>
       <h1>Una ciudad por descubrir.</h1>
-      <p className="lead">Información para estudiar, orientarte y dar tus primeros pasos, con la fuente y la fecha de revisión a la vista.</p>
+      <p className="lead">Información para estudiar, orientarte y dar tus primeros pasos, con la fuente y la fecha de revisión a la vista. Cualquier estudiante puede sumar la suya.</p>
+      <div className="admin-buttons">
+        <Link className="btn btn-primary" to="/conozcamos/nueva"><PlusIcon/>Crear una ficha</Link>
+        <Link className="btn btn-outline" to="/guia">Guía: cómo vivir en Formosa</Link>
+      </div>
     </header>
+    {notice && <p className="report-done" role="status">{notice}</p>}
 
     <div className="explore-tools">
       <form className="search-form explore-search" role="search" onSubmit={submitSearch} noValidate>

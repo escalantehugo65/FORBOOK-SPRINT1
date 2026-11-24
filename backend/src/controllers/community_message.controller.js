@@ -45,10 +45,12 @@ const presentMessages = async (rows, communityId, viewerId, abilities) => {
 // GET /communities/:id/messages?before=120 → 40 anteriores al mensaje 120 (para subir en el chat)
 // GET /communities/:id/messages?after=160  → los nuevos desde el 160 (el chat pregunta cada pocos segundos)
 // Al pedirlos, quedan como leídos. No se muestran los de personas ocultas o bloqueadas.
+// Moderación y administración de Forbook pueden leer el chat sin unirse (para revisar reportes), pero no escribir.
 export const getMessages = async (req, res) => {
   const { id } = matchedData(req, { locations: ['params'] });
   const { before, after } = matchedData(req, { locations: ['query'] });
-  const { community, member, abilities, viewer } = await communityContext(req, id, 'isMember');
+  const { community, member, abilities, viewer } = await communityContext(req, id);
+  if (!abilities.isMember && !abilities.canModerate) throw new HttpError(403, 'Unite a la comunidad para participar.');
   const invisible = await invisibleUserIds(viewer.id);
   const where = { communityId: community.id };
   if (invisible.length) where[Op.or] = [{ userId: null }, { userId: { [Op.notIn]: invisible } }];
@@ -69,7 +71,7 @@ export const getMessages = async (req, res) => {
     ? (await CommunityMessage.findAll({ where: { communityId: community.id, deletedAt: { [Op.gte]: new Date(Date.now() - 60000) } }, attributes: ['id'], raw: true })).map(row => row.id)
     : [];
   const newest = page.length ? page[page.length - 1].id : 0;
-  if (before === undefined && newest > member.lastReadMessageId) await member.update({ lastReadMessageId: newest });
+  if (abilities.isMember && before === undefined && newest > member.lastReadMessageId) await member.update({ lastReadMessageId: newest });
   res.json({ data: await presentMessages(page, community.id, viewer.id, abilities), meta: { hasMore, deletedIds } });
 };
 

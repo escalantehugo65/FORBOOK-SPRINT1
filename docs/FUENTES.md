@@ -56,7 +56,7 @@ No se cargaron rutas de colectivos: no se encontró una fuente oficial con los r
 | Alquileres en Marketplace | Experiencia de Lautaro Villalba | Dónde se publican alquileres y cuidados para evitar estafas. Remite a la ficha legal de alquileres. |
 | DiDi o Uber: cuál conviene | Experiencia de Lautaro Villalba | Entre estudiantes se usa más DiDi porque suele ser más barato. Sin precios. |
 | El tereré | Experiencia de Lautaro Villalba | Qué es y cómo se comparte. |
-| El «pa» de las preguntas | Experiencia de Lautaro Villalba | Uso de «pa» al final de las preguntas. El origen guaraní (partícula interrogativa -pa) coincide con Paz y Vidal, «Interrogative Constructions in Guaraní», Languages, 2022 (UNaF y CONICET). |
+| El «pa» para hablarle a alguien (corregida el 24/11/2026) | Experiencia de Lautaro Villalba | En Formosa se usa «pa» para dirigirse a otra persona, como «che» o «amigo»: «¿Qué onda, pa?». La versión anterior hablaba del «pa» al final de las preguntas y de su origen guaraní; no era el uso que se quería contar, así que se quitó esa parte y su cita. El seed la actualiza solo si nadie la editó. |
 | ¿Te faltan útiles? Capítulo, en el centro | Experiencia de Lautaro Villalba | Solo la recomendación. No se cargó dirección ni horario porque nadie los comprobó. |
 
 ## Banco y Capítulo (16/11/2026, tercer lote)
@@ -76,3 +76,41 @@ Actualización del 16/11/2026 (cuarto lote):
 - Biblioteca: la que recomendó Lautaro es la del ex Colegio Nacional, hoy EPES N.º 54 «Gobernador Juan José Silva». La dirección (Sarmiento 885) sale de la página de la escuela; la ubicación (-26.186668, -58.175340), de Google Maps. Algunos padrones escolares registran la escuela en Av. 25 de Mayo 1050, barrio Don Bosco: se usó la dirección que publica la propia escuela. No hay horarios publicados: la ficha y el lugar piden consultarlos.
 
 El seed actualiza la ruta del colectivo y el lugar de Capítulo solo si nadie los editó desde la página (`routeRevisions` y `placeRevisions` en el catálogo).
+
+## Guía y comida (24/11/2026)
+
+| Dato | Tipo y referencia | Alcance |
+|---|---|---|
+| Ficha: Alimentos seguros: cómo cocinar y guardar la comida (nueva) | Oficial. SENASA, «Claves para preparar, cocinar y conservar alimentos inocuos y saludables», 22/07/2020: https://www.argentina.gob.ar/node/206782 | Las nueve claves del SENASA (alimentos tratados, agua potable, cocción a 70 °C, comer lo cocido enseguida, enfriar antes de guardar, no mezclar crudo y cocido, lavarse las manos, cocina limpia y recipientes cerrados). Sin datos propios. |
+| Guía «Cómo vivir en Formosa» (/guia) | Las fichas que ya están en esta tabla | No agrega datos: ordena por tema (seguridad, salud y clima, comida, plata y trámites, costumbres) fichas que ya tienen su fuente. Si una ficha no existe o está oculta, no aparece. |
+
+Las fichas que crean los estudiantes desde Conozcamos Formosa no están en esta tabla: se publican con el nombre de quien las hizo, con su tipo de fuente (experiencia, comunitaria con referencia u oficial con enlace https) y la comunidad las puede reportar.
+
+## Mapa: lugares por categoría y por barrio (24/11/2026)
+
+Cómo se ubicó cada punto: la dirección sale de una fuente oficial (Formosa Digital del Gobierno provincial, https://fd.formosa.gob.ar/mapa, o la Municipalidad). Si la dirección es una esquina, la coordenada es la que devuelve Georef, el servicio oficial de normalización de direcciones (https://apis.datos.gob.ar/georef/api/direcciones). Georef no ubica alturas (números de calle) en Formosa, solo esquinas. Si no había esquina, se usó OpenStreetMap o Waze, y la fuente de cada lugar lo dice. Sin ubicación comprobada, el lugar va sin punto en el mapa.
+
+| Lugar | Barrio | Dirección (fuente) | Ubicación |
+|---|---|---|---|
+| Jefatura de Policía y Comisaría Seccional Primera | Centro | Saavedra 325, esquina Moreno (Municipalidad y Formosa Digital) | Georef, Saavedra y Moreno |
+| Comisaría Seccional Segunda | — | Av. 25 de Mayo 1380 (Formosa Digital) | Waze |
+| Comisaría Seccional Cuarta | — | Trinidad González y Rómulo Amadey (Formosa Digital) | Georef |
+| Comisaría Seccional Quinta | Circuito Cinco (B° Eva Perón) | Raúl Viciconti y Vicente Solano Lima (Formosa Digital) | Georef |
+| Comisaría Seccional Octava | La Nueva Formosa | B° La Nueva Formosa (Formosa Digital) | OpenStreetMap, nodo 4794199022 |
+| Hospital de Alta Complejidad | — | Av. Dr. Néstor Kirchner y Av. Pantaleón Gómez (publicada por el hospital, IntraMed) | Georef |
+| Hospital de la Madre y el Niño y Registro Civil Seccional Quinta | — | Córdoba 1450; Paraguay entre Córdoba y Roca (Formosa Digital) | Punto medio de las dos esquinas de Georef |
+| Hospital Odontológico | — | Av. 28 de Junio y Coronel Bogado (Formosa Digital) | Georef |
+| Centro de Salud La Nueva Formosa | La Nueva Formosa | B° La Nueva Formosa (Formosa Digital) | OpenStreetMap, vía 743459933 |
+| Hospital Distrital N.º 8 | Circuito Cinco | Av. Ana Esther Elías de Cánepa s/n (Formosa Digital) | Sin punto |
+| Registro Civil, sede central | Centro | Av. 25 de Mayo 162 (Formosa Digital) | Sin punto |
+| Registro Civil Seccional Cuarta | Circuito Cinco | Mz. 65, casa 24, B° Eva Perón (Formosa Digital) | Sin punto |
+| Terminal de Ómnibus | — | Av. Gutnisky 2615 (Municipalidad); esquina Av. Antártida Argentina (Unibus) | Georef |
+| Aeropuerto El Pucú | Cerca de La Nueva Formosa | 7 km al sur del centro (Argentina.gob.ar) | Wikipedia |
+| Colectivos: Plaza San Martín | Centro | Punto de conexión de las líneas (Municipalidad) | Parada comprobada por un estudiante del IPF (la misma del colectivo del IPF) |
+| Colectivos: cabecera de la línea D | Centro | San Martín y Corrientes (El Destape, 07/11/2025) | Georef |
+| Colectivos: cabecera de las líneas C y H | — | Av. Napoleón Uriburu y Córdoba (El Destape, 07/11/2025) | Georef |
+| Instituto Superior de Arte «Oscar Alberto Albertazzi» | Centro | Av. 9 de Julio y España (publicación del instituto en archivos.formosa.gob.ar) | Georef |
+
+Ficha «Las líneas de colectivo de la ciudad» (nueva): las líneas y su organización salen de la Municipalidad (https://www.formosatuciudad.gob.ar/servicios/transporte-urbano/8097-la-municipalidad-informo-como-sera-el-nuevo-sistema-de-transporte-publico-en-la-ciudad); las cabeceras actuales, de El Destape (07/11/2025); el recorrido de la línea H por el Circuito Cinco, de Guau Formosa (31/01/2025). La lista coincide con las líneas que la Secretaría de Transporte de la Nación nombró en octubre de 2025 (A, B, C, D, E, F, G, H, K y L). No se publican recorridos calle por calle de las demás líneas porque no hay una fuente que los dé completos.
+
+Quedan pendientes (sin punto en el mapa hasta tener la ubicación): Hospital Distrital N.º 8, Registro Civil central y Registro Civil Seccional Cuarta.

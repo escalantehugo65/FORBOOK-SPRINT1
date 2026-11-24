@@ -7,9 +7,8 @@ export function ErrorMessage({ message, retry }) {
 export function EmptyState({ title = 'Todavía no hay contenido', children, action, headingLevel = 2 }) {
   const Heading = `h${headingLevel}`;
   return <div className="empty">
-    <span className="badge badge-soon">En preparación</span>
     <Heading>{title}</Heading>
-    <p>{children || 'Preferimos esperar a tener información verificada antes que publicar algo dudoso.'}</p>
+    <p>{children || 'Por ahora no hay nada para mostrar acá.'}</p>
     {action}
   </div>;
 }

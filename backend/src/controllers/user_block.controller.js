@@ -1,6 +1,7 @@
 import { matchedData } from 'express-validator';
 import { UserBlock } from '../models/user_block.model.js';
 import { User } from '../models/user.model.js';
+import { findPair } from '../helpers/friendship.helper.js';
 import { HttpError } from '../helpers/error.helper.js';
 import { authorAttributes, avatarVersion } from '../helpers/user.helper.js';
 
@@ -23,6 +24,8 @@ export const setBlock = async (req, res) => {
   if (id === req.session.userId) throw new HttpError(400, 'No podés ocultarte ni bloquearte.');
   if (!await User.findByPk(id, { attributes: ['id'] })) throw new HttpError(404, 'No encontramos ese perfil.');
   await UserBlock.upsert({ userId: req.session.userId, targetId: id, kind });
+  // Bloquear corta la amistad y borra las solicitudes pendientes entre las dos.
+  if (kind === 'blocked') await (await findPair(req.session.userId, id))?.destroy();
   res.json({ data: { relation: kind }, message: kind === 'blocked' ? 'Bloqueaste a esta persona: no van a verse los mensajes entre ustedes y no puede ver tu perfil.' : 'Ocultaste a esta persona: dejás de ver sus mensajes en las comunidades.' });
 };
 

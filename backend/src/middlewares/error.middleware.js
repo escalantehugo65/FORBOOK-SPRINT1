@@ -22,6 +22,7 @@ export const errorHandler = (error, req, res, next) => {
     error: {
       message: status >= 500 ? 'No pudimos completar la operación. Intentá nuevamente.' : error.message,
       ...(error.fields ? { fields: error.fields } : {}),
+      ...(status < 500 && error.code ? { code: error.code } : {}),
     },
   });
 };
